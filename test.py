@@ -5,7 +5,7 @@ x = 5
 y = 10
 print(x + y)
 # %% [markdown]
-# #### Brute force - this is just a reference to check how the program is doing and notes look
+# #### Brute force - this is just a test for notes making inside .py
 # Time complexity: O(n^2), Space: O(1)
 # Walking through nested loops to find the pair.
 # **bold**, - bullet, `inline code`, even [links] www.google.com 
