@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML/DL/GenAI — The Complete Navigator v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d10;--sidebar:#111115;--surface:#18181e;--surface2:#202028;
+  --border:#28283a;--accent:#e8914a;--accent2:#5b9bd5;--accent3:#7ec88a;
+  --accent4:#c47eb8;--accent5:#f0c060;--text:#eae8e2;--text-muted:#7a7875;
+  --text-soft:#b8b5ae;--code-bg:#0a0a0e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:auto;}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;line-height:1.8;}
+
+/* SIDEBAR */
+#sidebar{width:290px;min-width:290px;background:var(--sidebar);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;}
+#sidebar::-webkit-scrollbar{width:3px;}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);}
+.sb-head{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--sidebar);z-index:10;}
+.sb-head h1{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--accent);line-height:1.3;}
+.sb-head p{font-size:0.65rem;color:var(--text-muted);margin-top:3px;font-family:'JetBrains Mono',monospace;}
+.nav-sec{padding:8px 0;border-bottom:1px solid var(--border);}
+.nav-sec-title{padding:7px 20px 3px;font-size:0.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);font-family:'JetBrains Mono',monospace;}
+.nav-item{display:block;padding:5px 20px 5px 24px;font-size:0.77rem;color:var(--text-soft);text-decoration:none;cursor:pointer;transition:all .15s;line-height:1.4;}
+.nav-item:hover{color:var(--accent);background:rgba(232,145,74,.08);}
+.nav-item.sub{padding-left:36px;font-size:0.71rem;color:#5a5856;}
+.nav-item.sub:hover{color:var(--accent2);}
+
+/* MAIN */
+#main{margin-left:290px;max-width:940px;padding:56px 60px 120px;}
+
+/* HERO */
+.hero{margin-bottom:64px;padding-bottom:44px;border-bottom:1px solid var(--border);}
+.hero-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--accent);background:rgba(232,145,74,.1);border:1px solid rgba(232,145,74,.25);padding:3px 10px;border-radius:2px;letter-spacing:.1em;margin-bottom:16px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:700;line-height:1.15;margin-bottom:16px;}
+.hero h1 span{color:var(--accent);}
+.hero p{font-size:1rem;color:var(--text-soft);max-width:620px;}
+
+/* CHAPTERS */
+.chapter{margin-bottom:72px;padding-top:8px;}
+.ch-num{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;}
+.ch-div{height:1px;background:linear-gradient(90deg,var(--accent) 0%,var(--border) 55%,transparent 100%);margin-bottom:32px;opacity:.45;}
+h2{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:700;color:var(--text);margin-bottom:18px;line-height:1.2;}
+h3{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:600;color:var(--accent);margin:36px 0 12px;line-height:1.3;}
+h4{font-size:.88rem;font-weight:600;color:var(--accent2);margin:20px 0 8px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;}
+p{margin-bottom:14px;font-size:.94rem;color:var(--text-soft);}
+p strong{color:var(--text);font-weight:600;}
+ul,ol{margin:10px 0 14px 22px;color:var(--text-soft);}
+li{margin-bottom:5px;font-size:.9rem;}
+li strong{color:var(--text);}
+
+/* CALLOUTS */
+.box{background:var(--surface);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:.88rem;}
+.box.blue{border-color:var(--accent2);}
+.box.green{border-color:var(--accent3);}
+.box.purple{border-color:var(--accent4);}
+.box.yellow{border-color:var(--accent5);}
+.box-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:7px;}
+.box.blue .box-label{color:var(--accent2);}
+.box.green .box-label{color:var(--accent3);}
+.box.purple .box-label{color:var(--accent4);}
+.box.yellow .box-label{color:var(--accent5);}
+.box p{margin:0;color:var(--text-soft);}
+
+/* GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:18px 0;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:16px 18px;transition:border-color .2s;}
+.card:hover{border-color:var(--accent);}
+.card h5{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);margin-bottom:7px;letter-spacing:.04em;}
+.card p{font-size:.8rem;margin:0;}
+
+/* MATH */
+.math{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:14px 20px;margin:16px 0;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);text-align:center;line-height:2;}
+.math .lbl{font-size:.6rem;color:var(--text-muted);display:block;text-align:right;margin-top:4px;letter-spacing:.1em;text-transform:uppercase;}
+.math-step{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 18px;margin:8px 0;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-soft);}
+.math-step .step-label{color:var(--accent5);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px;}
+
+/* CODE */
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:18px 22px;margin:16px 0;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.7;color:#c5c2b8;}
+code{font-family:'JetBrains Mono',monospace;font-size:.8em;background:var(--surface2);padding:2px 6px;border-radius:3px;color:var(--accent2);}
+pre code{background:none;padding:0;color:inherit;font-size:inherit;}
+.kw{color:#c47eb8;}.fn{color:#5b9bd5;}.str{color:#7ec88a;}.cm{color:#4a4845;font-style:italic;}.num{color:#e8914a;}.op{color:#f0c060;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.83rem;}
+th{background:var(--surface2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-soft);vertical-align:top;line-height:1.6;}
+tr:hover td{background:var(--surface);}
+
+/* TAGS */
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.62rem;padding:2px 7px;border-radius:3px;margin:2px;}
+.to{background:rgba(232,145,74,.13);color:var(--accent);}
+.tb{background:rgba(91,155,213,.13);color:var(--accent2);}
+.tg{background:rgba(126,200,138,.13);color:var(--accent3);}
+.tp{background:rgba(196,126,184,.13);color:var(--accent4);}
+
+/* TIMELINE */
+.tl{margin:24px 0;}
+.tl-item{display:flex;gap:16px;margin-bottom:20px;position:relative;}
+.tl-year{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent);min-width:44px;padding-top:2px;}
+.tl-body strong{color:var(--text);font-size:.87rem;display:block;margin-bottom:3px;}
+.tl-body span{color:var(--text-muted);font-size:.8rem;line-height:1.6;}
+.tl-line{position:absolute;left:44px;top:20px;bottom:-20px;width:1px;background:var(--border);}
+
+/* EVOLUTION CHAIN */
+.evo{display:flex;align-items:center;flex-wrap:wrap;gap:3px;margin:20px 0;}
+.evo-n{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:6px 12px;font-size:.72rem;font-family:'JetBrains Mono',monospace;color:var(--text-soft);}
+.evo-n.hi{border-color:var(--accent);color:var(--accent);background:rgba(232,145,74,.08);}
+.evo-a{color:var(--text-muted);font-size:.75rem;padding:0 1px;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:32px 0;opacity:.5;}
+
+/* SVG diagrams container */
+.diagram{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin:20px 0;text-align:center;}
+.diagram-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+
+/* PROGRESS */
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:200;transition:width .1s;}
+
+/* COLLAPSIBLE */
+.collapsible{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin:10px 0;overflow:hidden;}
+.coll-header{padding:12px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-soft);transition:background .15s;}
+.coll-header:hover{background:var(--surface2);}
+.coll-header .arrow{transition:transform .25s;color:var(--accent);}
+.coll-body{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;}
+.coll-body.open{max-height:2000px;padding:0 18px 16px;}
+
+/* ANCHOR */
+.anc{scroll-margin-top:28px;}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<!-- ======= SIDEBAR ======= -->
+<nav id="sidebar">
+<div class="sb-head">
+  <h1>ML / DL / GenAI<br>Complete Navigator</h1>
+  <p>v2 · 2026 · Hyderabad Edition</p>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Start Here</div>
+<a class="nav-item" onclick="navTo('overview')">The Big Picture</a>
+<a class="nav-item" onclick="navTo('field-map')">How Fields Relate</a>
+<a class="nav-item" onclick="navTo('evolution')">Evolution Timeline</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Mathematical Foundations</div>
+<a class="nav-item" onclick="navTo('linear-algebra')">Linear Algebra</a>
+<a class="nav-item sub" onclick="navTo('vectors')">Vectors & Matrices</a>
+<a class="nav-item sub" onclick="navTo('tensors')">Tensors</a>
+<a class="nav-item sub" onclick="navTo('matrix-mult')">Matrix Multiplication</a>
+<a class="nav-item" onclick="navTo('calculus')">Calculus & Gradients</a>
+<a class="nav-item sub" onclick="navTo('chain-rule')">Chain Rule Derivation</a>
+<a class="nav-item sub" onclick="navTo('gradient-descent')">Gradient Descent</a>
+<a class="nav-item" onclick="navTo('probability')">Probability & Statistics</a>
+<a class="nav-item sub" onclick="navTo('mle')">Maximum Likelihood</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Classical ML</div>
+<a class="nav-item" onclick="navTo('ml-types')">Types of Learning</a>
+<a class="nav-item" onclick="navTo('classical-algos')">Core Algorithms</a>
+<a class="nav-item sub" onclick="navTo('bias-variance')">Bias-Variance Tradeoff</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Neural Networks</div>
+<a class="nav-item" onclick="navTo('perceptron')">Perceptrons & MLPs</a>
+<a class="nav-item sub" onclick="navTo('forward-pass')">Forward Pass</a>
+<a class="nav-item" onclick="navTo('backprop')">Backpropagation</a>
+<a class="nav-item sub" onclick="navTo('backprop-deriv')">Full Derivation</a>
+<a class="nav-item" onclick="navTo('activations')">Activation Functions</a>
+<a class="nav-item sub" onclick="navTo('relu-gelu')">ReLU, GELU, Swish</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Training</div>
+<a class="nav-item" onclick="navTo('loss-fns')">Loss Functions</a>
+<a class="nav-item" onclick="navTo('optimizers')">Optimizers</a>
+<a class="nav-item sub" onclick="navTo('adam-adamw')">Adam & AdamW</a>
+<a class="nav-item" onclick="navTo('regularization')">Regularization</a>
+<a class="nav-item" onclick="navTo('normalization')">Normalization</a>
+<a class="nav-item sub" onclick="navTo('bn-ln')">Batch vs Layer Norm</a>
+<a class="nav-item" onclick="navTo('init-schedule')">Init & LR Schedule</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">CNNs</div>
+<a class="nav-item" onclick="navTo('cnn-intuition')">CNN Intuition</a>
+<a class="nav-item sub" onclick="navTo('conv-op')">Convolution: Worked Example</a>
+<a class="nav-item sub" onclick="navTo('stride-padding')">Stride, Padding, Pooling</a>
+<a class="nav-item sub" onclick="navTo('receptive-field')">Receptive Fields</a>
+<a class="nav-item sub" onclick="navTo('dilated-conv')">Dilated Convolutions</a>
+<a class="nav-item" onclick="navTo('cnn-archs')">CNN Architectures</a>
+<a class="nav-item sub" onclick="navTo('resnet')">ResNet & Skip Connections</a>
+<a class="nav-item" onclick="navTo('cnn-usecases')">CNN Use Cases</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Sequence Models</div>
+<a class="nav-item" onclick="navTo('rnn')">RNNs</a>
+<a class="nav-item sub" onclick="navTo('vanishing')">Vanishing Gradients</a>
+<a class="nav-item" onclick="navTo('lstm')">LSTM — Full Derivation</a>
+<a class="nav-item sub" onclick="navTo('lstm-gates')">Gate Equations</a>
+<a class="nav-item" onclick="navTo('gru')">GRU</a>
+<a class="nav-item" onclick="navTo('seq-usecases')">Sequence Use Cases</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Attention & Transformers</div>
+<a class="nav-item" onclick="navTo('seq2seq')">Seq2Seq & Bottleneck</a>
+<a class="nav-item" onclick="navTo('bahdanau')">Bahdanau Attention</a>
+<a class="nav-item" onclick="navTo('self-attention')">Self-Attention (Q, K, V)</a>
+<a class="nav-item sub" onclick="navTo('sa-worked')">Worked Numerical Example</a>
+<a class="nav-item" onclick="navTo('transformer')">The Transformer (2017)</a>
+<a class="nav-item sub" onclick="navTo('encoder-stack')">Encoder Stack</a>
+<a class="nav-item sub" onclick="navTo('decoder-stack')">Decoder Stack</a>
+<a class="nav-item sub" onclick="navTo('mha')">Multi-Head Attention</a>
+<a class="nav-item sub" onclick="navTo('pos-enc')">Positional Encoding</a>
+<a class="nav-item" onclick="navTo('transformer-usecases')">Transformer Use Cases</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Pre-trained LMs</div>
+<a class="nav-item" onclick="navTo('bert-gpt')">BERT vs GPT</a>
+<a class="nav-item sub" onclick="navTo('bert-detail')">BERT In Depth</a>
+<a class="nav-item sub" onclick="navTo('gpt-detail')">GPT Family</a>
+<a class="nav-item" onclick="navTo('transfer-learning')">Transfer Learning</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Generative Models</div>
+<a class="nav-item" onclick="navTo('autoencoders')">Autoencoders</a>
+<a class="nav-item" onclick="navTo('vae')">VAE + Derivation</a>
+<a class="nav-item sub" onclick="navTo('reparam')">Reparameterization Trick</a>
+<a class="nav-item" onclick="navTo('gans')">GANs</a>
+<a class="nav-item" onclick="navTo('diffusion')">Diffusion Models (DDPM)</a>
+<a class="nav-item sub" onclick="navTo('ddpm-math')">Forward & Reverse Math</a>
+<a class="nav-item" onclick="navTo('gen-usecases')">Generative Use Cases</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Modern Landscape</div>
+<a class="nav-item" onclick="navTo('scaling-laws')">Scaling Laws</a>
+<a class="nav-item" onclick="navTo('rlhf')">RLHF & Alignment</a>
+<a class="nav-item" onclick="navTo('peft')">PEFT: LoRA & QLoRA</a>
+<a class="nav-item" onclick="navTo('arch-innovations')">Arch Innovations (2023–26)</a>
+<a class="nav-item" onclick="navTo('state-2026')">State of the Field (2026)</a>
+</div>
+
+<div class="nav-sec">
+<div class="nav-sec-title">Reference</div>
+<a class="nav-item" onclick="navTo('glossary')">Full Glossary</a>
+<a class="nav-item" onclick="navTo('interview-prep')">Interview Prep Guide</a>
+<a class="nav-item" onclick="navTo('resources')">Curated Resources</a>
+</div>
+</nav>
+
+<!-- ======= MAIN ======= -->
+<main id="main">
+
+<div class="hero">
+  <div class="hero-tag">COMPLETE NAVIGATOR · v2 · HYDERABAD 2026</div>
+  <h1>Machine Learning,<br>Deep Learning &<br><span>Generative AI</span></h1>
+  <p>Every concept explained from first principles. Every connection mapped. Mathematical derivations. Worked examples. Use cases. The field — start to finish.</p>
+</div>
+
+<!-- =============== BIG PICTURE =============== -->
+<section class="chapter anc" id="overview">
+<div class="ch-num">Chapter 00 · Start Here</div>
+<div class="ch-div"></div>
+<h2>The Big Picture</h2>
+
+<p>The #1 reason people get lost in ML/DL is they encounter terms — "transformer," "gradient," "attention," "latent space" — without knowing which <em>layer of the field</em> those terms live in. Let's build the map first.</p>
+
+<h3 id="field-map">How the Fields Nest</h3>
+
+<div class="diagram">
+  <div class="diagram-title">AI → ML → DL → Generative AI — Field Nesting</div>
+  <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:520px;">
+    <defs>
+      <style>.lbl{font-family:JetBrains Mono,monospace;font-size:11px;fill:#7a7875;}.llbl{font-family:JetBrains Mono,monospace;font-size:10px;fill:#e8914a;font-weight:600;letter-spacing:.05em;}.desc{font-family:Source Serif 4,Georgia,serif;font-size:10px;fill:#7a7875;}</style>
+    </defs>
+    <!-- AI circle -->
+    <ellipse cx="260" cy="160" rx="230" ry="140" fill="rgba(232,145,74,.04)" stroke="rgba(232,145,74,.2)" stroke-width="1.5"/>
+    <text x="60" y="50" class="lbl">ARTIFICIAL INTELLIGENCE</text>
+    <text x="60" y="64" class="desc">Rule-based, Search, Expert Systems, ML</text>
+    <!-- ML circle -->
+    <ellipse cx="260" cy="168" rx="175" ry="107" fill="rgba(91,155,213,.05)" stroke="rgba(91,155,213,.25)" stroke-width="1.5"/>
+    <text x="105" y="93" class="lbl" fill="#5b9bd5">MACHINE LEARNING</text>
+    <text x="105" y="107" class="desc">Learns from data: SVMs, Trees, NNs</text>
+    <!-- DL circle -->
+    <ellipse cx="260" cy="178" rx="118" ry="75" fill="rgba(126,200,138,.06)" stroke="rgba(126,200,138,.3)" stroke-width="1.5"/>
+    <text x="162" y="137" class="lbl" fill="#7ec88a">DEEP LEARNING</text>
+    <text x="162" y="151" class="desc">Multi-layer neural nets</text>
+    <!-- GenAI circle -->
+    <ellipse cx="260" cy="190" rx="68" ry="44" fill="rgba(196,126,184,.12)" stroke="rgba(196,126,184,.4)" stroke-width="1.5"/>
+    <text x="218" y="183" class="lbl" fill="#c47eb8" style="font-size:9px">GENERATIVE AI</text>
+    <text x="222" y="196" class="desc" style="fill:#c47eb8;font-size:8px">LLMs, Diffusion</text>
+    <!-- Subfields outside -->
+    <text x="420" y="110" class="lbl" fill="#5b5855" style="font-size:9px">NLP</text>
+    <text x="420" y="150" class="lbl" fill="#5b5855" style="font-size:9px">Computer Vision</text>
+    <text x="420" y="190" class="lbl" fill="#5b5855" style="font-size:9px">Reinforcement RL</text>
+    <line x1="418" y1="108" x2="370" y2="120" stroke="#28283a" stroke-width="1" stroke-dasharray="3"/>
+    <line x1="418" y1="148" x2="375" y2="155" stroke="#28283a" stroke-width="1" stroke-dasharray="3"/>
+    <line x1="418" y1="188" x2="375" y2="185" stroke="#28283a" stroke-width="1" stroke-dasharray="3"/>
+  </svg>
+</div>
+
+<div class="grid2">
+  <div class="card"><h5>🤖 Artificial Intelligence</h5><p>Any technique making computers behave intelligently. Includes rule-based systems, search, planning, expert systems, and ML. Exists since 1950s (Turing, McCarthy).</p></div>
+  <div class="card"><h5>📊 Machine Learning</h5><p>Systems that <em>learn from data</em> instead of being explicitly programmed. You provide labeled examples; the algorithm finds the pattern. Flourished in 1990s–2000s.</p></div>
+  <div class="card"><h5>🧠 Deep Learning</h5><p>ML using multi-layer neural networks. Key insight: <strong>hierarchical feature learning</strong> — early layers learn edges, later layers learn faces. Dominant since AlexNet (2012).</p></div>
+  <div class="card"><h5>✨ Generative AI</h5><p>DL models that can <em>create new content</em> — text, images, code, audio. Subset of DL. Includes LLMs (GPT, Claude), diffusion models (Stable Diffusion), VAEs. Public breakthrough: ChatGPT (2022).</p></div>
+</div>
+
+<p>Adjacent fields that intersect constantly: <strong>NLP</strong> (language understanding/generation — now almost entirely DL), <strong>Computer Vision</strong> (image/video — CNNs then ViTs), <strong>Reinforcement Learning</strong> (agents learning from reward signals — used in game AI and RLHF for LLMs), <strong>Data Science</strong> (your background — data pipelines, analysis, visualization, and ML).</p>
+
+<h3 id="evolution">Historical Evolution — Why Each Step Happened</h3>
+<p>Every major architecture was invented to fix a specific failure in the previous one. The <em>why</em> is as important as the <em>what</em>.</p>
+
+<div class="tl">
+<div class="tl-item"><div class="tl-year">1943</div><div class="tl-body"><strong>McCulloch-Pitts Neuron</strong><span> — First mathematical neuron. Binary threshold logic. No learning. "A neuron fires if inputs exceed threshold." Problem: cannot learn.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">1958</div><div class="tl-body"><strong>Perceptron (Rosenblatt)</strong><span> — First trainable single-layer neuron. Learned linear boundaries. Huge hype. Fatal flaw: cannot solve XOR (non-linear). Led to 15-year "AI Winter."</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">1986</div><div class="tl-body"><strong>Backpropagation (Rumelhart, Hinton)</strong><span> — Made multi-layer nets trainable. Stack layers → solve XOR → solve complex tasks. The chain rule applied backward through a network. Revived neural nets.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">1989–98</div><div class="tl-body"><strong>LeNet (LeCun) — First CNN</strong><span> — Handwritten digit recognition (MNIST). Introduced convolution + pooling. Key insight: spatial structure matters. Too slow on available hardware for practical use.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">1997</div><div class="tl-body"><strong>LSTM (Hochreiter & Schmidhuber)</strong><span> — Plain RNNs suffered from vanishing gradients (couldn't learn long-range dependencies). LSTM's gating mechanism let gradients flow unchanged. Enabled language modeling, speech, time series.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2012</div><div class="tl-body"><strong>AlexNet — The Revolution</strong><span> — Deep CNN on GPU cuts ImageNet error 26%→16% (vs. next best at 26%). GPUs + ReLU + Dropout + Big data = DL takes over. Every major company scrambles for deep learning talent.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2014</div><div class="tl-body"><strong>GANs (Goodfellow) + Seq2Seq</strong><span> — GANs: adversarial training for generation. Seq2Seq: encoder-decoder architecture for translation using RNNs — but bottlenecks on long sentences.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2015</div><div class="tl-body"><strong>Attention Mechanism + ResNet</strong><span> — Bahdanau attention lets decoder look at any encoder state (fixes bottleneck). ResNet's skip connections enable 150+ layer networks without degradation.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2017</div><div class="tl-body"><strong>"Attention Is All You Need" — The Transformer</strong><span> — Eliminate RNNs entirely. Pure attention-based architecture. Fully parallelizable — train on 8 GPUs in days, not months. Scaled to any data size. Foundation of everything modern.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2018</div><div class="tl-body"><strong>BERT + GPT-1 — Transfer Learning Era</strong><span> — Pretrain on massive unlabeled text → fine-tune on task. BERT: bidirectional encoding for understanding. GPT: autoregressive generation. Changed NLP permanently.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2020</div><div class="tl-body"><strong>GPT-3 — Scale Changes Everything</strong><span> — 175B parameters. In-context few-shot learning: describe the task in the prompt, no fine-tuning needed. Emergent capabilities. Foundation model era begins.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2020–22</div><div class="tl-body"><strong>Diffusion Models — DDPM, DALL-E, Stable Diffusion</strong><span> — New generative paradigm: learn to reverse a gradual noising process. Outperforms GANs on image quality + diversity. Open-sourced by Stability AI.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2022–23</div><div class="tl-body"><strong>ChatGPT / Claude / GPT-4 — RLHF Era</strong><span> — Reinforcement Learning from Human Feedback aligns LLMs to be helpful, harmless, honest. 100M users in 2 months. AI enters mainstream.</span></div><div class="tl-line"></div></div>
+<div class="tl-item"><div class="tl-year">2024–26</div><div class="tl-body"><strong>Reasoning Models, Agents, Multimodal</strong><span> — o1/o3, DeepSeek-R1: "think before answering" (chain-of-thought at inference). Claude/GPT-4o: vision+text+audio natively. Mamba, MoE: efficient architectures challenging dense transformers. Agentic loops becoming real.</span></div></div>
+</div>
+</section>
+
+<!-- =============== MATH FOUNDATIONS =============== -->
+<section class="chapter anc" id="linear-algebra">
+<div class="ch-num">Chapter 01 · Mathematical Foundations</div>
+<div class="ch-div"></div>
+<h2>Mathematical Foundations</h2>
+<p>You need fluency in three areas: <strong>linear algebra</strong> (the language), <strong>calculus</strong> (the engine), and <strong>probability</strong> (the framework). Not PhD-level — but you must be able to read a paper's math and know what it's saying.</p>
+
+<h3 id="vectors">Vectors & Matrices</h3>
+<h4>Vectors</h4>
+<p>A <strong>vector</strong> is an ordered list of numbers. In ML: a data point, a word embedding, the output of a layer. A 4D vector: <code>x = [0.2, 0.8, -0.5, 1.3]</code>. Think of it geometrically as a point in multi-dimensional space, or an arrow with direction and magnitude.</p>
+
+<p><strong>Dot product</strong>: <code>a · b = Σᵢ aᵢbᵢ</code>. Measures "alignment" between two vectors. If a·b is large, the vectors point in similar directions. This is the core operation in attention mechanisms.</p>
+
+<div class="math">
+a = [1, 2, 3],  b = [4, 0, -1]
+a · b = (1×4) + (2×0) + (3×-1) = 4 + 0 - 3 = 1
+<span class="lbl">Dot product — core of attention and similarity computation</span>
+</div>
+
+<h4>Matrices</h4>
+<p>A <strong>matrix</strong> is a 2D array — rows and columns. Notation: W ∈ ℝⁿˣᵐ means n rows, m columns.</p>
+
+<h4 id="matrix-mult">Matrix Multiplication — The Core Operation</h4>
+<p>If W is (n×m) and x is (m×1), then y = Wx is (n×1). Each output element yᵢ = row i of W dotted with x. This is how every neural network layer works: linear transformation of data.</p>
+
+<div class="math">
+W = [[2, 1], [0, 3], [-1, 2]]   (3×2 matrix)
+x = [4, -1]                       (2-vector)
+
+y = W·x:
+  y₁ = 2×4 + 1×(-1) = 7
+  y₂ = 0×4 + 3×(-1) = -3
+  y₃ = (-1)×4 + 2×(-1) = -6
+
+y = [7, -3, -6]                   (3-vector)
+<span class="lbl">Matrix-vector multiplication: transforms a 2D input to 3D output space</span>
+</div>
+
+<div class="box blue">
+<div class="box-label">💡 Why this matters everywhere</div>
+<p>Every "layer" in a neural network is: <strong>y = W·x + b</strong>. W is the weight matrix (learned), x is the input, b is a bias vector (learned), y is the output. A 512→256 hidden layer has W of shape (256×512) — that's 131,072 learned weights in one layer. Training = finding the right values for all W and b matrices.</p>
+</div>
+
+<h4 id="tensors">Tensors — The Generalization</h4>
+<p>Tensors extend matrices to any number of dimensions. Everything in PyTorch/TensorFlow is a tensor.</p>
+
+<table>
+<tr><th>Dimensions</th><th>Name</th><th>Example in ML</th><th>Shape</th></tr>
+<tr><td>0D</td><td>Scalar</td><td>Single loss value: 0.342</td><td>()</td></tr>
+<tr><td>1D</td><td>Vector</td><td>One word embedding</td><td>(512,)</td></tr>
+<tr><td>2D</td><td>Matrix</td><td>Batch of sentences (seq_len × hidden)</td><td>(128, 512)</td></tr>
+<tr><td>3D</td><td>Tensor</td><td>Batch of sequences (batch × seq × hidden)</td><td>(32, 128, 512)</td></tr>
+<tr><td>4D</td><td>Tensor</td><td>Batch of images (batch × C × H × W)</td><td>(16, 3, 224, 224)</td></tr>
+</table>
+
+<pre><code><span class="kw">import</span> torch
+
+x = torch.randn(<span class="num">16</span>, <span class="num">3</span>, <span class="num">224</span>, <span class="num">224</span>)  <span class="cm"># batch of 16 RGB images, 224×224</span>
+print(x.shape)   <span class="cm"># torch.Size([16, 3, 224, 224])</span>
+print(x.dtype)   <span class="cm"># torch.float32 — default 32-bit float</span>
+print(x.ndim)    <span class="cm"># 4</span>
+
+<span class="cm"># Key operations</span>
+y = x.view(<span class="num">16</span>, -<span class="num">1</span>)          <span class="cm"># reshape to (16, 3×224×224) = (16, 150528)</span>
+z = x.permute(<span class="num">0</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">1</span>)      <span class="cm"># reorder dims: (16, 224, 224, 3)</span>
+m = x.mean(dim=(<span class="num">2</span>,<span class="num">3</span>))         <span class="cm"># mean over H,W: shape (16, 3)</span></code></pre>
+
+<h3 id="calculus">Calculus & Gradients</h3>
+<h4>What is a Gradient?</h4>
+<p>The gradient of a scalar function f(w₁, w₂, ..., wₙ) is the vector of partial derivatives: ∇f = [∂f/∂w₁, ∂f/∂w₂, ..., ∂f/∂wₙ]. It points in the direction of steepest <em>increase</em>. To minimize f (reduce the loss), we move in the <em>negative</em> gradient direction.</p>
+
+<h4 id="chain-rule">Chain Rule — The Engine of Backprop</h4>
+<p>For composed functions: if z = f(y) and y = g(x), then dz/dx = (dz/dy) · (dy/dx). A neural network is a composition of many functions. Chain rule lets you compute how the loss L changes with respect to any weight, no matter how deep it is.</p>
+
+<div class="box yellow">
+<div class="box-label">📐 Derivation: Chain Rule Through a Simple Network</div>
+<p>Forward pass: x → z₁ = W₁x → a₁ = ReLU(z₁) → z₂ = W₂a₁ → L = MSE(z₂, y)</p>
+</div>
+
+<div class="math-step"><span class="step-label">Step 1: Loss gradient w.r.t. z₂</span>∂L/∂z₂ = 2(z₂ - y)/n     (derivative of MSE)</div>
+<div class="math-step"><span class="step-label">Step 2: Gradient w.r.t. W₂</span>∂L/∂W₂ = (∂L/∂z₂) · aᵀ₁     (a₁ is the activation going IN to W₂)</div>
+<div class="math-step"><span class="step-label">Step 3: Gradient flowing back through W₂</span>∂L/∂a₁ = Wᵀ₂ · (∂L/∂z₂)     (transpose of W₂ times upstream gradient)</div>
+<div class="math-step"><span class="step-label">Step 4: Gradient through ReLU</span>∂L/∂z₁ = (∂L/∂a₁) ⊙ 𝟙[z₁ > 0]     (1 where ReLU was active, 0 where it was off)</div>
+<div class="math-step"><span class="step-label">Step 5: Gradient w.r.t. W₁</span>∂L/∂W₁ = (∂L/∂z₁) · xᵀ     (same pattern — upstream gradient × local input)</div>
+
+<p>Notice the <strong>pattern</strong>: to get gradient of W, multiply (upstream gradient) × (input to that layer). To pass gradient to previous layer, multiply (upstream gradient) × (transposed weight matrix). This is exactly what PyTorch's autograd does — automatically, for any arbitrary network.</p>
+
+<h4 id="gradient-descent">Gradient Descent — The Update Rule</h4>
+
+<div class="diagram">
+  <div class="diagram-title">Gradient Descent on a Loss Surface</div>
+  <svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:480px;">
+    <defs><style>.ax{stroke:#28283a;stroke-width:1;fill:none;}.ax-lbl{font-family:JetBrains Mono,monospace;font-size:10px;fill:#5a5856;}.gc{stroke:rgba(91,155,213,.6);stroke-width:1.5;fill:none;}</style></defs>
+    <!-- axes -->
+    <line class="ax" x1="40" y1="200" x2="440" y2="200"/>
+    <line class="ax" x1="40" y1="20" x2="40" y2="210"/>
+    <text x="250" y="220" class="ax-lbl" text-anchor="middle">parameter w</text>
+    <text x="15" y="120" class="ax-lbl" text-anchor="middle" transform="rotate(-90 15 120)">loss L</text>
+    <!-- parabola: y = 180 - 150*(x-240)^2/50000 but offset -->
+    <path d="M60,195 Q130,20 240,18 Q350,20 430,190" stroke="rgba(232,145,74,.7)" stroke-width="2" fill="rgba(232,145,74,.05)"/>
+    <!-- gradient descent steps -->
+    <circle cx="80" cy="178" r="5" fill="var(--accent2)"/>
+    <circle cx="130" cy="110" r="5" fill="var(--accent2)"/>
+    <circle cx="185" cy="50" r="5" fill="var(--accent2)"/>
+    <circle cx="240" cy="18" r="6" fill="var(--accent3)" stroke="var(--accent3)" stroke-width="2"/>
+    <!-- step arrows -->
+    <line x1="80" y1="178" x2="125" y2="114" stroke="var(--accent2)" stroke-width="1.5" stroke-dasharray="4"/>
+    <line x1="130" y1="110" x2="180" y2="54" stroke="var(--accent2)" stroke-width="1.5" stroke-dasharray="4"/>
+    <line x1="185" y1="50" x2="235" y2="22" stroke="var(--accent2)" stroke-width="1.5" stroke-dasharray="4"/>
+    <!-- labels -->
+    <text x="65" y="175" class="ax-lbl" fill="var(--accent2)">w₀</text>
+    <text x="235" y="36" class="ax-lbl" fill="var(--accent3)">w*</text>
+    <text x="280" y="80" class="ax-lbl" fill="var(--text-muted)">← w = w - η·∇L</text>
+    <text x="70" y="138" class="ax-lbl" fill="#4a4845">gradient</text>
+    <text x="70" y="150" class="ax-lbl" fill="#4a4845">steps ↗</text>
+  </svg>
+</div>
+
+<div class="math">
+Gradient Descent:     w ← w − η · ∂L/∂w
+Mini-batch SGD:       w ← w − η · (1/|B|) · Σᵢ∈B ∂Lᵢ/∂w
+<span class="lbl">η = learning rate (step size). Typical values: 0.001 – 0.1</span>
+</div>
+
+<h3 id="probability">Probability & Statistics</h3>
+
+<table>
+<tr><th>Concept</th><th>Formula</th><th>ML Application</th></tr>
+<tr><td><strong>Probability distribution</strong></td><td>P(X=x), Σ P(x) = 1</td><td>Softmax output is a probability distribution over classes</td></tr>
+<tr><td><strong>Gaussian (Normal)</strong></td><td>𝒩(μ, σ²) = exp(-(x-μ)²/2σ²) / √(2πσ²)</td><td>Weight initialization (Xavier), VAE latent space, noise in diffusion</td></tr>
+<tr><td><strong>Cross-Entropy</strong></td><td>H(p,q) = -Σ p(x) log q(x)</td><td>Classification loss — how surprised is q by true dist p</td></tr>
+<tr><td><strong>KL Divergence</strong></td><td>KL(p||q) = Σ p log(p/q)</td><td>VAE regularization term; how different are two distributions</td></tr>
+<tr><td><strong>Bayes Theorem</strong></td><td>P(A|B) = P(B|A)P(A)/P(B)</td><td>Probabilistic models, Bayesian NN, posterior inference</td></tr>
+<tr><td><strong>Softmax</strong></td><td>σ(z)ᵢ = ezᵢ / Σⱼ ezⱼ</td><td>Converting logits to probabilities in classification, attention</td></tr>
+</table>
+
+<h4 id="mle">Maximum Likelihood Estimation (MLE)</h4>
+<p>The mathematical foundation of training. Given data D = {x₁...xₙ}, find parameters θ that maximize the probability of observing the data: <strong>θ* = argmax_θ P(D|θ)</strong>. Taking log (monotonic, so same argmax): <strong>θ* = argmax_θ Σᵢ log P(xᵢ|θ)</strong>. Minimizing cross-entropy loss is exactly MLE for a classification model — they are equivalent.</p>
+</section>
+
+<!-- =============== CLASSICAL ML =============== -->
+<section class="chapter anc" id="ml-types">
+<div class="ch-num">Chapter 02 · Classical Machine Learning</div>
+<div class="ch-div"></div>
+<h2>Classical Machine Learning</h2>
+
+<h3>Types of Learning</h3>
+<div class="grid2">
+<div class="card"><h5>📚 Supervised</h5><p>Labeled input→output pairs. Model learns mapping by minimizing error. <strong>Examples</strong>: spam detection, house price prediction, image classification, fraud detection.</p></div>
+<div class="card"><h5>🔍 Unsupervised</h5><p>No labels. Find hidden structure. <strong>Examples</strong>: customer segmentation (K-Means), dimensionality reduction (PCA), anomaly detection, topic modeling.</p></div>
+<div class="card"><h5>🎮 Reinforcement</h5><p>Agent takes actions, receives rewards/penalties, learns to maximize total reward. <strong>Examples</strong>: AlphaGo, robotics, game playing, RLHF for LLM alignment.</p></div>
+<div class="card"><h5>🔄 Self-Supervised</h5><p>Supervision from data itself. GPT: predict next word. BERT: predict masked word. No human labeling. <strong>Why this changed everything</strong>: enables pretraining on internet-scale text.</p></div>
+</div>
+
+<h3 id="classical-algos">Core Classical Algorithms</h3>
+<table>
+<tr><th>Algorithm</th><th>Core Idea</th><th>Use When</th><th>Limitation vs DL</th></tr>
+<tr><td><strong>Linear Regression</strong></td><td>y = Wx + b, minimize ‖y - ŷ‖²</td><td>Continuous output, interpretability</td><td>Only linear relationships</td></tr>
+<tr><td><strong>Logistic Regression</strong></td><td>P(y=1) = σ(Wx+b), minimize cross-entropy</td><td>Binary classification baseline, fast</td><td>Only linear boundaries</td></tr>
+<tr><td><strong>Decision Tree</strong></td><td>Split data by feature thresholds recursively</td><td>Interpretable decisions, mixed types</td><td>Overfits; weak alone</td></tr>
+<tr><td><strong>Random Forest</strong></td><td>Ensemble of trees on random subsets (bagging)</td><td>Tabular data, robust to noise</td><td>Slow inference, large model</td></tr>
+<tr><td><strong>XGBoost / LightGBM</strong></td><td>Boosting: sequential trees correcting errors</td><td>Tabular data — state of the art</td><td>Needs feature engineering</td></tr>
+<tr><td><strong>SVM</strong></td><td>Maximum margin hyperplane, kernel trick</td><td>Small-medium datasets, text</td><td>Doesn't scale to big data</td></tr>
+<tr><td><strong>K-Means</strong></td><td>Assign to nearest centroid, update centroids</td><td>Clustering, segmentation</td><td>Assumes spherical clusters</td></tr>
+<tr><td><strong>PCA</strong></td><td>Project onto top eigenvectors (max variance)</td><td>Visualization, dimensionality reduction</td><td>Linear only; no non-linear structure</td></tr>
+</table>
+
+<h4 id="bias-variance">Bias-Variance Tradeoff — The Fundamental Tension</h4>
+<p><strong>Bias</strong>: Error from overly simple models that miss patterns. High bias = underfitting (linear model on non-linear data).<br>
+<strong>Variance</strong>: Error from models too sensitive to training noise. High variance = overfitting (memorizes training set, fails on new data).<br>
+<strong>Total Error</strong> = Bias² + Variance + Irreducible Noise.</p>
+
+<div class="box">
+<div class="box-label">📌 The Practical Rule</div>
+<p>Classical ML: increase model complexity → lower bias, higher variance. Deep learning at scale partially breaks this: very large neural networks can have high capacity yet still generalize well when trained with regularization, dropout, data augmentation, and massive data. This is the "double descent" phenomenon — test error decreases, increases, then decreases again as model size grows.</p>
+</div>
+</section>
+
+<!-- =============== NEURAL NETWORKS =============== -->
+<section class="chapter anc" id="perceptron">
+<div class="ch-num">Chapter 03 · Neural Networks</div>
+<div class="ch-div"></div>
+<h2>Neural Networks — From Perceptron to Deep Networks</h2>
+
+<h3>The Biological Analogy</h3>
+<p>A biological neuron: receives signals from dendrites → sums weighted inputs → fires if sum exceeds threshold → sends signal via axon. Artificial neuron: <code>output = activation(Σᵢ wᵢxᵢ + b)</code>. Same idea: weighted sum → non-linear threshold.</p>
+
+<h3 id="forward-pass">Multi-Layer Perceptron (MLP) — Forward Pass</h3>
+
+<div class="diagram">
+  <div class="diagram-title">Multi-Layer Perceptron (3 → 4 → 4 → 2)</div>
+  <svg viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:500px;">
+    <defs><style>.node{fill:var(--surface2);stroke:var(--border);stroke-width:1.5;}.node-hi{fill:rgba(232,145,74,.15);stroke:var(--accent);stroke-width:1.5;}.nl{font-family:JetBrains Mono,monospace;font-size:9px;fill:#7a7875;}.wl{font-family:JetBrains Mono,monospace;font-size:7.5px;fill:#5b9bd5;}</style></defs>
+    <!-- Input layer (3 nodes) -->
+    <circle cx="70" cy="60" r="18" class="node"/><text x="70" y="64" class="nl" text-anchor="middle">x₁</text>
+    <circle cx="70" cy="130" r="18" class="node"/><text x="70" y="134" class="nl" text-anchor="middle">x₂</text>
+    <circle cx="70" cy="200" r="18" class="node"/><text x="70" y="204" class="nl" text-anchor="middle">x₃</text>
+    <text x="70" y="230" class="nl" text-anchor="middle" fill="#5a5856">input</text>
+    <!-- Hidden 1 (4 nodes) -->
+    <circle cx="190" cy="40" r="18" class="node"/><text x="190" y="44" class="nl" text-anchor="middle">h₁</text>
+    <circle cx="190" cy="100" r="18" class="node"/><text x="190" y="104" class="nl" text-anchor="middle">h₂</text>
+    <circle cx="190" cy="160" r="18" class="node"/><text x="190" y="164" class="nl" text-anchor="middle">h₃</text>
+    <circle cx="190" cy="220" r="18" class="node"/><text x="190" y="224" class="nl" text-anchor="middle">h₄</text>
+    <text x="190" y="248" class="nl" text-anchor="middle" fill="#5a5856">hidden 1</text>
+    <!-- Hidden 2 (4 nodes) -->
+    <circle cx="320" cy="40" r="18" class="node"/><text x="320" y="44" class="nl" text-anchor="middle">h₁</text>
+    <circle cx="320" cy="100" r="18" class="node"/><text x="320" y="104" class="nl" text-anchor="middle">h₂</text>
+    <circle cx="320" cy="160" r="18" class="node"/><text x="320" y="164" class="nl" text-anchor="middle">h₃</text>
+    <circle cx="320" cy="220" r="18" class="node"/><text x="320" y="224" class="nl" text-anchor="middle">h₄</text>
+    <text x="320" y="248" class="nl" text-anchor="middle" fill="#5a5856">hidden 2</text>
+    <!-- Output (2 nodes) -->
+    <circle cx="440" cy="90" r="18" class="node-hi"/><text x="440" y="94" class="nl" text-anchor="middle">ŷ₁</text>
+    <circle cx="440" cy="170" r="18" class="node-hi"/><text x="440" y="174" class="nl" text-anchor="middle">ŷ₂</text>
+    <text x="440" y="248" class="nl" text-anchor="middle" fill="var(--accent)">output</text>
+    <!-- Connections input → h1 -->
+    <g stroke="rgba(91,155,213,.2)" stroke-width=".8" fill="none">
+    <line x1="88" y1="60" x2="172" y2="40"/><line x1="88" y1="60" x2="172" y2="100"/>
+    <line x1="88" y1="60" x2="172" y2="160"/><line x1="88" y1="60" x2="172" y2="220"/>
+    <line x1="88" y1="130" x2="172" y2="40"/><line x1="88" y1="130" x2="172" y2="100"/>
+    <line x1="88" y1="130" x2="172" y2="160"/><line x1="88" y1="130" x2="172" y2="220"/>
+    <line x1="88" y1="200" x2="172" y2="40"/><line x1="88" y1="200" x2="172" y2="100"/>
+    <line x1="88" y1="200" x2="172" y2="160"/><line x1="88" y1="200" x2="172" y2="220"/>
+    <!-- h1 → h2 -->
+    <line x1="208" y1="40" x2="302" y2="40"/><line x1="208" y1="40" x2="302" y2="100"/>
+    <line x1="208" y1="40" x2="302" y2="160"/><line x1="208" y1="40" x2="302" y2="220"/>
+    <line x1="208" y1="100" x2="302" y2="40"/><line x1="208" y1="100" x2="302" y2="100"/>
+    <line x1="208" y1="100" x2="302" y2="160"/><line x1="208" y1="100" x2="302" y2="220"/>
+    <line x1="208" y1="160" x2="302" y2="40"/><line x1="208" y1="160" x2="302" y2="100"/>
+    <line x1="208" y1="160" x2="302" y2="160"/><line x1="208" y1="160" x2="302" y2="220"/>
+    <line x1="208" y1="220" x2="302" y2="40"/><line x1="208" y1="220" x2="302" y2="100"/>
+    <line x1="208" y1="220" x2="302" y2="160"/><line x1="208" y1="220" x2="302" y2="220"/>
+    <!-- h2 → output -->
+    <line x1="338" y1="40" x2="422" y2="90"/><line x1="338" y1="100" x2="422" y2="90"/>
+    <line x1="338" y1="160" x2="422" y2="90"/><line x1="338" y1="220" x2="422" y2="90"/>
+    <line x1="338" y1="40" x2="422" y2="170"/><line x1="338" y1="100" x2="422" y2="170"/>
+    <line x1="338" y1="160" x2="422" y2="170"/><line x1="338" y1="220" x2="422" y2="170"/>
+    </g>
+    <!-- W labels -->
+    <text x="130" y="28" class="wl">W₁ (4×3)</text>
+    <text x="255" y="28" class="wl">W₂ (4×4)</text>
+    <text x="375" y="28" class="wl">W₃ (2×4)</text>
+  </svg>
+</div>
+
+<p>Forward pass equations for each layer:</p>
+<div class="math">
+Layer 1:   z₁ = W₁·x + b₁           (linear transform, W₁ shape: 4×3)
+           a₁ = ReLU(z₁)             (activation, shape: 4)
+Layer 2:   z₂ = W₂·a₁ + b₂          (W₂ shape: 4×4)
+           a₂ = ReLU(z₂)
+Output:    z₃ = W₃·a₂ + b₃          (W₃ shape: 2×4)
+           ŷ  = softmax(z₃)          (probability over 2 classes)
+<span class="lbl">Every layer: linear transformation (W·x+b) → non-linearity (activation)</span>
+</div>
+
+<p><strong>Why are multiple layers necessary?</strong> A single layer can only draw linear decision boundaries. Two layers can approximate any continuous function (Universal Approximation Theorem — Cybenko, 1989). Deeper networks learn hierarchical representations more efficiently — rather than memorizing the full function, they factorize it into reusable components.</p>
+
+<h3 id="backprop">Backpropagation — Full Derivation</h3>
+<p>The algorithm that makes training neural networks possible. Invented by Rumelhart, Hinton & Williams (1986) — though the mathematical roots go back further. It's simply the chain rule of calculus applied systematically through a computation graph.</p>
+
+<h4 id="backprop-deriv">Worked Derivation: 2-layer Network</h4>
+
+<div class="box blue">
+<div class="box-label">Setup</div>
+<p>Input x ∈ ℝⁿ, Target y ∈ ℝ¹ (regression). Network: x → z₁=W₁x+b₁ → a₁=σ(z₁) → ẑ=W₂a₁+b₂ → L = ½(ẑ-y)². We want: ∂L/∂W₂, ∂L/∂b₂, ∂L/∂W₁, ∂L/∂b₁.</p>
+</div>
+
+<div class="math-step"><span class="step-label">∂L/∂ẑ — derivative of loss w.r.t. output</span>∂L/∂ẑ = (ẑ - y)          ← derivative of ½(ẑ-y)²</div>
+<div class="math-step"><span class="step-label">∂L/∂W₂ — gradient of output layer weights</span>∂L/∂W₂ = (∂L/∂ẑ) · a₁ᵀ = (ẑ-y) · a₁ᵀ        ← outer product (shape: 1×hidden)</div>
+<div class="math-step"><span class="step-label">∂L/∂b₂ — gradient of output layer bias</span>∂L/∂b₂ = (∂L/∂ẑ) = (ẑ-y)                      ← same, bias doesn't multiply</div>
+<div class="math-step"><span class="step-label">∂L/∂a₁ — gradient flowing back through W₂</span>∂L/∂a₁ = W₂ᵀ · (∂L/∂ẑ) = W₂ᵀ · (ẑ-y)          ← transpose times upstream gradient</div>
+<div class="math-step"><span class="step-label">∂L/∂z₁ — gradient through sigmoid σ</span>∂σ/∂z = σ(z)(1-σ(z))    →    ∂L/∂z₁ = (∂L/∂a₁) ⊙ σ(z₁)(1-σ(z₁))    ← element-wise multiply</div>
+<div class="math-step"><span class="step-label">∂L/∂W₁ — gradient of hidden layer weights</span>∂L/∂W₁ = (∂L/∂z₁) · xᵀ                          ← same pattern: upstream gradient × input</div>
+
+<div class="box green">
+<div class="box-label">💡 The Pattern</div>
+<p>Every layer follows the same pattern: (1) receive gradient from above, (2) compute gradient for this layer's weights = upstream_gradient × this_layer's_input, (3) pass gradient further down = transpose(this_layer's_weights) × upstream_gradient. PyTorch's autograd does all of this automatically by building a computation graph during the forward pass.</p>
+</div>
+
+<h3 id="activations">Activation Functions</h3>
+
+<div class="diagram">
+  <div class="diagram-title">Activation Function Comparison</div>
+  <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:520px;">
+    <defs><style>.ax2{stroke:#28283a;stroke-width:1;fill:none;}.axl{font-family:JetBrains Mono,monospace;font-size:9px;fill:#5a5856;}.fn-lbl{font-family:JetBrains Mono,monospace;font-size:9px;}</style></defs>
+    <!-- axes -->
+    <line class="ax2" x1="40" y1="20" x2="40" y2="200"/><line class="ax2" x1="30" y1="110" x2="510" y2="110"/>
+    <text x="275" y="215" class="axl" text-anchor="middle">x</text><text x="20" y="115" class="axl" text-anchor="middle">y</text>
+    <!-- Tick marks -->
+    <line class="ax2" x1="40" y1="110" x2="40" y2="116"/><line class="ax2" x1="160" y1="110" x2="160" y2="116"/><line class="ax2" x1="280" y1="106" x2="280" y2="116"/><line class="ax2" x1="400" y1="110" x2="400" y2="116"/><line class="ax2" x1="500" y1="110" x2="500" y2="116"/>
+    <text x="40" y="126" class="axl" text-anchor="middle">-3</text><text x="160" y="126" class="axl" text-anchor="middle">-1</text><text x="280" y="126" class="axl" text-anchor="middle">0</text><text x="400" y="126" class="axl" text-anchor="middle">1</text><text x="500" y="126" class="axl" text-anchor="middle">2.5</text>
+    <!-- ReLU: red/orange -->
+    <!-- x: 40=-3, 160=-1, 280=0, 400=1, 500=2.5; y: 110=0, up=positive, scale: 60px per unit -->
+    <polyline points="40,110 280,110 500,22" stroke="var(--accent)" stroke-width="2" fill="none"/>
+    <text x="450" y="38" class="fn-lbl" fill="var(--accent)">ReLU</text>
+    <!-- Sigmoid: blue 0→1 -->
+    <!-- sigmoid(-3)≈0.05, sigmoid(-1)≈0.27, sigmoid(0)=0.5, sigmoid(1)≈0.73, sigmoid(2.5)≈0.92 -->
+    <!-- y-coord = 110 - value*60 -->
+    <path d="M40,107 C80,104 120,90 160,94 C200,98 240,90 280,80 C320,70 360,62 400,66 C440,69 470,62 500,55" stroke="var(--accent2)" stroke-width="2" fill="none"/>
+    <text x="430" y="55" class="fn-lbl" fill="var(--accent2)">Sigmoid</text>
+    <!-- Tanh: -1 to 1, output=110-tanh(x)*60 -->
+    <path d="M40,115 C80,114 130,113 160,108 C200,100 240,85 280,110 C310,90 340,66 400,52 C440,42 470,35 500,33" stroke="var(--accent3)" stroke-width="2" fill="none"/>
+    <text x="455" y="30" class="fn-lbl" fill="var(--accent3)">Tanh</text>
+    <!-- GELU: like smooth ReLU -->
+    <path d="M40,110 C100,110 180,113 220,114 C250,113 265,111 280,110 C300,107 340,80 380,62 C410,49 450,36 500,22" stroke="var(--accent4)" stroke-width="2" fill="none"/>
+    <text x="330" y="48" class="fn-lbl" fill="var(--accent4)">GELU</text>
+    <!-- zero line label -->
+    <text x="50" y="108" class="axl">0</text>
+  </svg>
+</div>
+
+<table>
+<tr><th>Function</th><th>Formula</th><th>Range</th><th>Key Property</th><th>Used In</th></tr>
+<tr><td><strong>Sigmoid</strong></td><td>1/(1+e⁻ˣ)</td><td>(0,1)</td><td>Smooth, but saturates at extremes → vanishing gradients</td><td>Output layer (binary classification); gates in LSTM</td></tr>
+<tr><td><strong>Tanh</strong></td><td>(eˣ-e⁻ˣ)/(eˣ+e⁻ˣ)</td><td>(-1,1)</td><td>Zero-centered (better than sigmoid), still saturates</td><td>Hidden layers in RNNs, LSTM cell state</td></tr>
+<tr><td id="relu-gelu"><strong>ReLU</strong></td><td>max(0,x)</td><td>[0,∞)</td><td>No saturation for x>0. Fast. "Dying ReLU": neurons stuck at 0</td><td>Hidden layers in CNNs, MLPs (since 2012)</td></tr>
+<tr><td><strong>Leaky ReLU</strong></td><td>max(αx,x), α≈0.01</td><td>(-∞,∞)</td><td>Fixes dying ReLU with small negative slope</td><td>GANs, anywhere dying ReLU is a problem</td></tr>
+<tr><td><strong>GELU</strong></td><td>x·Φ(x) ≈ 0.5x(1+tanh[√(2/π)(x+0.044715x³)])</td><td>(-∞,∞)</td><td>Smooth, probabilistic gating. Slightly better than ReLU empirically</td><td>BERT, GPT, all modern Transformers</td></tr>
+<tr><td><strong>Swish / SiLU</strong></td><td>x·σ(x) = x/(1+e⁻ˣ)</td><td>(-∞,∞)</td><td>Non-monotone, self-gating. Similar to GELU</td><td>EfficientNet, Llama uses SwiGLU variant</td></tr>
+<tr><td><strong>Softmax</strong></td><td>eˣⁱ/Σeˣʲ</td><td>(0,1), sum=1</td><td>Converts logits to probability distribution</td><td>Classification output, attention weights</td></tr>
+</table>
+
+<pre><code><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+x = torch.tensor([-<span class="num">2.0</span>, -<span class="num">1.0</span>, <span class="num">0.0</span>, <span class="num">1.0</span>, <span class="num">2.0</span>])
+
+print(<span class="fn">nn.ReLU()(x)</span>)        <span class="cm"># tensor([0., 0., 0., 1., 2.])</span>
+print(<span class="fn">nn.GELU()(x)</span>)        <span class="cm"># tensor([-0.0454, -0.1588, 0., 0.8413, 1.9545])</span>
+print(<span class="fn">nn.Sigmoid()(x)</span>)     <span class="cm"># tensor([0.1192, 0.2689, 0.5000, 0.7311, 0.8808])</span>
+print(<span class="fn">torch.softmax(x, dim=0)</span>) <span class="cm"># sums to 1.0</span>
+
+<span class="cm"># Why GELU > ReLU in Transformers:</span>
+<span class="cm"># GELU(x) ≈ x * P(X ≤ x) where X~N(0,1)</span>
+<span class="cm"># It gates inputs proportionally, not hard-zero</span></code></pre>
+</section>
+
+<!-- =============== TRAINING =============== -->
+<section class="chapter anc" id="loss-fns">
+<div class="ch-num">Chapter 04 · Training Deep Networks</div>
+<div class="ch-div"></div>
+<h2>Training: Losses, Optimizers, Regularization</h2>
+
+<h3>Loss Functions</h3>
+<table>
+<tr><th>Loss</th><th>Formula</th><th>Use Case</th><th>Notes</th></tr>
+<tr><td><strong>MSE</strong></td><td>(1/n)Σ(ŷᵢ-yᵢ)²</td><td>Regression</td><td>Penalizes outliers heavily (squared). Use MAE if outliers are a problem.</td></tr>
+<tr><td><strong>MAE</strong></td><td>(1/n)Σ|ŷᵢ-yᵢ|</td><td>Regression (robust)</td><td>Not differentiable at 0. Huber loss combines both.</td></tr>
+<tr><td><strong>Binary CE</strong></td><td>-[y log ŷ + (1-y) log(1-ŷ)]</td><td>Binary classification</td><td>Output must be probability (sigmoid). Equivalent to log-likelihood.</td></tr>
+<tr><td><strong>Categorical CE</strong></td><td>-Σᵢ yᵢ log(ŷᵢ)</td><td>Multi-class</td><td>Most common in NLP (next-token prediction). Use with softmax output.</td></tr>
+<tr><td><strong>KL Divergence</strong></td><td>Σ p log(p/q)</td><td>Generative models</td><td>Used in VAE regularization term. Not symmetric: KL(p||q) ≠ KL(q||p).</td></tr>
+<tr><td><strong>Contrastive / InfoNCE</strong></td><td>-log[exp(pos)/Σexp(all)]</td><td>Self-supervised (CLIP, SimCLR)</td><td>Pull similar pairs together, push dissimilar apart.</td></tr>
+</table>
+
+<h3 id="optimizers">Optimizers — The Evolution</h3>
+<div class="evo">
+<div class="evo-n">SGD</div><div class="evo-a">→</div>
+<div class="evo-n">SGD+Momentum</div><div class="evo-a">→</div>
+<div class="evo-n">RMSProp</div><div class="evo-a">→</div>
+<div class="evo-n">Adam</div><div class="evo-a">→</div>
+<div class="evo-n hi">AdamW</div>
+</div>
+
+<h4>SGD and Momentum</h4>
+<div class="math">
+SGD:        w ← w - η·∇L
+Momentum:   v ← βv + ∇L
+            w ← w - η·v          (β≈0.9: 90% of old velocity retained)
+<span class="lbl">Momentum: accumulates velocity in consistent directions, dampens oscillations</span>
+</div>
+
+<h4>Adam (Adaptive Moment Estimation, 2015)</h4>
+<p>Maintains per-parameter adaptive learning rates. First moment (mean of gradients, like momentum) and second moment (variance of gradients). Parameters getting consistently large gradients get smaller effective learning rates.</p>
+
+<div class="math">
+m_t = β₁·m_{t-1} + (1-β₁)·g_t        (first moment, β₁=0.9)
+v_t = β₂·v_{t-1} + (1-β₂)·g_t²       (second moment, β₂=0.999)
+m̂_t = m_t/(1-β₁ᵗ)                    (bias correction — important early in training)
+v̂_t = v_t/(1-β₂ᵗ)                    (bias correction)
+w_t = w_{t-1} - η · m̂_t/(√v̂_t + ε)  (ε=1e-8 for numerical stability)
+<span class="lbl">Adam: combines momentum (m) with per-parameter adaptive rates (v). Near-universal choice.</span>
+</div>
+
+<h4 id="adam-adamw">AdamW — Why it Matters</h4>
+<p>In Adam with L2 regularization, weight decay is added to the gradient: <code>g = ∇L + λw</code>. The problem: this decay then gets scaled by the adaptive learning rate 1/√v̂ — meaning frequently updated parameters get less weight decay than infrequently updated ones. This is incorrect.</p>
+
+<p><strong>AdamW decouples weight decay from the gradient update:</strong></p>
+
+<div class="math">
+Adam+L2:  w ← w - η · (m̂/(√v̂+ε) + λw)           ← decay scaled by adaptive rate ❌
+AdamW:    w ← (1 - η·λ)·w - η · m̂/(√v̂+ε)        ← decay applied directly ✓
+<span class="lbl">AdamW is the standard for Transformers. Better generalization than Adam+L2.</span>
+</div>
+
+<h3 id="regularization">Regularization</h3>
+<h4>L1 and L2 Regularization</h4>
+<p>Add a penalty to the loss function:</p>
+<div class="math">
+L1: L_total = L_data + λ·Σ|wᵢ|         ← encourages sparse weights (many exact zeros)
+L2: L_total = L_data + λ·Σwᵢ²          ← shrinks weights toward zero, rarely exact zero
+<span class="lbl">λ = regularization strength (hyperparameter). Weight decay in AdamW implements L2.</span>
+</div>
+
+<h4>Dropout</h4>
+<p>During training, randomly zero out neurons with probability p (typically 0.1–0.5). Forces the network to develop redundant representations — no single neuron can be relied upon. At inference: scale outputs by (1-p) to preserve expected value (or use "inverted dropout" — scale during training).</p>
+
+<pre><code><span class="cm"># PyTorch</span>
+<span class="kw">class</span> <span class="fn">MLP</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(<span class="num">512</span>, <span class="num">256</span>), nn.ReLU(), nn.Dropout(p=<span class="num">0.3</span>),
+            nn.Linear(<span class="num">256</span>, <span class="num">128</span>), nn.ReLU(), nn.Dropout(p=<span class="num">0.3</span>),
+            nn.Linear(<span class="num">128</span>, <span class="num">10</span>)
+        )
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.layers(x)  <span class="cm"># dropout auto-disabled in model.eval() mode</span></code></pre>
+
+<h3 id="normalization">Normalization Layers</h3>
+<h4 id="bn-ln">Batch Normalization vs Layer Normalization</h4>
+
+<div class="diagram">
+  <div class="diagram-title">What Each Normalization Normalizes</div>
+  <svg viewBox="0 0 480 180" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:480px;">
+    <defs><style>.nc{font-family:JetBrains Mono,monospace;font-size:9px;}.bx{fill:var(--surface2);stroke:var(--border);stroke-width:1;}</style></defs>
+    <!-- Tensor: batch × features -->
+    <text x="100" y="20" class="nc" text-anchor="middle" fill="#7a7875">BATCH NORM</text>
+    <text x="50" y="145" class="nc" fill="#7a7875">feature₁ feature₂ feature₃ feature₄</text>
+    <!-- 3 rows (batch items) x 4 cols (features) -->
+    <rect x="20" y="30" width="50" height="30" class="bx" fill="rgba(232,145,74,.15)" stroke="var(--accent)"/>
+    <rect x="72" y="30" width="50" height="30" class="bx" fill="rgba(232,145,74,.15)" stroke="var(--accent)"/>
+    <rect x="124" y="30" width="50" height="30" class="bx" fill="rgba(232,145,74,.15)" stroke="var(--accent)"/>
+    <rect x="176" y="30" width="50" height="30" class="bx" fill="rgba(232,145,74,.15)" stroke="var(--accent)"/>
+    <rect x="20" y="62" width="50" height="30" class="bx"/>
+    <rect x="72" y="62" width="50" height="30" class="bx"/>
+    <rect x="124" y="62" width="50" height="30" class="bx"/>
+    <rect x="176" y="62" width="50" height="30" class="bx"/>
+    <rect x="20" y="94" width="50" height="30" class="bx"/>
+    <rect x="72" y="94" width="50" height="30" class="bx"/>
+    <rect x="124" y="94" width="50" height="30" class="bx"/>
+    <rect x="176" y="94" width="50" height="30" class="bx"/>
+    <text x="45" y="50" class="nc" fill="var(--accent)" text-anchor="middle" style="font-size:8px">↕ norm</text>
+    <text x="97" y="50" class="nc" fill="var(--accent)" text-anchor="middle" style="font-size:8px">↕ norm</text>
+    <text x="149" y="50" class="nc" fill="var(--accent)" text-anchor="middle" style="font-size:8px">↕ norm</text>
+    <text x="201" y="50" class="nc" fill="var(--accent)" text-anchor="middle" style="font-size:8px">↕ norm</text>
+    <text x="115" y="140" class="nc" text-anchor="middle" fill="#5a5856">normalize each feature</text>
+    <text x="115" y="152" class="nc" text-anchor="middle" fill="#5a5856">across the batch</text>
+    <!-- Layer Norm -->
+    <text x="370" y="20" class="nc" text-anchor="middle" fill="#7a7875">LAYER NORM</text>
+    <rect x="285" y="30" width="50" height="30" class="bx" fill="rgba(91,155,213,.15)" stroke="var(--accent2)"/>
+    <rect x="337" y="30" width="50" height="30" class="bx" fill="rgba(91,155,213,.15)" stroke="var(--accent2)"/>
+    <rect x="389" y="30" width="50" height="30" class="bx" fill="rgba(91,155,213,.15)" stroke="var(--accent2)"/>
+    <rect x="441" y="30" width="30" height="30" class="bx" fill="rgba(91,155,213,.15)" stroke="var(--accent2)"/>
+    <rect x="285" y="62" width="50" height="30" class="bx"/>
+    <rect x="337" y="62" width="50" height="30" class="bx"/>
+    <rect x="389" y="62" width="50" height="30" class="bx"/>
+    <rect x="441" y="62" width="30" height="30" class="bx"/>
+    <rect x="285" y="94" width="50" height="30" class="bx"/>
+    <rect x="337" y="94" width="50" height="30" class="bx"/>
+    <rect x="389" y="94" width="50" height="30" class="bx"/>
+    <rect x="441" y="94" width="30" height="30" class="bx"/>
+    <text x="370" y="47" class="nc" fill="var(--accent2)" text-anchor="middle" style="font-size:8px">← norm →</text>
+    <text x="370" y="79" class="nc" fill="var(--accent2)" text-anchor="middle" style="font-size:8px">← norm →</text>
+    <text x="370" y="111" class="nc" fill="var(--accent2)" text-anchor="middle" style="font-size:8px">← norm →</text>
+    <text x="370" y="140" class="nc" text-anchor="middle" fill="#5a5856">normalize each sample</text>
+    <text x="370" y="152" class="nc" text-anchor="middle" fill="#5a5856">across its features</text>
+  </svg>
+</div>
+
+<div class="math">
+Batch Norm: μ_B = mean(batch), σ²_B = var(batch) per feature
+            x̂ = (x - μ_B) / √(σ²_B + ε),   y = γ·x̂ + β  (γ,β learned)
+
+Layer Norm: μ_L = mean(features), σ²_L = var(features) per sample
+            x̂ = (x - μ_L) / √(σ²_L + ε),   y = γ·x̂ + β
+<span class="lbl">Both learn γ (scale) and β (shift). Key difference: what statistics are computed over.</span>
+</div>
+
+<table>
+<tr><th>Property</th><th>Batch Norm</th><th>Layer Norm</th></tr>
+<tr><td>Statistics from</td><td>All examples in a batch, per feature</td><td>All features in one example, per example</td></tr>
+<tr><td>Batch size sensitive</td><td>Yes — breaks with batch size 1</td><td>No — works with any batch size</td></tr>
+<tr><td>Train vs inference</td><td>Different (running stats at inference)</td><td>Same (no running stats needed)</td></tr>
+<tr><td>Best for</td><td>CNNs, image models</td><td>Transformers, RNNs, NLP</td></tr>
+<tr><td>Why Transformers use LN</td><td>Generation uses batch=1; RNN/Transformer sequence varies</td><td>Stable across any batch/sequence configuration</td></tr>
+</table>
+
+<h3 id="init-schedule">Weight Initialization & Learning Rate Schedules</h3>
+<h4>Weight Initialization</h4>
+<p><strong>Why it matters</strong>: If all weights are zero, all neurons compute the same thing (symmetry problem). If weights are too large, activations saturate; too small, signals vanish. Good initialization keeps variance of activations roughly constant across layers.</p>
+
+<table>
+<tr><th>Method</th><th>Formula</th><th>Best For</th></tr>
+<tr><td><strong>Xavier / Glorot</strong></td><td>Uniform[-√(6/(nᵢₙ+nₒᵤₜ)), +√(6/(nᵢₙ+nₒᵤₜ))]</td><td>Sigmoid, Tanh activations</td></tr>
+<tr><td><strong>He / Kaiming</strong></td><td>Normal(0, √(2/nᵢₙ))</td><td>ReLU and variants (most CNNs, MLPs)</td></tr>
+<tr><td><strong>Normal (small)</strong></td><td>Normal(0, 0.02)</td><td>Transformers (original GPT-2 recipe)</td></tr>
+</table>
+
+<h4>Learning Rate Schedules</h4>
+<p>A constant learning rate is rarely optimal. Most modern training uses a <strong>warmup + decay</strong> schedule:</p>
+<ul>
+<li><strong>Linear warmup</strong>: Start from near-zero, ramp up to target LR over first 1–10% of training. Prevents large early updates before model is stable.</li>
+<li><strong>Cosine decay</strong>: After warmup, follow a cosine curve from peak LR to near-zero. Most common for LLMs.</li>
+<li><strong>Step decay</strong>: Reduce LR by factor (e.g., ×0.1) at fixed epochs. Used in ResNet training.</li>
+<li><strong>OneCycleLR</strong>: Fast.ai's policy — warmup then decay in one cycle. Very fast convergence.</li>
+</ul>
+</section>
+
+<!-- =============== CNNs =============== -->
+<section class="chapter anc" id="cnn-intuition">
+<div class="ch-num">Chapter 05 · Convolutional Neural Networks</div>
+<div class="ch-div"></div>
+<h2>Convolutional Neural Networks (CNNs)</h2>
+
+<p>The dominant architecture for image/video from 2012–2020. Still foundational. CNNs encode two powerful inductive biases about images: <strong>locality</strong> (nearby pixels are related) and <strong>translation equivariance</strong> (a cat looks like a cat whether it's top-left or bottom-right). These reduce parameters dramatically vs a dense MLP and often generalize better.</p>
+
+<h3>The Core Insight: Weight Sharing</h3>
+<p>A 224×224 RGB image has 224×224×3 = 150,528 pixels. If you used a dense layer with 1,000 hidden units, you'd need 150 million parameters — just for the first layer! CNNs instead learn a small filter (e.g., 3×3×3 = 27 parameters) and apply it everywhere. A filter for detecting vertical edges looks the same in the top-left as the bottom-right — you don't need separate edge-detectors for every location.</p>
+
+<h3 id="conv-op">Convolution — Worked Example</h3>
+
+<div class="diagram">
+  <div class="diagram-title">3×3 Filter Sliding Across a 5×5 Input → 3×3 Feature Map</div>
+  <svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:500px;">
+    <defs><style>.cell{fill:var(--surface2);stroke:var(--border);stroke-width:1;}.chi{fill:rgba(91,155,213,.2);stroke:var(--accent2);stroke-width:1.5;}.clo{fill:rgba(232,145,74,.12);stroke:var(--accent);stroke-width:1.5;}.cval{font-family:JetBrains Mono,monospace;font-size:10px;text-anchor:middle;fill:#b8b5ae;}.cval2{font-family:JetBrains Mono,monospace;font-size:9px;text-anchor:middle;fill:var(--accent2);}.lbl2{font-family:JetBrains Mono,monospace;font-size:9px;fill:#5a5856;}</style></defs>
+    <!-- Input 5x5 -->
+    <text x="105" y="14" class="lbl2" text-anchor="middle">Input (5×5)</text>
+    <!-- Grid -->
+    <rect x="30" y="20" width="30" height="30" class="chi"/><text x="45" y="40" class="cval2">1</text>
+    <rect x="60" y="20" width="30" height="30" class="chi"/><text x="75" y="40" class="cval2">2</text>
+    <rect x="90" y="20" width="30" height="30" class="chi"/><text x="105" y="40" class="cval2">3</text>
+    <rect x="120" y="20" width="30" height="30" class="cell"/><text x="135" y="40" class="cval">0</text>
+    <rect x="150" y="20" width="30" height="30" class="cell"/><text x="165" y="40" class="cval">1</text>
+
+    <rect x="30" y="50" width="30" height="30" class="chi"/><text x="45" y="70" class="cval2">0</text>
+    <rect x="60" y="50" width="30" height="30" class="chi"/><text x="75" y="70" class="cval2">1</text>
+    <rect x="90" y="50" width="30" height="30" class="chi"/><text x="105" y="70" class="cval2">2</text>
+    <rect x="120" y="50" width="30" height="30" class="cell"/><text x="135" y="70" class="cval">1</text>
+    <rect x="150" y="50" width="30" height="30" class="cell"/><text x="165" y="70" class="cval">0</text>
+
+    <rect x="30" y="80" width="30" height="30" class="chi"/><text x="45" y="100" class="cval2">2</text>
+    <rect x="60" y="80" width="30" height="30" class="chi"/><text x="75" y="100" class="cval2">0</text>
+    <rect x="90" y="80" width="30" height="30" class="chi"/><text x="105" y="100" class="cval2">1</text>
+    <rect x="120" y="80" width="30" height="30" class="cell"/><text x="135" y="100" class="cval">0</text>
+    <rect x="150" y="80" width="30" height="30" class="cell"/><text x="165" y="100" class="cval">2</text>
+
+    <rect x="30" y="110" width="30" height="30" class="cell"/><text x="45" y="130" class="cval">1</text>
+    <rect x="60" y="110" width="30" height="30" class="cell"/><text x="75" y="130" class="cval">2</text>
+    <rect x="90" y="110" width="30" height="30" class="cell"/><text x="105" y="130" class="cval">1</text>
+    <rect x="120" y="110" width="30" height="30" class="cell"/><text x="135" y="130" class="cval">3</text>
+    <rect x="150" y="110" width="30" height="30" class="cell"/><text x="165" y="130" class="cval">1</text>
+
+    <rect x="30" y="140" width="30" height="30" class="cell"/><text x="45" y="160" class="cval">0</text>
+    <rect x="60" y="140" width="30" height="30" class="cell"/><text x="75" y="160" class="cval">1</text>
+    <rect x="90" y="140" width="30" height="30" class="cell"/><text x="105" y="160" class="cval">0</text>
+    <rect x="120" y="140" width="30" height="30" class="cell"/><text x="135" y="160" class="cval">2</text>
+    <rect x="150" y="140" width="30" height="30" class="cell"/><text x="165" y="160" class="cval">1</text>
+
+    <!-- Filter 3x3 -->
+    <text x="255" y="14" class="lbl2" text-anchor="middle">Filter (3×3)</text>
+    <rect x="220" y="20" width="30" height="30" class="clo"/><text x="235" y="40" class="cval" fill="var(--accent)">1</text>
+    <rect x="250" y="20" width="30" height="30" class="clo"/><text x="265" y="40" class="cval" fill="var(--accent)">0</text>
+    <rect x="280" y="20" width="30" height="30" class="clo"/><text x="295" y="40" class="cval" fill="var(--accent)">-1</text>
+    <rect x="220" y="50" width="30" height="30" class="clo"/><text x="235" y="70" class="cval" fill="var(--accent)">1</text>
+    <rect x="250" y="50" width="30" height="30" class="clo"/><text x="265" y="70" class="cval" fill="var(--accent)">0</text>
+    <rect x="280" y="50" width="30" height="30" class="clo"/><text x="295" y="70" class="cval" fill="var(--accent)">-1</text>
+    <rect x="220" y="80" width="30" height="30" class="clo"/><text x="235" y="100" class="cval" fill="var(--accent)">1</text>
+    <rect x="250" y="80" width="30" height="30" class="clo"/><text x="265" y="100" class="cval" fill="var(--accent)">0</text>
+    <rect x="280" y="80" width="30" height="30" class="clo"/><text x="295" y="100" class="cval" fill="var(--accent)">-1</text>
+    <text x="255" y="125" class="lbl2" text-anchor="middle">vertical edge detector</text>
+
+    <!-- Arrow -->
+    <text x="335" y="80" style="font-size:20px;fill:var(--accent2);">→</text>
+
+    <!-- Output 3x3 -->
+    <text x="430" y="14" class="lbl2" text-anchor="middle">Output (3×3)</text>
+    <rect x="390" y="20" width="40" height="40" class="cell" fill="rgba(126,200,138,.12)" stroke="var(--accent3)"/><text x="410" y="46" class="cval" fill="var(--accent3)">-2</text>
+    <rect x="430" y="20" width="40" height="40" class="cell"/><text x="450" y="46" class="cval">1</text>
+    <rect x="470" y="20" width="30" height="40" class="cell"/><text x="485" y="46" class="cval">0</text>
+    <rect x="390" y="60" width="40" height="40" class="cell"/><text x="410" y="86" class="cval">1</text>
+    <rect x="430" y="60" width="40" height="40" class="cell"/><text x="450" y="86" class="cval">-1</text>
+    <rect x="470" y="60" width="30" height="40" class="cell"/><text x="485" y="86" class="cval">2</text>
+    <rect x="390" y="100" width="40" height="40" class="cell"/><text x="410" y="126" class="cval">3</text>
+    <rect x="430" y="100" width="40" height="40" class="cell"/><text x="450" y="126" class="cval">-2</text>
+    <rect x="470" y="100" width="30" height="40" class="cell"/><text x="485" y="126" class="cval">0</text>
+    <text x="430" y="165" class="lbl2" text-anchor="middle">1 value per position</text>
+
+    <!-- Computation annotation -->
+    <text x="105" y="185" style="font-family:JetBrains Mono,monospace;font-size:8px;fill:#5a5856;" text-anchor="middle">Blue patch ⊙ Filter → output[-2]: (1×1)+(2×0)+(3×-1)+(0×1)+(1×0)+(2×-1)+(2×1)+(0×0)+(1×-1) = 1+0-3+0+0-2+2+0-1 = -2 ✓</text>
+  </svg>
+</div>
+
+<p>Each filter learns to detect a specific pattern. With 32 filters in the first layer, you get 32 different feature maps — each highlighting something different (edges in different directions, color gradients, etc.). Deeper layers combine these to detect complex shapes and eventually objects.</p>
+
+<h3 id="stride-padding">Stride, Padding & Pooling</h3>
+<div class="math">
+Output_size = ⌊(Input + 2×Padding - Kernel) / Stride⌋ + 1
+
+Example: Input=28, Kernel=3, Padding=1, Stride=1 → ⌊(28+2-3)/1⌋+1 = 28  (same)
+Example: Input=28, Kernel=3, Padding=0, Stride=2 → ⌊(28+0-3)/2⌋+1 = 13  (halved ~)
+<span class="lbl">Critical formula for interview coding questions — always verify output shapes</span>
+</div>
+
+<table>
+<tr><th>Concept</th><th>What it does</th><th>Effect on output</th><th>Use case</th></tr>
+<tr><td><strong>Stride=1</strong></td><td>Move 1 pixel at a time (dense)</td><td>Small output, more overlap</td><td>Feature extraction</td></tr>
+<tr><td><strong>Stride=2</strong></td><td>Jump 2 pixels (skip one)</td><td>~Half spatial size</td><td>Spatial downsampling (replaces max pool)</td></tr>
+<tr><td><strong>Same padding</strong></td><td>Zero-pad edges so output = input size</td><td>Preserves spatial dimensions</td><td>Most hidden conv layers</td></tr>
+<tr><td><strong>Valid padding</strong></td><td>No padding</td><td>Output shrinks by (kernel-1)</td><td>When you want size reduction</td></tr>
+<tr><td><strong>Max Pooling</strong></td><td>Take max in each window (e.g., 2×2)</td><td>Reduces spatial by 2× (with stride=2)</td><td>Spatial invariance, downsampling</td></tr>
+<tr><td><strong>Avg Pooling</strong></td><td>Take average in each window</td><td>Reduces spatial by 2×</td><td>Smoother downsampling</td></tr>
+<tr><td><strong>Global Avg Pool</strong></td><td>Average entire feature map to 1 value per channel</td><td>(H,W,C) → (1,1,C) → flatten to (C)</td><td>Replace dense layers at CNN end (ResNet, etc.)</td></tr>
+</table>
+
+<h3 id="receptive-field">Receptive Fields</h3>
+<p>The <strong>receptive field</strong> of a neuron = the region of the original input that can influence its activation. Crucially: it grows with depth. With 3×3 filters and stride=1:</p>
+
+<div class="math">
+After layer 1 (3×3 filter): receptive field = 3×3
+After layer 2 (3×3 filter): receptive field = 5×5
+After layer k (3×3 filters): receptive field = (2k+1)×(2k+1)
+
+With stride=2 at each layer: receptive field grows much faster
+<span class="lbl">Deeper networks "see" larger context — enabling detection of global features</span>
+</div>
+
+<p><strong>Effective receptive field</strong>: In practice, not all pixels in the theoretical receptive field contribute equally. Central pixels have more influence paths; edge pixels fewer. The effective RF is often much smaller than the theoretical one — an important practical consideration.</p>
+
+<h3 id="dilated-conv">Dilated (Atrous) Convolutions</h3>
+<p>Insert gaps (rate r) between filter elements. A 3×3 filter with dilation rate=2 covers a 5×5 area but only has 9 actual weights. Exponentially grows receptive field without increasing parameters or losing resolution. Used in: DeepLab (semantic segmentation), WaveNet (audio generation), TemporalConvNet (time series).</p>
+
+<h3 id="cnn-archs">CNN Architectures — The Lineage</h3>
+<table>
+<tr><th>Architecture</th><th>Year</th><th>Key Innovation</th><th>ImageNet Top-5 Err</th></tr>
+<tr><td><strong>LeNet-5</strong></td><td>1998</td><td>First successful CNN: conv→pool→FC pattern</td><td>N/A (MNIST)</td></tr>
+<tr><td><strong>AlexNet</strong></td><td>2012</td><td>Deep CNN on GPU, ReLU, Dropout, data aug</td><td>16.4% (vs 26% prev)</td></tr>
+<tr><td><strong>VGGNet-16/19</strong></td><td>2014</td><td>Very deep (16–19 layers), all 3×3 filters</td><td>7.3%</td></tr>
+<tr><td><strong>GoogLeNet / Inception</strong></td><td>2014</td><td>Inception modules: parallel convs at different scales</td><td>6.7%</td></tr>
+<tr><td><strong>ResNet-50/152</strong></td><td>2015</td><td>Skip connections: y = F(x) + x. 150+ layers</td><td>3.57%</td></tr>
+<tr><td><strong>DenseNet</strong></td><td>2017</td><td>Each layer receives feature maps from all previous layers</td><td>~3.5%</td></tr>
+<tr><td><strong>EfficientNet</strong></td><td>2019</td><td>Compound scaling of depth/width/resolution</td><td>~2.9%</td></tr>
+<tr><td><strong>ViT (Vision Transformer)</strong></td><td>2020</td><td>Patch-based Transformer for images. CNNs' reign ends.</td><td>~1.8%</td></tr>
+</table>
+
+<h4 id="resnet">ResNet & Skip Connections — Why They Work</h4>
+<p>Without skip connections, deep networks (20+ layers) actually perform <em>worse</em> than shallow ones — not from overfitting, but from optimization failure. The gradient degrades as it propagates back through many layers.</p>
+
+<div class="math">
+Standard layer:   y = F(x, W)                 ← learn full mapping
+Residual block:   y = F(x, W) + x             ← learn residual F(x,W) = desired - identity
+                  ∂L/∂x = ∂L/∂y · (∂F/∂x + 1)  ← gradient always has +1 term!
+<span class="lbl">Skip connection guarantees gradient can flow unchanged (∂L/∂x ≥ ∂L/∂y). No vanishing.</span>
+</div>
+
+<p>If a layer is unhelpful, it can easily learn F(x,W)=0 (making the block an identity). This is much easier than learning the identity from scratch. Skip connections are now universal — every Transformer uses them as "Add & Norm" layers.</p>
+
+<h3 id="cnn-usecases">CNN Use Cases & Applications</h3>
+<div class="grid2">
+<div class="card"><h5>🏥 Medical Imaging</h5><p>Detecting cancer in mammograms (Arevalo et al.), diabetic retinopathy in retinal scans (Google). FDA-cleared AI diagnostics use CNNs. Key challenge: small labeled datasets → transfer learning from ImageNet.</p></div>
+<div class="card"><h5>🚗 Autonomous Vehicles</h5><p>Tesla FSD: object detection (YOLO-style), lane detection, depth estimation. Processes camera feeds in real-time. Multi-camera fusion. Also LiDAR point cloud processing.</p></div>
+<div class="card"><h5>🔍 Object Detection</h5><p>YOLO (You Only Look Once): predict bounding boxes + class in one forward pass. Used in security cameras, manufacturing QC, sports analytics. Fast enough for real-time video.</p></div>
+<div class="card"><h5>🎨 Image Generation</h5><p>CNNs as generators and discriminators in GANs. As encoders/decoders in VAEs. U-Net backbone in diffusion models (Stable Diffusion). Style transfer.</p></div>
+<div class="card"><h5>📱 Mobile & Edge</h5><p>MobileNet: depthwise separable convolutions for <1MB models. EfficientNet on device. Powers camera features in every smartphone.</p></div>
+<div class="card"><h5>🌍 Remote Sensing</h5><p>Satellite imagery analysis: crop yield prediction, disaster assessment, deforestation monitoring, urban planning. Useful with your data analytics background.</p></div>
+</div>
+</section>
+
+<!-- =============== RNNS =============== -->
+<section class="chapter anc" id="rnn">
+<div class="ch-num">Chapter 06 · Sequence Models</div>
+<div class="ch-div"></div>
+<h2>Recurrent Neural Networks & Sequence Models</h2>
+
+<p>Images have spatial structure — nearby pixels relate. Text, audio, time series have <strong>temporal structure</strong> — the order of elements matters fundamentally. "The dog bit the man" ≠ "The man bit the dog." Standard MLPs and CNNs can't handle variable-length sequences with order-dependent meaning. Enter RNNs.</p>
+
+<h3>The RNN — Unrolled Through Time</h3>
+
+<div class="diagram">
+  <div class="diagram-title">RNN Unrolled: Processing "cat sat on mat"</div>
+  <svg viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:500px;">
+    <defs><style>.rbox{fill:rgba(91,155,213,.12);stroke:var(--accent2);stroke-width:1.5;rx:4;}.rl{font-family:JetBrains Mono,monospace;font-size:9px;fill:#7a7875;text-anchor:middle;}</style></defs>
+    <!-- Time 1 -->
+    <rect x="20" y="50" width="80" height="50" rx="4" class="rbox"/>
+    <text x="60" y="72" class="rl" fill="var(--accent2)">RNN Cell</text>
+    <text x="60" y="87" class="rl">t=1</text>
+    <!-- input arrow -->
+    <line x1="60" y1="140" x2="60" y2="100" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text x="60" y="152" class="rl" fill="var(--accent)">"cat"</text>
+    <!-- output arrow -->
+    <line x1="60" y1="50" x2="60" y2="25" stroke="var(--accent3)" stroke-width="1.5"/>
+    <text x="60" y="18" class="rl" fill="var(--accent3)">h₁</text>
+    <!-- Time 2 -->
+    <rect x="150" y="50" width="80" height="50" rx="4" class="rbox"/>
+    <text x="190" y="72" class="rl" fill="var(--accent2)">RNN Cell</text>
+    <text x="190" y="87" class="rl">t=2</text>
+    <line x1="190" y1="140" x2="190" y2="100" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="190" y="152" class="rl" fill="var(--accent)">"sat"</text>
+    <line x1="190" y1="50" x2="190" y2="25" stroke="var(--accent3)" stroke-width="1.5"/>
+    <text x="190" y="18" class="rl" fill="var(--accent3)">h₂</text>
+    <!-- hidden state pass -->
+    <line x1="100" y1="75" x2="150" y2="75" stroke="var(--accent4)" stroke-width="2"/>
+    <text x="125" y="68" class="rl" fill="var(--accent4)">h₁→</text>
+    <!-- Time 3 -->
+    <rect x="280" y="50" width="80" height="50" rx="4" class="rbox"/>
+    <text x="320" y="72" class="rl" fill="var(--accent2)">RNN Cell</text>
+    <text x="320" y="87" class="rl">t=3</text>
+    <line x1="320" y1="140" x2="320" y2="100" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="320" y="152" class="rl" fill="var(--accent)">"on"</text>
+    <line x1="320" y1="50" x2="320" y2="25" stroke="var(--accent3)" stroke-width="1.5"/>
+    <text x="320" y="18" class="rl" fill="var(--accent3)">h₃</text>
+    <line x1="230" y1="75" x2="280" y2="75" stroke="var(--accent4)" stroke-width="2"/>
+    <text x="255" y="68" class="rl" fill="var(--accent4)">h₂→</text>
+    <!-- Time 4 -->
+    <rect x="410" y="50" width="80" height="50" rx="4" class="rbox"/>
+    <text x="450" y="72" class="rl" fill="var(--accent2)">RNN Cell</text>
+    <text x="450" y="87" class="rl">t=4</text>
+    <line x1="450" y1="140" x2="450" y2="100" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="450" y="152" class="rl" fill="var(--accent)">"mat"</text>
+    <line x1="450" y1="50" x2="450" y2="25" stroke="var(--accent3)" stroke-width="1.5"/>
+    <text x="450" y="18" class="rl" fill="var(--accent3)">h₄</text>
+    <line x1="360" y1="75" x2="410" y2="75" stroke="var(--accent4)" stroke-width="2"/>
+    <text x="385" y="68" class="rl" fill="var(--accent4)">h₃→</text>
+    <!-- same weights note -->
+    <text x="250" y="175" style="font-family:JetBrains Mono,monospace;font-size:8px;fill:#4a4845;" text-anchor="middle">Same weight matrices Wₓₓ and Wₕₕ used at every time step (parameter sharing over time)</text>
+  </svg>
+</div>
+
+<div class="math">
+hₜ = tanh(Wₓₓ · xₜ + Wₕₕ · hₜ₋₁ + b)
+yₜ = Wₕᵧ · hₜ   (if producing output at each step)
+<span class="lbl">Same W matrices reused at every step — this is temporal weight sharing</span>
+</div>
+
+<h4 id="vanishing">Vanishing Gradient — Root Cause</h4>
+<p>During backpropagation through time (BPTT), gradients must travel backward through T time steps. At each step, you multiply by Wₕₕ and the derivative of tanh (which is ≤ 1). After T steps:</p>
+
+<div class="math">
+∂L/∂h₁ = ∏ₜ₌₂ᵀ (∂hₜ/∂hₜ₋₁) · (∂L/∂hₕ)
+        = ∏ₜ₌₂ᵀ diag(tanh'(hₜ₋₁)) · Wₕₕ
+
+If largest eigenvalue of Wₕₕ < 1: gradient shrinks exponentially → vanishes
+If largest eigenvalue of Wₕₕ > 1: gradient grows exponentially → explodes
+<span class="lbl">This is why plain RNNs can only reliably use ~10-20 steps of history</span>
+</div>
+
+<h3 id="lstm">LSTM — Long Short-Term Memory (Hochreiter & Schmidhuber, 1997)</h3>
+
+<div class="diagram">
+  <div class="diagram-title">LSTM Cell — Gates and Cell State Highway</div>
+  <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:520px;">
+    <defs><style>.gate{fill:rgba(196,126,184,.15);stroke:var(--accent4);stroke-width:1.5;rx:4;}.cs{fill:rgba(232,145,74,.08);stroke:var(--accent);stroke-width:2;rx:2;}.gl{font-family:JetBrains Mono,monospace;font-size:8px;text-anchor:middle;}.op{fill:var(--surface2);stroke:var(--border);stroke-width:1.5;}.mul{fill:rgba(126,200,138,.15);stroke:var(--accent3);stroke-width:1.5;}.add{fill:rgba(91,155,213,.15);stroke:var(--accent2);stroke-width:1.5;}</style></defs>
+    <!-- Cell state highway (top) -->
+    <rect x="30" y="20" width="460" height="24" rx="3" class="cs"/>
+    <text x="260" y="36" class="gl" fill="var(--accent)">C_{t-1} ──────────────────────── Cₜ  (Cell State Highway — gradient flows unchanged)</text>
+    <!-- Forget gate -->
+    <rect x="60" y="80" width="70" height="50" rx="4" class="gate"/>
+    <text x="95" y="103" class="gl" fill="var(--accent4)">FORGET</text>
+    <text x="95" y="115" class="gl" fill="var(--accent4)">GATE σ</text>
+    <!-- × for forget -->
+    <circle cx="95" cy="55" r="10" class="mul"/>
+    <text x="95" y="59" class="gl" fill="var(--accent3)">×</text>
+    <line x1="95" y1="80" x2="95" y2="65" stroke="var(--accent4)" stroke-width="1.5"/>
+    <!-- Input gate -->
+    <rect x="200" y="80" width="70" height="50" rx="4" class="gate"/>
+    <text x="235" y="103" class="gl" fill="var(--accent4)">INPUT</text>
+    <text x="235" y="115" class="gl" fill="var(--accent4)">GATE σ</text>
+    <rect x="200" y="140" width="70" height="40" rx="4" style="fill:rgba(91,155,213,.12);stroke:var(--accent2);stroke-width:1.5;"/>
+    <text x="235" y="158" class="gl" fill="var(--accent2)">CELL</text>
+    <text x="235" y="170" class="gl" fill="var(--accent2)">CAND tanh</text>
+    <!-- × for input -->
+    <circle cx="235" cy="55" r="10" class="mul"/>
+    <text x="235" y="59" class="gl" fill="var(--accent3)">×</text>
+    <line x1="235" y1="80" x2="235" y2="65" stroke="var(--accent4)" stroke-width="1.5"/>
+    <!-- + to combine -->
+    <circle cx="165" cy="55" r="10" class="add"/>
+    <text x="165" y="59" class="gl" fill="var(--accent2)">+</text>
+    <line x1="95" y1="55" x2="155" y2="55" stroke="var(--accent3)" stroke-width="1.5"/>
+    <line x1="175" y1="55" x2="225" y2="55" stroke="var(--accent3)" stroke-width="1.5"/>
+    <!-- Output gate -->
+    <rect x="370" y="80" width="70" height="50" rx="4" class="gate"/>
+    <text x="405" y="103" class="gl" fill="var(--accent4)">OUTPUT</text>
+    <text x="405" y="115" class="gl" fill="var(--accent4)">GATE σ</text>
+    <!-- × output -->
+    <circle cx="405" cy="55" r="10" class="mul"/>
+    <text x="405" y="59" class="gl" fill="var(--accent3)">×</text>
+    <line x1="405" y1="80" x2="405" y2="65" stroke="var(--accent4)" stroke-width="1.5"/>
+    <!-- tanh(C) -->
+    <rect x="330" y="44" width="30" height="22" rx="3" style="fill:rgba(126,200,138,.12);stroke:var(--accent3);stroke-width:1;"/>
+    <text x="345" y="59" class="gl" fill="var(--accent3)">tanh</text>
+    <line x1="360" y1="55" x2="395" y2="55" stroke="var(--accent3)" stroke-width="1.5"/>
+    <!-- hₜ output -->
+    <line x1="415" y1="55" x2="490" y2="55" stroke="var(--accent4)" stroke-width="1.5"/>
+    <text x="495" y="58" class="gl" fill="var(--accent4)">hₜ</text>
+    <!-- inputs [hₜ₋₁, xₜ] -->
+    <text x="200" y="195" class="gl" fill="#5a5856">[hₜ₋₁, xₜ] enters each gate: forget, input, output gates all receive the same concatenated input</text>
+  </svg>
+</div>
+
+<h4 id="lstm-gates">LSTM Gate Equations — Fully Derived</h4>
+
+<div class="math-step"><span class="step-label">Input concatenation</span>[hₜ₋₁, xₜ] — concatenate previous hidden state with current input</div>
+<div class="math-step"><span class="step-label">Forget Gate — what to erase from cell state</span>fₜ = σ(Wf·[hₜ₋₁, xₜ] + bf)        fₜ ∈ (0,1): 0=forget completely, 1=keep completely</div>
+<div class="math-step"><span class="step-label">Input Gate — what new info to write</span>iₜ = σ(Wᵢ·[hₜ₋₁, xₜ] + bᵢ)          iₜ ∈ (0,1): how much of candidate to write</div>
+<div class="math-step"><span class="step-label">Candidate cell state — what to potentially write</span>C̃ₜ = tanh(Wc·[hₜ₋₁, xₜ] + bc)     C̃ₜ ∈ (-1,1): candidate values for cell state</div>
+<div class="math-step"><span class="step-label">Cell state update — additive, not multiplicative!</span>Cₜ = fₜ ⊙ Cₜ₋₁ + iₜ ⊙ C̃ₜ           Erase old, add new. Additive update = gradient highway</div>
+<div class="math-step"><span class="step-label">Output Gate — what to expose as hidden state</span>oₜ = σ(Wo·[hₜ₋₁, xₜ] + bo)          oₜ ∈ (0,1)</div>
+<div class="math-step"><span class="step-label">Hidden state output</span>hₜ = oₜ ⊙ tanh(Cₜ)                   Filter cell state through output gate</div>
+
+<div class="box green">
+<div class="box-label">🔑 Why LSTMs Solve Vanishing Gradients</div>
+<p>The key: Cₜ = fₜ⊙Cₜ₋₁ + iₜ⊙C̃ₜ is an <strong>additive</strong> update. When you backpropagate through time: ∂Cₜ/∂Cₜ₋₁ = fₜ (the forget gate value). Unlike the RNN's multiplicative Wₕₕ, this can be close to 1.0 (meaning "don't forget this information"). The gradient can flow through the cell state for hundreds of steps without vanishing. This is the "constant error carousel" — Hochreiter's original description.</p>
+</div>
+
+<h3 id="gru">GRU (Gated Recurrent Unit) — Cho et al. 2014</h3>
+<p>Simplified LSTM: merges forget and input gates into one <strong>update gate</strong>, eliminates separate cell state. Fewer parameters, often comparable performance, faster training.</p>
+
+<div class="math">
+zₜ = σ(Wz·[hₜ₋₁, xₜ])              (update gate: how much to update hidden state)
+rₜ = σ(Wr·[hₜ₋₁, xₜ])              (reset gate: how much of past to forget)
+h̃ₜ = tanh(W·[rₜ⊙hₜ₋₁, xₜ])        (candidate hidden state)
+hₜ = (1-zₜ)⊙hₜ₋₁ + zₜ⊙h̃ₜ          (interpolate old and new — like LSTM cell update)
+<span class="lbl">GRU: 2 gates vs LSTM's 3. Same intuition, fewer parameters. Good for smaller datasets.</span>
+</div>
+
+<h3 id="seq-usecases">Sequence Model Use Cases</h3>
+<div class="grid2">
+<div class="card"><h5>📝 Language Modeling</h5><p>Predict next word/character. The original LSTM killer app. Google's neural machine translation (2016) replaced phrase-based systems. Still used in fast lightweight NLP.</p></div>
+<div class="card"><h5>📈 Time Series</h5><p>Stock price forecasting, demand forecasting (Nike inventory!), weather prediction, IoT sensor anomaly detection. LSTM handles long seasonal patterns.</p></div>
+<div class="card"><h5>🎵 Speech & Audio</h5><p>Speech recognition (DeepSpeech 2 used bidir-LSTM), music generation, speaker diarization. WaveNet (Google) used dilated CNNs but inspired by sequence modeling insights.</p></div>
+<div class="card"><h5>🧬 Biological Sequences</h5><p>Protein function prediction from amino acid sequences. Gene expression modeling. DeepMind's AlphaFold 1 used LSTMs (AlphaFold 2 uses Transformers).</p></div>
+</div>
+</section>
+
+<!-- =============== ATTENTION =============== -->
+<section class="chapter anc" id="seq2seq">
+<div class="ch-num">Chapter 07 · Attention Mechanisms</div>
+<div class="ch-div"></div>
+<h2>Attention Mechanisms</h2>
+
+<h3>The Seq2Seq Bottleneck Problem</h3>
+<p>Seq2Seq (Sutskever et al., 2014): encode an entire input sequence into a single fixed-size vector (the "context vector"), then decode. For "The agreement on the European Economic Area was signed in August 1992" → French, the entire sentence must fit in a ~256-dimensional vector. Long sentences: crucial early information gets "forgotten."</p>
+
+<h3 id="bahdanau">Bahdanau Attention (2015) — The Solution</h3>
+<p>At each decoding step, instead of using only the final encoder state, compute a weighted combination of <em>all</em> encoder states. The weights are learned based on compatibility between the current decoder state and each encoder state.</p>
+
+<div class="math">
+Score:       eₜᵢ = vᵀ tanh(Wₛ·sₜ₋₁ + Wₕ·hᵢ)     (alignment score: decoder state vs encoder state i)
+Weights:     αₜᵢ = softmax(eₜᵢ) = exp(eₜᵢ)/Σⱼexp(eₜⱼ)  (attention distribution, sums to 1)
+Context:     cₜ = Σᵢ αₜᵢ · hᵢ                    (weighted sum of encoder states)
+Decode:      sₜ = f(sₜ₋₁, yₜ₋₁, cₜ)               (use context for this step's generation)
+<span class="lbl">Bahdanau: additive/concatenation attention. Learned alignment — the model discovers which input words to focus on when generating each output word.</span>
+</div>
+
+<p>A key result: the learned attention weights form interpretable alignment matrices — when translating "European Economic Area," the French output "zone économique européenne" attends to those specific input words in the right order. Attention provides <em>interpretability</em> as a byproduct.</p>
+
+<h3 id="self-attention">Self-Attention — The Transformer's Core</h3>
+<p>Regular attention: decoder attends to encoder. Self-attention: each position in a sequence attends to <em>all other positions in the same sequence</em>. This lets representations be context-aware — "bank" in "river bank" vs "bank account" gets different representations based on surrounding words.</p>
+
+<p>Three projections of the input X:</p>
+<div class="math">
+Q = X·Wᵠ    (Query: "what am I looking for?")
+K = X·Wᴷ    (Key:   "what do I contain?")
+V = X·Wᵛ    (Value: "what do I offer?")
+
+Attention(Q, K, V) = softmax(QKᵀ / √dₖ) · V
+
+Why √dₖ scaling? For high-dimensional vectors (dₖ=64), dot products grow in magnitude (~√dₖ),
+pushing softmax into saturation (near-zero gradients). Dividing by √dₖ stabilizes training.
+<span class="lbl">Scaled Dot-Product Attention — foundation of all modern Transformers</span>
+</div>
+
+<h4 id="sa-worked">Worked Numerical Example</h4>
+<div class="box blue">
+<div class="box-label">Self-Attention: 3 tokens, dₖ = 2 (simplified)</div>
+<p>Sequence: ["I", "love", "cats"] with embeddings (2D for simplicity)</p>
+</div>
+
+<div class="math-step"><span class="step-label">Input embeddings (X)</span>
+X = [[1, 0],    ("I")
+     [0, 1],    ("love")
+     [1, 1]]    ("cats")
+Weight matrices (learned): Wᵠ = Wᴷ = Wᵛ = I (identity, for simplicity)
+So Q = K = V = X (same in this simplified example)</div>
+<div class="math-step"><span class="step-label">Compute scores: QKᵀ</span>
+QKᵀ = X·Xᵀ:
+  "I"·"I"=1,    "I"·"love"=0,    "I"·"cats"=1
+  "love"·"I"=0, "love"·"love"=1, "love"·"cats"=1
+  "cats"·"I"=1, "cats"·"love"=1, "cats"·"cats"=2
+Score matrix = [[1,0,1],[0,1,1],[1,1,2]] / √2 ≈ [[0.7,0,0.7],[0,0.7,0.7],[0.7,0.7,1.4]]</div>
+<div class="math-step"><span class="step-label">Apply softmax to each row → attention weights</span>
+Row 1 (for "I"):    softmax([0.7, 0, 0.7]) ≈ [0.42, 0.15, 0.42]   ← "I" attends mostly to "I" and "cats"
+Row 2 (for "love"): softmax([0, 0.7, 0.7]) ≈ [0.15, 0.42, 0.42]  ← "love" attends mostly to "love","cats"
+Row 3 (for "cats"): softmax([0.7,0.7,1.4]) ≈ [0.25, 0.25, 0.50]  ← "cats" attends most to itself</div>
+<div class="math-step"><span class="step-label">Output: attention weights × V</span>
+Output_"I" = 0.42×[1,0] + 0.15×[0,1] + 0.42×[1,1] = [0.84, 0.57]
+Now "I" has information from "cats" in its representation — context-aware!</div>
+
+<div class="box green">
+<div class="box-label">💡 The Database Retrieval Analogy</div>
+<p>Think of attention as a soft, differentiable database lookup: Query = your search term. Keys = "tags" on stored documents. Values = actual content of documents. Dot(Q,K) measures relevance. Softmax normalizes to weights. ΣαᵢVᵢ retrieves a weighted blend. Unlike hard lookup returning one document, attention returns a smooth mixture — and the whole thing is differentiable so you can learn the best Q, K, V projections through gradient descent.</p>
+</div>
+</section>
+
+<!-- =============== TRANSFORMER =============== -->
+<section class="chapter anc" id="transformer">
+<div class="ch-num">Chapter 08 · The Transformer</div>
+<div class="ch-div"></div>
+<h2>"Attention Is All You Need" — The Transformer (2017)</h2>
+
+<p>Vaswani et al. (Google Brain). 8 authors. English-German/French translation benchmarks. The claim: you can eliminate RNNs entirely and build sequence models using only attention. This enables full parallelization (RNNs process sequentially) and scales to massive data and compute. The most cited AI paper of the decade.</p>
+
+<div class="diagram">
+  <div class="diagram-title">Transformer Architecture — Encoder (left) and Decoder (right)</div>
+  <svg viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:520px;">
+    <defs><style>.tbox{fill:var(--surface2);stroke:var(--border);stroke-width:1;rx:4;}.tbox-a{fill:rgba(91,155,213,.1);stroke:var(--accent2);stroke-width:1.5;}.tbox-f{fill:rgba(232,145,74,.08);stroke:rgba(232,145,74,.3);stroke-width:1;}.tbox-n{fill:rgba(126,200,138,.08);stroke:rgba(126,200,138,.3);stroke-width:1;}.tl{font-family:JetBrains Mono,monospace;font-size:8.5px;text-anchor:middle;fill:#b8b5ae;}</style></defs>
+    <!-- ENCODER SIDE -->
+    <text x="130" y="15" class="tl" fill="var(--accent2)">ENCODER (×6 stacked)</text>
+    <!-- Multi-head self-attention -->
+    <rect x="30" y="30" width="200" height="35" rx="3" class="tbox-a"/>
+    <text x="130" y="52" class="tl" fill="var(--accent2)">Multi-Head Self-Attention</text>
+    <!-- Add & Norm -->
+    <rect x="30" y="75" width="200" height="25" rx="3" class="tbox-n"/>
+    <text x="130" y="92" class="tl" fill="var(--accent3)">Add &amp; Norm</text>
+    <!-- FFN -->
+    <rect x="30" y="110" width="200" height="35" rx="3" class="tbox-f"/>
+    <text x="130" y="127" class="tl" fill="var(--accent)">Position-wise FFN</text>
+    <text x="130" y="140" class="tl" fill="#5a5856">Linear → GELU → Linear</text>
+    <!-- Add & Norm 2 -->
+    <rect x="30" y="155" width="200" height="25" rx="3" class="tbox-n"/>
+    <text x="130" y="172" class="tl" fill="var(--accent3)">Add &amp; Norm</text>
+    <!-- Bracket for ×6 -->
+    <rect x="16" y="25" width="218" height="165" rx="2" fill="none" stroke="rgba(91,155,213,.15)" stroke-width="1.5" stroke-dasharray="4"/>
+    <text x="14" y="110" style="font-family:JetBrains Mono,monospace;font-size:9px;fill:rgba(91,155,213,.5);" transform="rotate(-90 14 110)">×6</text>
+    <!-- Input -->
+    <rect x="55" y="225" width="150" height="30" rx="3" class="tbox"/>
+    <text x="130" y="245" class="tl">Input Embeddings</text>
+    <rect x="55" y="265" width="150" height="25" rx="3" class="tbox"/>
+    <text x="130" y="282" class="tl">Positional Encoding</text>
+    <line x1="130" y1="255" x2="130" y2="266" stroke="var(--border)" stroke-width="1"/>
+    <line x1="130" y1="290" x2="130" y2="320" stroke="var(--accent2)" stroke-width="1.5"/>
+    <text x="130" y="335" class="tl" fill="var(--accent2)">"The cat sat"</text>
+
+    <!-- DECODER SIDE -->
+    <text x="390" y="15" class="tl" fill="var(--accent4)">DECODER (×6 stacked)</text>
+    <!-- Masked self-attn -->
+    <rect x="290" y="30" width="210" height="35" rx="3" style="fill:rgba(196,126,184,.1);stroke:var(--accent4);stroke-width:1.5;"/>
+    <text x="395" y="48" class="tl" fill="var(--accent4)">Masked Self-Attention</text>
+    <text x="395" y="60" class="tl" fill="#5a5856">(can't see future tokens)</text>
+    <!-- Add & Norm -->
+    <rect x="290" y="75" width="210" height="25" rx="3" class="tbox-n"/>
+    <text x="395" y="92" class="tl" fill="var(--accent3)">Add &amp; Norm</text>
+    <!-- Cross-attn -->
+    <rect x="290" y="110" width="210" height="35" rx="3" class="tbox-a"/>
+    <text x="395" y="127" class="tl" fill="var(--accent2)">Cross-Attention</text>
+    <text x="395" y="140" class="tl" fill="#5a5856">(Q from decoder, K,V from encoder)</text>
+    <!-- Add & Norm -->
+    <rect x="290" y="155" width="210" height="25" rx="3" class="tbox-n"/>
+    <text x="395" y="172" class="tl" fill="var(--accent3)">Add &amp; Norm</text>
+    <!-- FFN -->
+    <rect x="290" y="190" width="210" height="30" rx="3" class="tbox-f"/>
+    <text x="395" y="210" class="tl" fill="var(--accent)">Position-wise FFN</text>
+    <!-- Add & Norm -->
+    <rect x="290" y="230" width="210" height="25" rx="3" class="tbox-n"/>
+    <text x="395" y="247" class="tl" fill="var(--accent3)">Add &amp; Norm</text>
+    <rect x="276" y="25" width="238" height="238" rx="2" fill="none" stroke="rgba(196,126,184,.15)" stroke-width="1.5" stroke-dasharray="4"/>
+    <!-- Linear + Softmax -->
+    <rect x="315" y="275" width="160" height="25" rx="3" class="tbox"/>
+    <text x="395" y="292" class="tl">Linear + Softmax</text>
+    <line x1="395" y1="255" x2="395" y2="276" stroke="var(--border)" stroke-width="1"/>
+    <line x1="395" y1="300" x2="395" y2="320" stroke="var(--accent4)" stroke-width="1.5"/>
+    <text x="395" y="335" class="tl" fill="var(--accent4)">Output probabilities</text>
+    <!-- Encoder → Decoder cross-attn arrow -->
+    <path d="M230,127 Q260,127 290,127" stroke="var(--accent2)" stroke-width="1.5" stroke-dasharray="3" fill="none"/>
+    <text x="259" y="120" class="tl" fill="var(--accent2)">K,V</text>
+  </svg>
+</div>
+
+<h3 id="encoder-stack">Encoder Stack — Deep Dive</h3>
+<p>6 identical encoder layers (in the original paper). Each layer has two sub-layers:</p>
+<ol>
+<li><strong>Multi-head self-attention</strong>: every position attends to every other position in the same sequence. Produces contextually-enriched representations.</li>
+<li><strong>Position-wise Feed-Forward Network (FFN)</strong>: Two linear layers with GELU/ReLU: FFN(x) = Linear₂(GELU(Linear₁(x))). Applied <em>identically</em> to each position independently. The FFN layers are where most of the model's "knowledge" is thought to be stored (they're much larger — 4× the hidden dimension typically).</li>
+</ol>
+<p>Each sub-layer is wrapped with <strong>residual (skip) connection + Layer Norm</strong>: output = LayerNorm(x + sublayer(x)).</p>
+
+<h3 id="decoder-stack">Decoder Stack — Deep Dive</h3>
+<p>6 identical decoder layers. Three sub-layers:</p>
+<ol>
+<li><strong>Masked self-attention</strong>: positions can only attend to previous (left) positions. The "mask" zeros out all future attention scores before softmax. This enforces causality — when generating word 5, you can't look at words 6, 7, 8... (you haven't generated them yet).</li>
+<li><strong>Cross-attention (encoder-decoder attention)</strong>: Queries come from the decoder's previous sub-layer. Keys and Values come from the encoder's final output. This is where the Bahdanau attention idea is incorporated — the decoder reads the encoded source sequence.</li>
+<li><strong>FFN + Add & Norm</strong>: same as encoder.</li>
+</ol>
+
+<h3 id="mha">Multi-Head Attention — Parallel Attention Subspaces</h3>
+<p>Instead of one attention function with full dimensionality, run h=8 parallel attention "heads" with lower dimension (dₖ = d_model/h = 512/8 = 64 each). Concatenate results, project back.</p>
+
+<div class="math">
+For head i: headᵢ = Attention(Q·Wᵢᵠ, K·Wᵢᴷ, V·Wᵢᵛ)    (Wᵢᵠ, Wᵢᴷ, Wᵢᵛ ∈ ℝ^{512×64})
+MultiHead(Q,K,V) = Concat(head₁,...,head₈) · Wᴼ          (Wᴼ ∈ ℝ^{512×512})
+<span class="lbl">Each head learns different relationship types. One might learn syntax, another semantics, another coreference.</span>
+</div>
+
+<p><strong>Why multiple heads work</strong>: In a single attention head, after the softmax, the output is a weighted average of values — it can only "look at one thing" at a time (the weighted average loses the multi-modal structure). Multiple heads can attend to different things simultaneously and capture richer interactions.</p>
+
+<h3 id="pos-enc">Positional Encoding — Adding Order Information</h3>
+<p>Self-attention is permutation-invariant by design — if you shuffle input tokens, the output is the same (just shuffled). But language is order-dependent. Positional encoding injects position information.</p>
+
+<div class="math">
+Original sinusoidal encoding:
+PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))
+PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+
+Intuition: Different frequencies — low-i dimensions encode large-scale position information,
+high-i dimensions encode fine-grained position. Like binary representation of numbers.
+The model can attend to relative positions by noting: PE(pos+k) = function(PE(pos)).
+<span class="lbl">Modern models use RoPE (Rotary Position Embeddings) — encode position as rotation in embedding space. Better for long contexts.</span>
+</div>
+
+<h3 id="transformer-usecases">Transformer Use Cases</h3>
+<div class="grid2">
+<div class="card"><h5>🌐 Machine Translation</h5><p>The original application. Google Translate replaced phrase-based systems with Transformer (2019). BLEU scores jumped dramatically. Now handles 100+ language pairs.</p></div>
+<div class="card"><h5>💬 Text Generation (GPT family)</h5><p>Decoder-only Transformers. Autoregressive generation: predict one token at a time, feed back as input. Powers ChatGPT, Claude, Gemini, Llama.</p></div>
+<div class="card"><h5>📖 Text Understanding (BERT family)</h5><p>Encoder-only Transformers. Document classification, NER, QA, sentiment analysis. Fine-tune on labeled data. Powers Google Search.</p></div>
+<div class="card"><h5>👁️ Vision Transformers (ViT)</h5><p>Split image into 16×16 patches, treat as tokens, apply Transformer. Surpassed CNN accuracy on ImageNet with enough data/scale. Now the dominant CV backbone.</p></div>
+<div class="card"><h5>🧬 Biology / Science</h5><p>AlphaFold 2 (protein structure), ESM-2 (protein language model), Geneformer (gene expression). Transformers are becoming the universal scientific modeling tool.</p></div>
+<div class="card"><h5>🎵 Multimodal</h5><p>CLIP: text+image similarity. DALL-E: text→image. GPT-4V/Claude 3: vision+text understanding. Whisper: speech→text. Transformers unify modalities.</p></div>
+</div>
+</section>
+
+<!-- =============== BERT / GPT =============== -->
+<section class="chapter anc" id="bert-gpt">
+<div class="ch-num">Chapter 09 · Pretrained Language Models</div>
+<div class="ch-div"></div>
+<h2>BERT, GPT & Transfer Learning</h2>
+
+<table>
+<tr><th></th><th>BERT (Google, Oct 2018)</th><th>GPT-1/2/3/4 (OpenAI, 2018–2023)</th></tr>
+<tr><td><strong>Architecture</strong></td><td>Encoder-only (bidirectional)</td><td>Decoder-only (causal/left-to-right)</td></tr>
+<tr><td><strong>Attention</strong></td><td>Sees entire sequence at once (both left and right context)</td><td>Sees only left context (masked)</td></tr>
+<tr><td><strong>Pretraining</strong></td><td>Masked Language Modeling (MLM) + Next Sentence Prediction (NSP)</td><td>Causal Language Modeling: predict next token</td></tr>
+<tr><td><strong>Usage</strong></td><td>Fine-tune: add task head, train on labeled data</td><td>Prompt-based: describe task, generate output (no fine-tuning needed at scale)</td></tr>
+<tr><td><strong>Strength</strong></td><td>Deep contextual understanding. Rich embeddings. NER, QA, classification.</td><td>Flexible generation. Coding, reasoning, conversation, translation.</td></tr>
+<tr><td><strong>Scale advantage</strong></td><td>Limited by need for labeled fine-tuning data per task</td><td>In-context learning emerges at scale — task described in prompt → no labels needed</td></tr>
+<tr><td><strong>2026 status</strong></td><td>BERT-style encoders still used in search, classification, embedding APIs</td><td>GPT-style decoders dominate LLM landscape (ChatGPT, Claude, Gemini)</td></tr>
+</table>
+
+<h3 id="bert-detail">BERT — In Depth</h3>
+<h4>Masked Language Modeling (MLM)</h4>
+<p>Randomly mask 15% of input tokens. Model must predict the original token from bidirectional context. "The [MASK] sat on the mat" → model predicts "cat" using both "The" (left) and "sat on the mat" (right). Because BERT can see in both directions, it learns richer representations than GPT (left-only). BERT-large: 24 layers, 16 attention heads, 340M parameters.</p>
+
+<h4>Applications of BERT-style models</h4>
+<ul>
+<li><strong>Google Search</strong>: BERT improved search understanding of natural language queries (2019)</li>
+<li><strong>Sentence embeddings</strong>: SBERT (Sentence-BERT) — fine-tuned for semantic similarity. Used in RAG systems to embed documents.</li>
+<li><strong>Named Entity Recognition (NER)</strong>: Tag words as PERSON, ORG, LOCATION, etc.</li>
+<li><strong>Question Answering</strong>: Extract answer spans from a given context passage.</li>
+<li><strong>Text classification</strong>: Sentiment analysis, topic classification, toxicity detection.</li>
+</ul>
+
+<h3 id="gpt-detail">GPT Family — The Scaling Journey</h3>
+<table>
+<tr><th>Model</th><th>Year</th><th>Params</th><th>Key Advancement</th></tr>
+<tr><td>GPT-1</td><td>2018</td><td>117M</td><td>Showed unsupervised pretraining + fine-tuning works for NLP</td></tr>
+<tr><td>GPT-2</td><td>2019</td><td>1.5B</td><td>Zero-shot task performance. Initially "too dangerous to release" (media hype)</td></tr>
+<tr><td>GPT-3</td><td>2020</td><td>175B</td><td>Few-shot learning in context. Emergent capabilities. Foundation model era.</td></tr>
+<tr><td>InstructGPT</td><td>2022</td><td>175B</td><td>RLHF: aligns model to follow instructions. Predecessor to ChatGPT.</td></tr>
+<tr><td>GPT-4</td><td>2023</td><td>~1T (MoE)</td><td>Multimodal (vision+text). Human-level on many benchmarks.</td></tr>
+</table>
+
+<h3 id="transfer-learning">Transfer Learning — The Paradigm Shift</h3>
+<p>Pre-2018 NLP: train a separate model from scratch for every task. Post-BERT/GPT: pretrain one huge model on unlabeled text → fine-tune (or just prompt) for any task. This mirrors how humans learn — general language understanding, then task-specific application.</p>
+
+<p><strong>Why does pretraining work?</strong> Predicting the next word in billions of sentences requires understanding grammar, facts about the world, reasoning, style, humor — virtually everything humans communicate through language. The model is forced to build compressed world knowledge to predict text well.</p>
+
+<h3>In-Context Learning — Why Scale Changes Everything</h3>
+<p>With GPT-3, you can describe a task with a few examples in the prompt and the model performs it — without any weight updates. This "in-context learning" (ICL) is an emergent property of scale. GPT-2 can't do it. GPT-3 can. Why? Current hypothesis: during pretraining, the model implicitly learns a meta-learning procedure — it recognizes task patterns from context and adapts its "reasoning" accordingly.</p>
+</section>
+
+<!-- =============== GENERATIVE MODELS =============== -->
+<section class="chapter anc" id="autoencoders">
+<div class="ch-num">Chapter 10 · Generative Models</div>
+<div class="ch-div"></div>
+<h2>Generative Models: VAEs, GANs, Diffusion</h2>
+
+<p>Generative models learn the distribution of training data well enough to sample new, realistic examples. Three major families, each with different mathematics and tradeoffs.</p>
+
+<h3>Autoencoders — The Foundation</h3>
+<p>Encoder compresses x → z (latent code, bottleneck). Decoder reconstructs z → x̂. Loss = reconstruction error: L = ‖x - x̂‖². Used for compression, denoising, anomaly detection. Problem: the latent space is unstructured — you can't sample from arbitrary z and get realistic outputs.</p>
+
+<h3 id="vae">Variational Autoencoders (VAEs) — Kingma & Welling, 2013</h3>
+<p>Key change: instead of encoding to a single point z, encode to a <strong>probability distribution</strong> q(z|x) = N(μ, σ²). Sample z from this distribution. Decode z → x̂. This forces the latent space to be smooth and continuous — you can sample any z near the training distribution and get a realistic output.</p>
+
+<div class="diagram">
+  <div class="diagram-title">VAE Architecture: Encoder → Latent Distribution → Sample → Decoder</div>
+  <svg viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:520px;">
+    <defs><style>.vb{fill:var(--surface2);stroke:var(--border);stroke-width:1;rx:4;}.vl{font-family:JetBrains Mono,monospace;font-size:9px;text-anchor:middle;fill:#b8b5ae;}</style></defs>
+    <rect x="10" y="30" width="70" height="60" rx="4" class="vb" style="fill:rgba(91,155,213,.1);stroke:var(--accent2);"/><text x="45" y="58" class="vl" fill="var(--accent2)">Input</text><text x="45" y="73" class="vl" fill="var(--accent2)">Image x</text>
+    <line x1="80" y1="60" x2="120" y2="60" stroke="var(--accent2)" stroke-width="1.5"/>
+    <rect x="120" y="30" width="80" height="60" rx="4" class="vb" style="fill:rgba(232,145,74,.08);stroke:rgba(232,145,74,.3);"/><text x="160" y="55" class="vl" fill="var(--accent)">Encoder</text><text x="160" y="70" class="vl" fill="var(--accent)">q(z|x)</text><text x="160" y="83" class="vl" style="font-size:8px;" fill="#5a5856">predicts μ, σ</text>
+    <line x1="200" y1="60" x2="240" y2="60" stroke="var(--accent)" stroke-width="1.5"/>
+    <rect x="240" y="20" width="80" height="80" rx="4" class="vb" style="fill:rgba(196,126,184,.1);stroke:var(--accent4);"/>
+    <text x="280" y="45" class="vl" fill="var(--accent4)">Latent</text>
+    <text x="280" y="60" class="vl" fill="var(--accent4)">z ~ N(μ,σ²)</text>
+    <text x="280" y="75" class="vl" style="font-size:8px;" fill="#5a5856">z = μ + σ·ε</text>
+    <text x="280" y="90" class="vl" style="font-size:8px;" fill="var(--accent4)">ε~N(0,1)</text>
+    <line x1="320" y1="60" x2="360" y2="60" stroke="var(--accent4)" stroke-width="1.5"/>
+    <rect x="360" y="30" width="80" height="60" rx="4" class="vb" style="fill:rgba(126,200,138,.1);stroke:var(--accent3);"/><text x="400" y="55" class="vl" fill="var(--accent3)">Decoder</text><text x="400" y="70" class="vl" fill="var(--accent3)">p(x|z)</text>
+    <line x1="440" y1="60" x2="480" y2="60" stroke="var(--accent3)" stroke-width="1.5"/>
+    <rect x="480" y="30" width="30" height="60" rx="4" class="vb" style="fill:rgba(126,200,138,.1);stroke:var(--accent3);"/><text x="495" y="58" class="vl" fill="var(--accent3)">x̂</text>
+    <!-- Loss annotation -->
+    <text x="260" y="112" class="vl" style="font-size:8px;" fill="#5a5856">Loss = Recon(x, x̂) + β·KL(q(z|x) || N(0,I))   ← β controls regularization strength</text>
+  </svg>
+</div>
+
+<div class="math">
+ELBO (Evidence Lower BOund) = Evidence we want to maximize:
+log p(x) ≥ E_q[log p(x|z)] - KL(q(z|x) || p(z))
+           ↑ reconstruction        ↑ regularization
+           term (want high)        term (want low — keep q close to N(0,I))
+<span class="lbl">Maximize ELBO = good reconstruction + smooth/structured latent space</span>
+</div>
+
+<h4 id="reparam">The Reparameterization Trick</h4>
+<p>Problem: we need to backprop through a sampling operation z ~ N(μ, σ²). But sampling is stochastic — no gradient flows through it.</p>
+
+<div class="math">
+Original (NOT differentiable):  z ~ N(μ, σ²)            ← can't backprop
+Reparameterized:                z = μ + σ ⊙ ε,  ε ~ N(0,I)  ← CAN backprop through μ and σ!
+
+Gradient:  ∂z/∂μ = 1,   ∂z/∂σ = ε
+The randomness (ε) is treated as a fixed external input, not a parameter.
+<span class="lbl">This allows gradient-based optimization of μ and σ through the sampling step.</span>
+</div>
+
+<pre><code><span class="kw">class</span> <span class="fn">VAE</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">encode</span>(self, x):
+        h = self.encoder(x)
+        mu = self.fc_mu(h)         <span class="cm"># mean of latent distribution</span>
+        log_var = self.fc_var(h)   <span class="cm"># log variance (for stability)</span>
+        <span class="kw">return</span> mu, log_var
+
+    <span class="kw">def</span> <span class="fn">reparameterize</span>(self, mu, log_var):
+        std = torch.exp(<span class="num">0.5</span> * log_var)   <span class="cm"># σ = exp(½ log σ²)</span>
+        eps = torch.randn_like(std)          <span class="cm"># ε ~ N(0,1)</span>
+        <span class="kw">return</span> mu + eps * std              <span class="cm"># z = μ + σε — differentiable!</span>
+
+    <span class="kw">def</span> <span class="fn">vae_loss</span>(self, x, x_hat, mu, log_var):
+        recon = F.mse_loss(x_hat, x, reduction=<span class="str">'sum'</span>)
+        kld = -<span class="num">0.5</span> * torch.sum(<span class="num">1</span> + log_var - mu.pow(<span class="num">2</span>) - log_var.exp())
+        <span class="kw">return</span> recon + kld</code></pre>
+
+<h3 id="gans">Generative Adversarial Networks (Goodfellow et al., 2014)</h3>
+<p>Two networks competing in a game:</p>
+<ul>
+<li><strong>Generator G(z)</strong>: Takes random noise z ~ N(0,I) → produces fake data. Wants to fool D.</li>
+<li><strong>Discriminator D(x)</strong>: Takes data → outputs P(real). Wants to distinguish real from fake.</li>
+</ul>
+
+<div class="math">
+Minimax objective:
+min_G max_D V(D,G) = E_{x~p_data}[log D(x)] + E_{z~p_z}[log(1 - D(G(z)))]
+                     ↑ D correctly identifies real     ↑ D correctly identifies fake (G wants this term large!)
+
+D update: maximize V by improving real/fake discrimination
+G update: minimize V = maximize log D(G(z)) (trick: instead of minimizing log(1-D(G(z))))
+<span class="lbl">At Nash equilibrium: G produces perfect samples, D outputs 0.5 everywhere (50/50 guess)</span>
+</div>
+
+<h4>GAN Variants and Applications</h4>
+<table>
+<tr><th>Variant</th><th>Key Idea</th><th>Application</th></tr>
+<tr><td><strong>DCGAN</strong></td><td>Convolutional G and D, batch norm</td><td>Image generation baseline</td></tr>
+<tr><td><strong>cGAN</strong></td><td>Condition on class label — generate specific classes</td><td>Class-conditional image generation</td></tr>
+<tr><td><strong>Pix2Pix</strong></td><td>Image-to-image translation (paired data)</td><td>Sketch→photo, aerial→map</td></tr>
+<tr><td><strong>CycleGAN</strong></td><td>Unpaired image translation via cycle consistency</td><td>Photo→painting, horse→zebra</td></tr>
+<tr><td><strong>StyleGAN</strong></td><td>Style-based generator for face synthesis</td><td>Photorealistic face generation (thispersondoesnotexist.com)</td></tr>
+<tr><td><strong>WGAN</strong></td><td>Wasserstein distance loss, gradient penalty</td><td>Stable training, no mode collapse</td></tr>
+</table>
+
+<h3 id="diffusion">Diffusion Models (DDPM) — Ho et al., 2020</h3>
+<p>The current state-of-the-art for image generation. Elegant idea: train a neural network to reverse a gradual noising process.</p>
+
+<div class="diagram">
+  <div class="diagram-title">Diffusion Forward (Add Noise) and Reverse (Denoise) Process</div>
+  <svg viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:520px;">
+    <defs><style>.img{fill:var(--surface2);stroke:var(--border);stroke-width:1;rx:4;}.iml{font-family:JetBrains Mono,monospace;font-size:8px;text-anchor:middle;fill:#7a7875;}</style></defs>
+    <!-- Forward process: left to right, adding noise -->
+    <!-- Image boxes with progressively less detail -->
+    <rect x="10" y="20" width="50" height="50" rx="3" class="img" style="fill:rgba(91,155,213,.15);stroke:var(--accent2);"/>
+    <text x="35" y="50" class="iml" fill="var(--accent2)">🖼 x₀</text>
+    <text x="35" y="78" class="iml">clean</text>
+    <line x1="60" y1="45" x2="90" y2="45" stroke="#28283a" stroke-width="1.5"/>
+    <rect x="90" y="20" width="50" height="50" rx="3" class="img" style="fill:rgba(91,155,213,.1);"/>
+    <text x="115" y="50" class="iml">x₂₅₀</text>
+    <text x="115" y="78" class="iml">+noise</text>
+    <line x1="140" y1="45" x2="170" y2="45" stroke="#28283a" stroke-width="1.5"/>
+    <rect x="170" y="20" width="50" height="50" rx="3" class="img" style="fill:rgba(91,155,213,.06);"/>
+    <text x="195" y="50" class="iml">x₅₀₀</text>
+    <text x="195" y="78" class="iml">noisy</text>
+    <line x1="220" y1="45" x2="250" y2="45" stroke="#28283a" stroke-width="1.5"/>
+    <rect x="250" y="20" width="50" height="50" rx="3" class="img"/>
+    <text x="275" y="50" class="iml">x₁₀₀₀</text>
+    <text x="275" y="78" class="iml">~ N(0,I)</text>
+    <!-- Labels for processes -->
+    <text x="155" y="12" class="iml" fill="var(--accent2)">← FORWARD q(xₜ|xₜ₋₁): add Gaussian noise →</text>
+    <!-- Reverse process: right to left -->
+    <line x1="300" y1="45" x2="330" y2="45" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="none"/>
+    <rect x="330" y="20" width="50" height="50" rx="3" class="img"/>
+    <text x="355" y="50" class="iml">xₜ₋₁</text>
+    <text x="355" y="78" class="iml">less noise</text>
+    <line x1="380" y1="45" x2="410" y2="45" stroke="var(--accent)" stroke-width="1.5"/>
+    <rect x="410" y="20" width="50" height="50" rx="3" class="img" style="fill:rgba(232,145,74,.1);stroke:var(--accent);"/>
+    <text x="435" y="45" class="iml" fill="var(--accent)">x₀ (new)</text>
+    <text x="435" y="58" class="iml" fill="var(--accent)">generated</text>
+    <text x="435" y="78" class="iml" fill="var(--accent)">image!</text>
+    <text x="370" y="12" class="iml" fill="var(--accent)">← REVERSE pθ(xₜ₋₁|xₜ): U-Net denoises →</text>
+  </svg>
+</div>
+
+<h4 id="ddpm-math">DDPM — Mathematical Derivation</h4>
+
+<div class="math-step"><span class="step-label">Forward Process q(xₜ|x₀) — closed form for any t</span>
+q(xₜ|xₜ₋₁) = N(xₜ; √(1-βₜ)xₜ₋₁, βₜI)    (add small noise at each step)
+
+Define: ᾱₜ = ∏ₛ₌₁ᵗ (1-βₛ)   (cumulative noise schedule)
+
+Then: xₜ = √ᾱₜ · x₀ + √(1-ᾱₜ) · ε,   ε~N(0,I)    (can jump to any step t directly!)</div>
+
+<div class="math-step"><span class="step-label">Reverse Process — what we train</span>
+We train a U-Net ε_θ(xₜ, t) to predict the noise ε that was added to x₀ to get xₜ.
+
+Training objective (simplified): L = E_{t,x₀,ε} [‖ε - ε_θ(√ᾱₜx₀ + √(1-ᾱₜ)ε, t)‖²]
+Just MSE between true noise ε and predicted noise ε_θ — very simple!</div>
+
+<div class="math-step"><span class="step-label">Inference (DDPM sampling)</span>
+Start: xT ~ N(0,I)   (pure noise)
+For t = T, T-1, ..., 1:
+    predicted_noise = ε_θ(xₜ, t)
+    x₀_pred = (xₜ - √(1-ᾱₜ)·predicted_noise) / √ᾱₜ
+    xₜ₋₁ = √ᾱₜ₋₁ · x₀_pred + √(1-ᾱₜ₋₁) · predicted_noise + σₜ · z  (z~N(0,I))
+Result: a new image generated from random noise — T=1000 denoising steps</div>
+
+<div class="box">
+<div class="box-label">🔗 Latent Diffusion (Stable Diffusion)</div>
+<p>DDPM in pixel space is expensive (1000 steps × full image resolution). Stable Diffusion's insight: use a VAE to compress images to a latent space (e.g., 512×512×3 → 64×64×4), run the diffusion process in latent space, then decode with the VAE decoder. This is 8× cheaper while producing comparable quality. The VAE encoder/decoder are trained separately. This architecture (Latent Diffusion Models, Rombach et al., 2022) is what powers Stable Diffusion, DALL-E 3, Midjourney, and Sora.</p>
+</div>
+
+<h3 id="gen-usecases">Generative Model Use Cases</h3>
+<div class="grid3">
+<div class="card"><h5>🎨 Image Generation</h5><p>DALL-E, Midjourney, Stable Diffusion. Text→image. Product mockups, advertising, game asset creation.</p></div>
+<div class="card"><h5>🎬 Video Generation</h5><p>Sora (OpenAI), RunwayML Gen-2/3. Video diffusion. Film pre-visualization, content creation.</p></div>
+<div class="card"><h5>🔬 Drug Discovery</h5><p>Generate novel molecular structures (AlphaFold, RFDiffusion for protein design). Roche, Pfizer using generative models in drug pipelines.</p></div>
+<div class="card"><h5>📊 Synthetic Data</h5><p>Generate realistic training data to augment small datasets. Privacy-preserving synthetic patient records.</p></div>
+<div class="card"><h5>🎵 Audio/Music</h5><p>MusicGen, AudioCraft (Meta), Suno. Text→music. Voice cloning, podcast production.</p></div>
+<div class="card"><h5>💻 Code Generation</h5><p>GitHub Copilot, Cursor, Claude. Transformer-based. Dramatically accelerates software development.</p></div>
+</div>
+</section>
+
+<!-- =============== MODERN LANDSCAPE =============== -->
+<section class="chapter anc" id="scaling-laws">
+<div class="ch-num">Chapter 11 · Modern Landscape (2026)</div>
+<div class="ch-div"></div>
+<h2>The Modern Landscape</h2>
+
+<h3>Scaling Laws — Why Size Matters</h3>
+<p>Kaplan et al. (2020, OpenAI): loss follows a power law with N (parameters), D (data), and C (compute). Specifically: L(N,D) ≈ (Nc/N)^αN + (Dc/D)^αD + L∞. This means you can <em>predict</em> performance at scale before training. The Chinchilla paper (Hoffmann et al., 2022) found the optimal compute allocation: for a given compute budget, train a model with N parameters on 20N tokens (not the previous rule of "train on everything available").</p>
+
+<div class="box">
+<div class="box-label">📌 Scaling Insight</div>
+<p>Llama 3 (Meta, 2024) trains a 8B model on 15 trillion tokens — far more than Chinchilla-optimal for training efficiency, but optimal for inference (a smaller, very well-trained model is cheaper to run at scale). This "inference-optimal" training is increasingly important as serving costs dominate.</p>
+</div>
+
+<h3 id="rlhf">RLHF — Reinforcement Learning from Human Feedback</h3>
+<p>The technique that turned GPT-3 into ChatGPT. A raw language model trained on next-token prediction can generate plausible but unhelpful, harmful, or dishonest text. RLHF aligns it to human values.</p>
+
+<ol>
+<li><strong>SFT (Supervised Fine-Tuning)</strong>: Collect (prompt, ideal response) pairs from human labelers. Fine-tune the base LLM on these pairs. Gets the model to follow instructions.</li>
+<li><strong>Reward Model Training</strong>: Show labelers K responses to the same prompt, have them rank them. Train a reward model Rθ(prompt, response) → scalar score to predict human preference. This is a classification problem: predict which response humans prefer.</li>
+<li><strong>PPO Training</strong>: Use the reward model as a reward signal. Run RL (PPO algorithm) to update the SFT model to maximize expected reward, with a KL penalty to prevent it from drifting too far from the SFT model (prevents "reward hacking" — gaming the reward model).</li>
+</ol>
+
+<div class="math">
+PPO Objective:
+L(θ) = E_t[min(rₜ(θ)·Aₜ, clip(rₜ(θ), 1-ε, 1+ε)·Aₜ)] - β·KL[πθ || π_ref]
+
+rₜ(θ) = πθ(aₜ|sₜ) / π_old(aₜ|sₜ)   (probability ratio)
+Aₜ = Rφ(response) - V(prompt)          (advantage = reward minus baseline)
+KL term: keeps model close to SFT model (prevents reward hacking)
+<span class="lbl">Modern approaches also use DPO (Direct Preference Optimization) — simpler, no explicit reward model needed.</span>
+</div>
+
+<h3 id="peft">PEFT: Parameter-Efficient Fine-Tuning</h3>
+<p>Full fine-tuning of a 70B model needs ~280GB GPU memory. PEFT fine-tunes a tiny fraction of parameters:</p>
+
+<h4>LoRA (Low-Rank Adaptation, Hu et al. 2021)</h4>
+<div class="math">
+Full fine-tune: W' = W + ΔW          (ΔW ∈ ℝ^{d×k}, very large)
+LoRA:           W' = W + BA           (B ∈ ℝ^{d×r}, A ∈ ℝ^{r×k}, rank r << d or k)
+
+Typical: d=k=4096, r=16  →  ΔW has 4096×4096 = 16.7M params
+                            BA has (4096×16)+(16×4096) = 131K params = 0.8% of original!
+<span class="lbl">Only A and B are trained. W is frozen. At inference: merge W+BA for zero overhead.</span>
+</div>
+
+<pre><code><span class="cm"># Using HuggingFace PEFT library</span>
+<span class="kw">from</span> peft <span class="kw">import</span> get_peft_model, LoraConfig
+
+config = LoraConfig(
+    r=<span class="num">16</span>,              <span class="cm"># rank</span>
+    lora_alpha=<span class="num">32</span>,     <span class="cm"># scaling factor</span>
+    target_modules=[<span class="str">"q_proj"</span>, <span class="str">"v_proj"</span>],  <span class="cm"># which layers to LoRA-ify</span>
+    lora_dropout=<span class="num">0.05</span>,
+    task_type=<span class="str">"CAUSAL_LM"</span>
+)
+model = get_peft_model(base_model, config)
+model.print_trainable_parameters()
+<span class="cm"># "trainable params: 4,194,304 || all params: 6,742,609,920 || trainable%: 0.0622"</span></code></pre>
+
+<h3 id="arch-innovations">Key Architectural Innovations (2023–2026)</h3>
+<table>
+<tr><th>Innovation</th><th>Paper / Model</th><th>What it does</th><th>Why it matters</th></tr>
+<tr><td><strong>Flash Attention</strong></td><td>Dao et al. 2022/2023</td><td>Memory-efficient attention via IO-aware tiling</td><td>2–4× faster, 10× less memory. Now universal.</td></tr>
+<tr><td><strong>RoPE</strong></td><td>GPT-NeoX, Llama</td><td>Rotary position embeddings</td><td>Better extrapolation to longer context than training length</td></tr>
+<tr><td><strong>GQA/MQA</strong></td><td>Llama 2, Mistral</td><td>Group Query Attention: share K,V across query heads</td><td>Reduce KV cache 8× for faster generation</td></tr>
+<tr><td><strong>SwiGLU</strong></td><td>Llama, PaLM</td><td>Gated linear units in FFN: FFN(x) = (xW₁⊙sigmoid(xW₂))W₃</td><td>Better than GELU in FFN layers empirically</td></tr>
+<tr><td><strong>RMSNorm</strong></td><td>T5, Llama</td><td>x / RMS(x) — no mean subtraction</td><td>Slightly faster, similar stability to LayerNorm</td></tr>
+<tr><td><strong>MoE (Mixture of Experts)</strong></td><td>Mixtral, GPT-4</td><td>N expert FFN layers, route each token to top-k</td><td>Scale model size without proportional compute cost</td></tr>
+<tr><td><strong>Mamba / SSM</strong></td><td>Gu & Dao 2023</td><td>State Space Models: linear-time recurrence, selective state updates</td><td>O(n) vs O(n²) for attention. Better for very long sequences.</td></tr>
+<tr><td><strong>Speculative Decoding</strong></td><td>Chen et al. 2023</td><td>Small draft model proposes tokens, large model verifies in parallel</td><td>3–5× faster generation with same output quality</td></tr>
+</table>
+
+<h3 id="state-2026">State of the Field — 2026</h3>
+
+<div class="grid2">
+<div class="card"><h5>🏆 Frontier Models</h5><p>Claude 4 (Opus/Sonnet), GPT-4o, Gemini 2.0 Ultra, Grok 3, Llama 4. All multimodal. 100K–1M context. Human-level on most professional benchmarks (bar, medical, coding exams).</p></div>
+<div class="card"><h5>🤔 Reasoning Models</h5><p>OpenAI o1/o3, DeepSeek-R1, Claude 3.7+. Generate explicit chain-of-thought before answering. Major gains on math olympiad problems, competitive coding, scientific reasoning.</p></div>
+<div class="card"><h5>🤖 Agentic Systems</h5><p>Models using tools (web search, code execution, computer use), taking multi-step actions, running in loops. The reliability gap is closing. Claude Computer Use, OpenAI Operator.</p></div>
+<div class="card"><h5>⚡ Efficient & Open</h5><p>Llama 3.1 405B (open weights), Mistral, Phi-3. Open-source closing the gap. Quantization (GGUF, GPTQ) enables running 70B models locally. On-device inference becoming real.</p></div>
+<div class="card"><h5>🔬 Key Open Problems</h5><p>Reliable long-horizon planning, eliminating hallucinations, true continuous learning, efficient architectures, interpretability, causal reasoning beyond pattern matching.</p></div>
+<div class="card"><h5>💼 Industry Reality</h5><p>MLE roles increasingly require: RAG/vector DBs, LLM fine-tuning (LoRA/PEFT), model evaluation frameworks, prompt engineering, inference optimization. Pure DL research roles remain competitive.</p></div>
+</div>
+</section>
+
+<!-- =============== GLOSSARY =============== -->
+<section class="chapter anc" id="glossary">
+<div class="ch-num">Chapter 12 · Reference</div>
+<div class="ch-div"></div>
+<h2>Full Glossary</h2>
+
+<table>
+<tr><th>Term</th><th>Definition & Context</th></tr>
+<tr><td><strong>Ablation Study</strong></td><td>Remove one component at a time and measure impact on performance. Standard way to prove each component is necessary. Expected in Applied Scientist research.</td></tr>
+<tr><td><strong>Attention Mask</strong></td><td>Binary mask applied before softmax in attention to prevent certain positions from being attended to. Two types: padding mask (ignore padding tokens) and causal mask (prevent future peeking in decoder).</td></tr>
+<tr><td><strong>Autoregressive</strong></td><td>Generate one token at a time, conditioning each on all previous tokens. How GPT-style models generate text. Inherently sequential at inference time.</td></tr>
+<tr><td><strong>Batch Size</strong></td><td>Number of training examples per gradient update. Larger = more stable gradients, more memory. Typical: 8–2048 for language models.</td></tr>
+<tr><td><strong>Beam Search</strong></td><td>At each generation step, keep top-k candidate sequences instead of just the top-1. Explores more of the output space. Used in translation; often replaced by sampling for chat models.</td></tr>
+<tr><td><strong>BLEU / ROUGE</strong></td><td>BLEU: n-gram precision, used for translation. ROUGE: recall-oriented overlap, used for summarization. Both imperfect — correlation with human judgment varies.</td></tr>
+<tr><td><strong>Checkpoint</strong></td><td>Saved snapshot of model weights during training. Allows resuming training, evaluating at different stages, and selecting the best model.</td></tr>
+<tr><td><strong>Contrastive Learning</strong></td><td>Pull similar pairs together, push dissimilar pairs apart in embedding space. Used in CLIP (text-image), SimCLR (images). Enables self-supervised representation learning.</td></tr>
+<tr><td><strong>Context Window</strong></td><td>Max tokens a model can process at once. GPT-4: 128K. Claude 3: 200K. Models can't recall information beyond this window without external memory (RAG).</td></tr>
+<tr><td><strong>CoT (Chain-of-Thought)</strong></td><td>Prompting strategy: ask model to show reasoning steps before final answer. "Let's think step by step." Significantly improves multi-step math and reasoning.</td></tr>
+<tr><td><strong>Cross-Entropy Loss</strong></td><td>-Σ yᵢ log(ŷᵢ). Standard for classification. Equivalent to negative log-likelihood. Penalizes confident wrong predictions very heavily.</td></tr>
+<tr><td><strong>Embedding</strong></td><td>Dense vector representation of a discrete entity (token, word, item). Captures semantic similarity — similar concepts have similar vectors. Learned during training.</td></tr>
+<tr><td><strong>Epoch</strong></td><td>One complete pass through the training dataset. Models typically train for 3–50 epochs depending on dataset size. LLMs: often just 1 epoch on massive datasets.</td></tr>
+<tr><td><strong>Fine-tuning</strong></td><td>Continue training a pretrained model on task-specific data. Updates all weights (full fine-tuning) or a subset (PEFT/LoRA). Much cheaper than training from scratch.</td></tr>
+<tr><td><strong>Foundation Model</strong></td><td>Large model pretrained on broad data, intended for adaptation to many tasks. GPT-4, Claude, Gemini, Llama. Term coined by Stanford HAI, 2021.</td></tr>
+<tr><td><strong>Gradient Clipping</strong></td><td>If gradient norm exceeds threshold τ, scale it: g = g × τ/‖g‖. Prevents exploding gradients. Nearly universal in Transformer training. Typical τ=1.0.</td></tr>
+<tr><td><strong>Hallucination</strong></td><td>LLM generates confident-sounding but factually incorrect information. Major reliability challenge. Mitigations: RLHF, grounding with RAG, calibration training.</td></tr>
+<tr><td><strong>Hyperparameter</strong></td><td>A parameter you set before training (learning rate, batch size, number of layers, dropout rate). As opposed to parameters (weights), which are learned. Tuned via grid search, random search, or Bayesian optimization.</td></tr>
+<tr><td><strong>In-Context Learning</strong></td><td>Model adapts to a task from examples in the prompt — no weight updates. Emergent in models ≥6B parameters. Enables zero-shot and few-shot task transfer.</td></tr>
+<tr><td><strong>Inference</strong></td><td>Using a trained model to make predictions on new data. At inference: dropout disabled, batch norm uses running stats, no gradient computation (torch.no_grad()).</td></tr>
+<tr><td><strong>KV Cache</strong></td><td>During autoregressive generation, cache computed key and value matrices for previous tokens. Avoids recomputing them on every new token. Essential for fast generation.</td></tr>
+<tr><td><strong>Latent Space</strong></td><td>The compressed representation space inside a model (e.g., encoder output, VAE bottleneck). Structured latent spaces allow interpolation and generation.</td></tr>
+<tr><td><strong>Learning Rate</strong></td><td>Step size for gradient descent. Too high → diverge (loss explodes). Too low → very slow. Typical: 1e-4 to 3e-4 for transformers with AdamW + warmup.</td></tr>
+<tr><td><strong>Logits</strong></td><td>Raw output scores before softmax. "The cat sat" → logits over vocabulary: [3.2, -0.5, 1.1, ...]. Softmax converts to probabilities.</td></tr>
+<tr><td><strong>Perplexity</strong></td><td>2^(cross-entropy loss per token). Standard LM evaluation. Lower = model assigns higher prob to real text = better. GPT-2: ~35 on WebText. GPT-4: ~5 on typical text.</td></tr>
+<tr><td><strong>Prompt Engineering</strong></td><td>Designing inputs to elicit desired behavior from LLMs. Techniques: system prompts, few-shot examples, chain-of-thought, role-play, XML tags for structure.</td></tr>
+<tr><td><strong>Quantization</strong></td><td>Reduce weight precision: float32 (32-bit) → float16 → int8 → int4. GPTQ, AWQ, GGUF. Dramatic memory reduction with modest accuracy loss. Enables local inference.</td></tr>
+<tr><td><strong>RAG (Retrieval-Augmented Generation)</strong></td><td>Retrieve relevant documents at inference time, inject into context. Addresses knowledge cutoff and hallucination. Uses vector database + embedding model for retrieval.</td></tr>
+<tr><td><strong>Temperature</strong></td><td>Divide logits by T before softmax. T=1: default. T→0: greedy (always pick highest). T>1: more random. Controls output diversity vs coherence.</td></tr>
+<tr><td><strong>Tokenization</strong></td><td>Convert raw text to integer tokens. BPE (Byte-Pair Encoding), SentencePiece, tiktoken. Vocabulary size: 32K–128K. Affects context length efficiency and multilingual capability.</td></tr>
+<tr><td><strong>Top-p / Nucleus Sampling</strong></td><td>At each step, sample from the smallest set of tokens whose cumulative probability ≥ p. More principled than top-k. Typical p=0.9 or 0.95.</td></tr>
+<tr><td><strong>Transformer Block</strong></td><td>One "layer" of a Transformer: Multi-head attention → Add&Norm → FFN → Add&Norm. Stacked N times (e.g., GPT-3 has 96 blocks).</td></tr>
+<tr><td><strong>Validation Loss</strong></td><td>Loss on a held-out validation set, not seen during training. Use to detect overfitting (val loss increases while train loss decreases) and select best checkpoint.</td></tr>
+<tr><td><strong>Weight Decay</strong></td><td>Penalize large weights: effectively multiplies w by (1-λη) each step (in AdamW). Prevents overfitting. Typical λ=0.01–0.1 for LLMs.</td></tr>
+<tr><td><strong>Zero-shot / Few-shot</strong></td><td>Zero-shot: no examples, just task description. Few-shot: 2–10 examples in prompt. One-shot: exactly 1 example. All are in-context learning variants.</td></tr>
+</table>
+</section>
+
+<!-- =============== INTERVIEW PREP =============== -->
+<section class="chapter anc" id="interview-prep">
+<div class="ch-num">Chapter 13 · Career Prep</div>
+<div class="ch-div"></div>
+<h2>MLE / Applied Scientist / FDE Interview Prep</h2>
+
+<h3>What Each Role Tests</h3>
+<table>
+<tr><th>Round Type</th><th>MLE</th><th>Applied Scientist</th><th>FDE (Forward Deploy)</th></tr>
+<tr><td><strong>Coding (DSA)</strong></td><td>Heavy — LeetCode Medium/Hard. Arrays, graphs, DP.</td><td>Moderate — arrays, strings, basic DP</td><td>Lighter — practical scripting, LLM API usage</td></tr>
+<tr><td><strong>ML Theory</strong></td><td>Strong emphasis: backprop, activations, loss fns</td><td>Research depth: derive equations, explain tradeoffs</td><td>Applied emphasis: prompting, RAG, fine-tuning</td></tr>
+<tr><td><strong>ML System Design</strong></td><td>Design a recommendation engine, search ranking</td><td>Design an experiment, model selection</td><td>Design an LLM application, agent workflow</td></tr>
+<tr><td><strong>Coding ML</strong></td><td>Implement neural net from scratch in NumPy</td><td>Implement paper from scratch</td><td>Build LLM app using APIs</td></tr>
+<tr><td><strong>Behavioral</strong></td><td>Standard STAR format</td><td>Research impact, paper explanations</td><td>Client success stories, communication</td></tr>
+</table>
+
+<h3>Most Likely Technical Questions — And Your Answers</h3>
+
+<div class="collapsible">
+<div class="coll-header" onclick="toggleColl(this)">Q: Explain backpropagation. How do gradients flow through a network? <span class="arrow">▼</span></div>
+<div class="coll-body">
+<p><strong>Answer structure</strong>: Forward pass computes predictions and loss. Backward pass computes ∂L/∂w for every weight using the chain rule, working backward from the output. At each layer: gradient of weights = upstream gradient × this layer's input. Gradient to pass down = transposed weight matrix × upstream gradient. PyTorch's autograd builds a computation graph during forward pass and traverses it in reverse during backward(). The key insight: the chain rule allows exact gradient computation in O(n) passes through the network, not O(n²) separate passes.</p>
+</div>
+</div>
+
+<div class="collapsible">
+<div class="coll-header" onclick="toggleColl(this)">Q: What is the vanishing gradient problem and how do LSTMs solve it? <span class="arrow">▼</span></div>
+<div class="coll-body">
+<p><strong>Answer</strong>: In plain RNNs, gradients flow back through T time steps by multiplying Wₕₕ T times. If the dominant eigenvalue of Wₕₕ < 1, gradients shrink exponentially → vanish → early time steps get near-zero gradient. LSTMs solve this via the cell state: Cₜ = fₜ⊙Cₜ₋₁ + iₜ⊙C̃ₜ. This is <em>additive</em>, not multiplicative. The gradient ∂Cₜ/∂Cₜ₋₁ = fₜ (the forget gate), which can be maintained close to 1.0. So gradients can flow unchanged for hundreds of steps through the cell state "highway."</p>
+</div>
+</div>
+
+<div class="collapsible">
+<div class="coll-header" onclick="toggleColl(this)">Q: Explain attention. What is scaled dot-product attention and why the √dₖ scaling? <span class="arrow">▼</span></div>
+<div class="coll-body">
+<p><strong>Answer</strong>: Attention(Q,K,V) = softmax(QKᵀ/√dₖ)·V. Queries, keys, values are linear projections of the input. QKᵀ computes similarity scores (dot products) between queries and keys. Softmax normalizes these into weights. The weighted sum of values is the output. The √dₖ scaling: for high-dimensional vectors, dot products grow in magnitude proportional to dₖ (since each of the dₖ terms contributes independently). Without scaling, softmax saturates into one-hot distributions (near-zero gradients). Dividing by √dₖ keeps the variance of the dot products around 1, maintaining useful gradients.</p>
+</div>
+</div>
+
+<div class="collapsible">
+<div class="coll-header" onclick="toggleColl(this)">Q: Batch Norm vs Layer Norm — when do you use each and why? <span class="arrow">▼</span></div>
+<div class="coll-body">
+<p><strong>Answer</strong>: Batch Norm normalizes across the batch dimension per feature (uses statistics from the entire mini-batch). Layer Norm normalizes across the feature dimension per sample (statistics computed per-example). BN: great for CNNs and image models where batch statistics are stable. Breaks with batch size 1 and different statistics at inference. LN: great for RNNs, LSTMs, Transformers — works with any batch size including 1, same computation at train and inference. Transformers use LN because language generation is often batch_size=1 and the sequence lengths vary, making batch statistics unreliable.</p>
+</div>
+</div>
+
+<div class="collapsible">
+<div class="coll-header" onclick="toggleColl(this)">Q: Why is AdamW better than Adam + L2 regularization? <span class="arrow">▼</span></div>
+<div class="coll-body">
+<p><strong>Answer</strong>: In Adam+L2, weight decay is added to the gradient: g = ∇L + λw, and then the full g is scaled by the adaptive learning rate 1/√v̂. This means frequently updated parameters (with large v̂) effectively get less weight decay than infrequently updated ones — the regularization effect is corrupted by the adaptive scaling. AdamW decouples: w = (1-ηλ)w - η·m̂/(√v̂+ε). Weight decay is applied directly, independent of the gradient statistics. This gives more consistent and effective regularization, especially for Transformers where different parameter groups have very different gradient magnitudes.</p>
+</div>
+</div>
+
+<h3>Must-Implement List (Before August Interviews)</h3>
+<table>
+<tr><th>Implementation</th><th>Language</th><th>Why It Matters</th></tr>
+<tr><td>Backprop through 2-layer MLP (no PyTorch autograd)</td><td>NumPy</td><td>Proves you understand the fundamentals. Asked directly at many companies.</td></tr>
+<tr><td>Scaled dot-product attention from scratch</td><td>PyTorch</td><td>Core of every Transformer interview. Know the √dₖ reason.</td></tr>
+<tr><td>Multi-head attention</td><td>PyTorch</td><td>Follow-up to self-attention. Understand concat + projection.</td></tr>
+<tr><td>Full Transformer encoder block</td><td>PyTorch</td><td>Applied Scientist interviews often ask you to code this on whiteboard.</td></tr>
+<tr><td>LSTM from scratch (forward pass at minimum)</td><td>PyTorch</td><td>Gate equations, cell state update — very common interview topic.</td></tr>
+<tr><td>CNN: forward + output shape calculation</td><td>PyTorch</td><td>Conv2d, stride, padding — output size formula is a staple.</td></tr>
+<tr><td>Fine-tune an LLM with LoRA (HuggingFace)</td><td>Python</td><td>FDE and MLE roles at AI-first companies expect this hands-on.</td></tr>
+<tr><td>Build a RAG pipeline (end-to-end)</td><td>Python</td><td>FDE essential. Embedding, vector DB, retrieval, generation.</td></tr>
+<tr><td>Simple LM training loop (GPT on tiny dataset)</td><td>PyTorch</td><td>Karpathy's nanoGPT — follow it exactly. Understand every line.</td></tr>
+</table>
+
+<h3>ML System Design Framework</h3>
+<p>For any ML system design question, follow this structure:</p>
+<ol>
+<li><strong>Problem formulation</strong>: What is the exact ML task? (classification, ranking, generation). What does success look like?</li>
+<li><strong>Data</strong>: Where does it come from? Labels? Volume? Quality issues? Real-time vs batch?</li>
+<li><strong>Features / Modeling</strong>: Which architecture? Why? Alternatives considered?</li>
+<li><strong>Training</strong>: Loss function, optimizer, regularization, evaluation metrics (offline). How to avoid data leakage?</li>
+<li><strong>Deployment</strong>: Latency requirements? Batch vs real-time serving? Model size vs accuracy tradeoff?</li>
+<li><strong>Monitoring</strong>: How do you detect distribution shift, model degradation? Online metrics vs offline metrics gap?</li>
+<li><strong>Iteration</strong>: How do you improve the system over time? A/B testing? Feedback loops?</li>
+</ol>
+
+<h3 id="resources">Curated Resources — For Your August Target</h3>
+<table>
+<tr><th>Resource</th><th>Best For</th><th>Priority</th></tr>
+<tr><td><strong>Andrej Karpathy: Neural Networks Zero to Hero</strong></td><td>Building backprop, language model, GPT from scratch. Best DL teaching available.</td><td>🔴 Must</td></tr>
+<tr><td><strong>d2l.ai</strong></td><td>Comprehensive DL textbook — CNNs, RNNs, Transformers, with code</td><td>🔴 Must</td></tr>
+<tr><td><strong>Stanford CS224N (NLP)</strong></td><td>Transformers, BERT/GPT, NLP systems. Aligns with your upcoming NLP course.</td><td>🔴 Must</td></tr>
+<tr><td><strong>Lilian Weng's Blog (lilianweng.github.io)</strong></td><td>Attention, diffusion, RL, RLHF, LLM — excellent deep dives</td><td>🟠 High</td></tr>
+<tr><td><strong>fast.ai Part 1 + 2</strong></td><td>Practical DL, top-down, fast results. Great for projects.</td><td>🟠 High</td></tr>
+<tr><td><strong>HuggingFace Course</strong></td><td>Transformers library, PEFT, fine-tuning, deployment</td><td>🟠 High</td></tr>
+<tr><td><strong>Sebastian Raschka: LLMs from Scratch</strong></td><td>Book + code. Build GPT-style LLM step by step.</td><td>🟠 High</td></tr>
+<tr><td><strong>CS231n (Stanford, CNNs)</strong></td><td>CNNs, backprop, visualization. Foundational.</td><td>🟡 Medium</td></tr>
+<tr><td><strong>Papers With Code</strong></td><td>Find implementations of any paper. Essential for portfolio projects.</td><td>🟡 Medium</td></tr>
+<tr><td><strong>colah.github.io</strong></td><td>LSTM, CNN feature visualization, embeddings — beautiful visual intuition</td><td>🟡 Medium</td></tr>
+</table>
+</section>
+
+</main>
+
+<script>
+// Fixed navigation — no hash links, pure JS
+function navTo(id){
+  var el = document.getElementById(id);
+  if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+}
+
+// Progress bar
+window.addEventListener('scroll', function(){
+  var doc = document.documentElement;
+  var progress = doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100;
+  document.getElementById('prog').style.width = Math.min(100, progress) + '%';
+});
+
+// Collapsible sections
+function toggleColl(header){
+  var body = header.nextElementSibling;
+  var arrow = header.querySelector('.arrow');
+  body.classList.toggle('open');
+  arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+// Prevent any click inside nav from following href (belt-and-suspenders)
+document.getElementById('sidebar').addEventListener('click', function(e){
+  if(e.target.tagName === 'A') e.preventDefault();
+});
+</script>
+</body>
+</html>
