@@ -426,4 +426,5 @@ for _ in range(p):
     ans = ans - inc_fac
     inc_fac = inc_fac / 10
     
-print(ans)
+print(round(ans, p)) # rounding to p decimal places
+

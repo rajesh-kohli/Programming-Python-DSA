@@ -221,3 +221,55 @@ for line in f:
     line_number += 1
 f.close()
 
+f2 = open("tp.txt", "r")
+print(f2.read())
+f2.close()
+
+# Write a program where alphabets are replaced with asterisks and digits are replaced with astericks and special characters are replaced with 0s
+f = open("tp.txt", "r")
+data = f.read()
+for i in data:
+    if i.isalpha():
+        data.replace(i, "#")
+    elif i.isdigit():
+        data.replace(i, "*")
+    else:
+        data.replace(i, "0")
+f.close()
+f = open("tp.txt", "r")
+print(f.read())
+f.close()
+
+
+
+with open("tp.txt", "r") as f:
+    data = f.read()
+
+new_data = "".join(
+    "#" if c.isalpha() else "*" if c.isdigit() else "0"
+    for c in data
+)
+
+with open("tp.txt", "w") as f:
+    f.write(new_data)
+
+###########################################################################################################################################################################################################################################################################################################################################################################################################################################
+f5 = open("abc.txt", "w")
+f5.write("Hello World")
+f5.write("\nThis is a test file")
+f5.write("jsfuiwefncshuiuewifw88q392e[0wchkncx9uqw90rfq39u89qw89r87r2ihuchasd89qwy98h ]")
+f5.write("2392809480ue!!@&*&@&*#%^%^!&*!*(!())_#&*&^%%^$$@#$%^&*()(&*^%$%#FYTUJHGFGHVBN")
+f5.close()
+
+f6 = open("abc.txt", "r")
+print(f6.read())
+f6.close()
+
+f6 = open("abc.txt", "r")
+data = f6.read()
+f7 = open("abc1.txt", "w")
+f7.write(data)
+f7.close()
+f6.close()
+
+###########################################################################################################################################################################################################################################################################################################################################################################################################################################
