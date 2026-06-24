@@ -28,3 +28,13 @@ print(two_sum([2, 7, 11, 15], 9))
 # Approach explained here: [Google](https://www.google.com)
 
 # %%
+6/3
+# %%
+7/2
+# %%
+7//2
+# %%
+7%2
+# %%
+6%2
+# %%
