@@ -428,3 +428,6 @@ for _ in range(p):
     
 print(round(ans, p)) # rounding to p decimal places
 
+# another way to do round is using the f string - 4f means round to 4 decimal places
+
+print(f"{ans: 4f}")
