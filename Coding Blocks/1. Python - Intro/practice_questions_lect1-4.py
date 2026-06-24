@@ -198,6 +198,22 @@ for i in range(num):
         print("*", end=" ")
     print()  # move to the next line after printing each row of stars
 
+for i in range(1, num+1):
+    for j in range(1, i+1):
+        print("*", end=" ")
+
+#using while loop
+
+i = 1
+while i <= num:
+    # for the ith row, print i stars
+    j = 1
+    while j <= i:
+        print("*", end=" ") # by default print function goes to the next line after printing the value, so we use end=" " to print the stars without a new line
+        j += 1
+    print()
+    i += 1
+
 # inverted right-angled triangle of stars with multiple for loops
 
 for i in range(num):
