@@ -155,7 +155,7 @@ for i in range(num):
 num = int(input("Enter a number: "))
 for i in range(num):
     print("* " * num)  # prints a square of stars
-    
+   
 for i in range(num):
     print("* " * (num - i))  # prints an inverted right-angled triangle of stars
 
@@ -164,6 +164,14 @@ for i in range(num):
     
 for i in range(num):
     print(" " * (num - i - 1) + "*" * (i + 1))  # prints a right-angled triangle of stars aligned to the right
+
+n = 5
+for i in range(1, n+1):
+    for j in range(n-i):
+        print(" ", end = " ")
+    for k in range(i):
+        print("*", end = " ")
+    print()
 
 for i in range(num):
     print(" " * i + "*" * (num - i))  # prints an inverted right-angled triangle of stars aligned to the right
@@ -267,9 +275,10 @@ for i in range(1, num+1):
         print(" ", end=" ")
     for l in range(i):
         print("*", end=" ")
-    print() # this print() is to move to the next line after printing each row of       
+    print() # this print() is to move to the next line after printing each row
     
 # this is a more compact way to do the butterfly pattern (upper half)
+num = 5
 
 for i in range(1, num+1):
     print("* " * i + "  " * (num - i) * 2 + "* " * i) 
