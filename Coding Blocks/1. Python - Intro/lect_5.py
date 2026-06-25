@@ -80,7 +80,7 @@ else:
         c = a + b
         a = b
         b = c
-    print(b)
+    print(c)
     
 # OR
 n = int(input("Enter a number: "))
