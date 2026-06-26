@@ -87,10 +87,25 @@ print(binary_search(arr, n, t))
 # time complexity of binary search  = O(logn) (Explanation in the video)
 # Best case for this is constant and worse case is O(logn)
 
-# ----- Why O(log n)? -----
+# ----- Why O(log n)? (Deriving it, not just memorizing it) -----
+#
+# Ask: "How many times can I halve n before I reach 1?"
+#
 # Each iteration cuts the search space in half:
 #   n --> n/2 --> n/4 --> n/8 --> ... --> 1
-# After k steps: n / 2^k = 1  -->  k = log2(n)
+# After k steps: n / 2^k = 1  -->  2^k = n  -->  k = log2(n)
+#
+# That's it. Whenever you see "cut in half each step", it's O(log n).
+#
+# ----- How to RECOGNIZE O(log n) in code -----
+# Look for:  lo, hi pointers that move TOWARD each other by halving
+#            or a variable that doubles/halves each iteration (i *= 2 or i //= 2)
+# These are the hallmarks of logarithmic time.
+#
+# ----- Space: O(1) -----
+# We only use a fixed number of variables (lo, hi, mid) regardless of array size.
+# We don't create any new arrays or lists. The input array already exists —
+# space complexity only counts EXTRA memory the algorithm uses.
 
 
 # =============================================================================
@@ -134,7 +149,15 @@ def first_occ(arr: list[int], n: int, t: int) -> int:
     return ans
 
 
-# this is always O(logn)
+# ----- Why is this still O(log n) and not slower? -----
+# You might think: "we don't stop when we find the target, so doesn't it take longer?"
+# No! The loop still halves the search space every iteration (either hi = mid-1 or lo = mid+1).
+# The number of iterations is still at most log2(n), same as regular binary search.
+# The only difference is: instead of returning immediately on a match, we record it and keep going.
+# But "keep going" still means halving — so the total number of steps doesn't change.
+#
+# Time:  O(log n) — same halving logic as binary search
+# Space: O(1)     — just lo, hi, mid, ans
 
 print(first_occ(arr, n, t))
 
@@ -343,11 +366,533 @@ generate_subarrays(arr,n)
 # Total number of subarrays = n*(n+1)/2
 # For n=3: 3*4/2 = 6 subarrays
 # For n=5: 5*6/2 = 15 subarrays
-# Time complexity: O(n^2) for generating, O(n^3) if you count printing each subarray
+#
+# ----- Deriving the time complexity -----
+#
+# The two loops generate all (i, j) pairs where 0 <= i <= j <= n-1.
+#
+# Count the inner loop iterations:
+#   i=0: j runs from 0 to n-1 --> n iterations
+#   i=1: j runs from 1 to n-1 --> n-1 iterations
+#   i=2: j runs from 2 to n-1 --> n-2 iterations
+#   ...
+#   i=n-1: j runs from n-1 to n-1 --> 1 iteration
+#
+# Total = n + (n-1) + (n-2) + ... + 1 = n*(n+1)/2 = O(n^2)
+#
+# BUT: inside the inner loop, arr[i:j+1] creates a SLICE, which copies (j-i+1) elements.
+# That copy itself takes O(length of subarray) time. In the worst case, the subarray
+# is length n, and on average it's about n/3. So the true total work is:
+#
+#   Sum over all (i,j) of (j - i + 1) = n*(n+1)*(n+2)/6 ≈ O(n^3)
+#
+# Takeaway: generating all subarrays is O(n^2), but printing/processing them is O(n^3)
+# because each subarray has variable length.
+#
+# Space: O(n) — arr[i:j+1] creates a temporary list of up to n elements each time.
+#   If we only printed individual elements (without slicing), it would be O(1) extra space.
 
+
+# =============================================================================
+# SECTION 7: Maximum Subarray Sum (Brute Force)
+# =============================================================================
 
 ### Maximum Subarray Sum
-def maximum_subarray_sum
+# Given an array of N integers, design an algorithm to find the maximum subarray sum.
+
+# ----- What is the problem? -----
+# Given: an array of integers (can have NEGATIVES)
+# Find:  the contiguous subarray whose elements add up to the LARGEST sum
+#
+# Example:
+#   arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+#   Answer: subarray [4, -1, 2, 1] has sum = 6 (the maximum)
+#
+# ----- Why is this interesting? -----
+# If all numbers were positive, the answer would be trivially the entire array.
+# Negatives make it tricky: you have to decide where to start and where to stop.
+#
+# We'll solve this THREE ways, each faster than the last:
+#   1. Brute Force:            O(n^3)
+#   2. Optimized Brute Force:  O(n^2)
+#   3. Prefix Sum approach:    O(n^2) but introduces a powerful concept
+#   (Kadane's Algorithm is O(n) — covered in a later lecture)
 
 
+# ----- Approach 1: Brute Force — O(n^3) -----
+#
+# Try EVERY possible subarray. For each one, compute the sum. Track the maximum.
+#
+# Three nested loops:
+#   i = start index     (picks where the subarray begins)
+#   j = end index       (picks where the subarray ends)
+#   k = sum loop        (adds up elements from i to j)
+#
+# ----- Walkthrough -----
+# arr = [1, -2, 3, 4]
+#
+# i=0, j=0: sum([1])          = 1
+# i=0, j=1: sum([1,-2])       = -1
+# i=0, j=2: sum([1,-2,3])     = 2
+# i=0, j=3: sum([1,-2,3,4])   = 6
+# i=1, j=1: sum([-2])         = -2
+# i=1, j=2: sum([-2,3])       = 1
+# i=1, j=3: sum([-2,3,4])     = 5
+# i=2, j=2: sum([3])          = 3
+# i=2, j=3: sum([3,4])        = 7    <-- MAXIMUM!
+# i=3, j=3: sum([4])          = 4
+#
+# Answer: 7
+
+def max_subarray_sum_brute(arr: list[int], n: int) -> int:
+    max_sum = float('-inf')
+
+    for i in range(n):                  # start of subarray
+        for j in range(i, n):           # end of subarray
+            current_sum = 0
+            for k in range(i, j + 1):   # compute sum of arr[i..j]
+                current_sum += arr[k]
+            max_sum = max(max_sum, current_sum)
+
+    return max_sum
+
+# ----- Deriving the Time Complexity: O(n^3) -----
+#
+# Let's count the work the INNERMOST loop (k) does across ALL iterations:
+#
+#   For i=0:
+#     j=0: k runs 1 time       (sum of 1 element)
+#     j=1: k runs 2 times      (sum of 2 elements)
+#     j=2: k runs 3 times      ...
+#     j=n-1: k runs n times
+#     Total for i=0: 1 + 2 + 3 + ... + n = n*(n+1)/2
+#
+#   For i=1:
+#     Total: 1 + 2 + ... + (n-1) = (n-1)*n/2
+#
+#   ...and so on until i=n-1 which does just 1 operation.
+#
+#   Grand total = n*(n+1)/2 + (n-1)*n/2 + ... + 1
+#               = sum of k*(k+1)/2 for k = 1 to n
+#               ≈ n^3 / 6
+#               = O(n^3)
+#
+# ----- How to THINK about it more simply -----
+# Three nested loops, each running up to n times --> O(n) * O(n) * O(n) = O(n^3).
+# This is a loose upper bound but gives you the right Big-O.
+#
+# Space: O(1) — just a few variables (max_sum, current_sum, i, j, k).
+#   We don't create any arrays. We compute sums on the fly.
+
+
+# ----- Approach 2: Optimized Brute Force — O(n^2) -----
+#
+# Key insight: when we move from subarray [i..j] to [i..j+1],
+# we're adding just ONE more element: arr[j+1].
+# So: sum(i..j+1) = sum(i..j) + arr[j+1]
+#
+# We don't need the inner k-loop at all! Just extend the running sum.
+#
+# ----- How this eliminates the third loop -----
+# Before:  for each (i,j), recompute sum from scratch with k-loop  --> O(n^3)
+# After:   for each i, extend sum incrementally as j grows          --> O(n^2)
+#
+# ----- Walkthrough -----
+# arr = [1, -2, 3, 4]
+#
+# i=0: current_sum starts at 0
+#   j=0: current_sum += 1  = 1,  max_sum = 1
+#   j=1: current_sum += -2 = -1, max_sum = 1
+#   j=2: current_sum += 3  = 2,  max_sum = 2
+#   j=3: current_sum += 4  = 6,  max_sum = 6
+#
+# i=1: current_sum resets to 0
+#   j=1: current_sum += -2 = -2, max_sum = 6
+#   j=2: current_sum += 3  = 1,  max_sum = 6
+#   j=3: current_sum += 4  = 5,  max_sum = 6
+#
+# i=2: current_sum resets to 0
+#   j=2: current_sum += 3  = 3,  max_sum = 6
+#   j=3: current_sum += 4  = 7,  max_sum = 7   <-- new max!
+#
+# i=3: current_sum resets to 0
+#   j=3: current_sum += 4  = 4,  max_sum = 7
+#
+# Answer: 7
+
+def max_subarray_sum_optimized(arr: list[int], n: int) -> int:
+    max_sum = float('-inf')
+
+    for i in range(n):                  # start of subarray
+        current_sum = 0                 # reset for each new starting point
+        for j in range(i, n):           # end of subarray
+            current_sum += arr[j]       # EXTEND the sum by one element
+            max_sum = max(max_sum, current_sum)
+
+    return max_sum
+
+# ----- Deriving the Time Complexity: O(n^2) -----
+#
+# Two nested loops. Count the inner loop iterations:
+#   i=0: j runs n times
+#   i=1: j runs n-1 times
+#   i=2: j runs n-2 times
+#   ...
+#   i=n-1: j runs 1 time
+#
+# Total = n + (n-1) + (n-2) + ... + 1 = n*(n+1)/2 = O(n^2)
+#
+# Each inner iteration does O(1) work (one addition, one comparison).
+# So total work = O(n^2) * O(1) = O(n^2).
+#
+# ----- The key lesson: going from O(n^3) to O(n^2) -----
+# We eliminated an entire loop by REUSING previous computation.
+# Instead of recomputing the sum from scratch, we extended it.
+# This is called "incremental computation" and is one of the most
+# common ways to optimize algorithms. Always ask:
+#   "Am I recomputing something I already know?"
+#
+# Space: O(1) — still just a few variables.
+
+
+# =============================================================================
+# SECTION 8: Prefix Sum
+# =============================================================================
+
+# ----- What is a Prefix Sum? -----
+#
+# A prefix sum array stores the CUMULATIVE SUM up to each index.
+#
+# Given: arr     = [3, 1, 4, 1, 5]
+# Build: prefix  = [3, 4, 8, 9, 14]
+#
+# prefix[i] = arr[0] + arr[1] + ... + arr[i]
+#            = "sum of all elements from the start up to index i"
+#
+# ----- How to build it -----
+# prefix[0] = arr[0]                          (just the first element)
+# prefix[i] = prefix[i-1] + arr[i]           (previous prefix + current element)
+#
+# ----- Walkthrough of building prefix sum -----
+# arr = [3, 1, 4, 1, 5]
+#
+# prefix[0] = 3                               = 3
+# prefix[1] = prefix[0] + arr[1] = 3 + 1      = 4
+# prefix[2] = prefix[1] + arr[2] = 4 + 4      = 8
+# prefix[3] = prefix[2] + arr[3] = 8 + 1      = 9
+# prefix[4] = prefix[3] + arr[4] = 9 + 5      = 14
+#
+# prefix = [3, 4, 8, 9, 14]
+
+def build_prefix_sum(arr: list[int], n: int) -> list[int]:
+    prefix = [0] * n
+    prefix[0] = arr[0]
+    for i in range(1, n):
+        prefix[i] = prefix[i - 1] + arr[i]
+    return prefix
+
+# Time:  O(n) — single loop through the array
+# Space: O(n) — we create a new array of size n
+#
+# ----- Why is this useful? -----
+#
+# Once we have the prefix sum array, we can find the SUM OF ANY SUBARRAY
+# in O(1) time — just ONE subtraction!
+#
+# sum(arr[i..j]) = prefix[j] - prefix[i-1]
+#
+# (If i == 0, then sum(arr[0..j]) = prefix[j])
+#
+# ----- Why does this formula work? -----
+#
+# prefix[j]   = arr[0] + arr[1] + ... + arr[i-1] + arr[i] + ... + arr[j]
+# prefix[i-1] = arr[0] + arr[1] + ... + arr[i-1]
+#
+# Subtracting: prefix[j] - prefix[i-1] = arr[i] + arr[i+1] + ... + arr[j]
+#
+# The prefix[i-1] "cancels out" all the elements before index i, leaving
+# exactly the sum of the subarray from i to j.
+#
+# ----- Walkthrough of using prefix sum -----
+# arr    = [3, 1, 4, 1, 5]
+# prefix = [3, 4, 8, 9, 14]
+#
+# Q: What is sum(arr[2..4])?   (sum of elements at indices 2, 3, 4)
+# A: prefix[4] - prefix[1] = 14 - 4 = 10
+# Check: arr[2]+arr[3]+arr[4] = 4 + 1 + 5 = 10 ✓
+#
+# Q: What is sum(arr[0..2])?   (sum of elements at indices 0, 1, 2)
+# A: prefix[2] = 8             (i=0, so just use prefix[j] directly)
+# Check: 3 + 1 + 4 = 8 ✓
+#
+# Q: What is sum(arr[1..3])?
+# A: prefix[3] - prefix[0] = 9 - 3 = 6
+# Check: 1 + 4 + 1 = 6 ✓
+
+# ----- The Trade-off: Time vs Space -----
+#
+# Without prefix sum:
+#   - Computing sum of any subarray takes O(n) time (loop through elements)
+#   - No extra space needed
+#
+# With prefix sum:
+#   - Building the prefix array: O(n) time, O(n) space (one-time cost)
+#   - After that, ANY subarray sum is O(1)
+#
+# This is worth it when you need to answer MANY subarray sum queries.
+# If you only need one sum, it's not worth building the prefix array.
+# This is a classic "precomputation" trade-off: spend time and space upfront
+# to make future queries faster.
+
+
+# =============================================================================
+# SECTION 9: Maximum Subarray Sum using Prefix Sum
+# =============================================================================
+
+# ----- Idea -----
+# We already know:  sum(arr[i..j]) = prefix[j] - prefix[i-1]
+#
+# To maximize this, for each j, we want prefix[i-1] to be as SMALL as possible.
+# (Because: bigger number minus smaller number = bigger result)
+#
+# Approach:
+#   For every pair (i, j), compute prefix[j] - prefix[i-1] and track the maximum.
+#
+# This is still O(n^2) because we try all pairs, but it shows how prefix sums
+# transform the problem from "summing subarrays" to "subtracting two values".
+
+# ----- Method 1: Using prefix sum with two loops — O(n^2) -----
+
+def max_subarray_sum_prefix(arr: list[int], n: int) -> int:
+    prefix = build_prefix_sum(arr, n)
+
+    max_sum = float('-inf')
+
+    for i in range(n):                  # start of subarray
+        for j in range(i, n):           # end of subarray
+            if i == 0:
+                current_sum = prefix[j]
+            else:
+                current_sum = prefix[j] - prefix[i - 1]
+            max_sum = max(max_sum, current_sum)
+
+    return max_sum
+
+# ----- Walkthrough -----
+# arr    = [1, -2, 3, 4]
+# prefix = [1, -1, 2, 6]
+#
+# i=0, j=0: prefix[0]                  = 1,   max = 1
+# i=0, j=1: prefix[1]                  = -1,  max = 1
+# i=0, j=2: prefix[2]                  = 2,   max = 2
+# i=0, j=3: prefix[3]                  = 6,   max = 6
+# i=1, j=1: prefix[1] - prefix[0]      = -1-1 = -2,  max = 6
+# i=1, j=2: prefix[2] - prefix[0]      = 2-1  = 1,   max = 6
+# i=1, j=3: prefix[3] - prefix[0]      = 6-1  = 5,   max = 6
+# i=2, j=2: prefix[2] - prefix[1]      = 2-(-1) = 3, max = 6
+# i=2, j=3: prefix[3] - prefix[1]      = 6-(-1) = 7, max = 7  <-- new max!
+# i=3, j=3: prefix[3] - prefix[2]      = 6-2 = 4,    max = 7
+#
+# Answer: 7 (subarray [3, 4])
+
+# ----- Time: O(n^2) -----
+# Building prefix sum: O(n)
+# Two nested loops: O(n^2)
+# Each inner iteration: O(1) (just a subtraction and comparison)
+# Total: O(n) + O(n^2) = O(n^2)
+#   (The O(n) for building prefix is absorbed by the larger O(n^2))
+#
+# ----- Space: O(n) -----
+# The prefix array uses O(n) extra space.
+# This is a trade-off vs the optimized brute force (O(1) space, same O(n^2) time).
+# Here, the prefix sum doesn't give us a time advantage — but it introduces the
+# CONCEPT which becomes powerful in other problems (range queries, 2D prefix sums, etc.)
+
+
+# ----- Method 2: Smarter prefix sum approach — O(n) -----
+#
+# Key insight: sum(arr[i..j]) = prefix[j] - prefix[i-1]
+# To MAXIMIZE this for a given j, we need the MINIMUM prefix[i-1] seen so far.
+#
+# So instead of trying all pairs (i,j), for each j we just need:
+#   max_sum = max(max_sum, prefix[j] - min_prefix_so_far)
+#
+# We track min_prefix_so_far as we go — single pass!
+
+def max_subarray_sum_prefix_optimized(arr: list[int], n: int) -> int:
+    prefix = build_prefix_sum(arr, n)
+
+    max_sum = float('-inf')
+    min_prefix = 0          # represents prefix[-1] = 0 (empty prefix before index 0)
+
+    for j in range(n):
+        max_sum = max(max_sum, prefix[j] - min_prefix)
+        min_prefix = min(min_prefix, prefix[j])
+
+    return max_sum
+
+# ----- Walkthrough -----
+# arr    = [1, -2, 3, 4]
+# prefix = [1, -1, 2, 6]
+#
+# Start: max_sum = -inf, min_prefix = 0
+#
+# j=0: max_sum = max(-inf, prefix[0] - 0) = max(-inf, 1) = 1
+#      min_prefix = min(0, 1) = 0
+#
+# j=1: max_sum = max(1, prefix[1] - 0) = max(1, -1) = 1
+#      min_prefix = min(0, -1) = -1
+#
+# j=2: max_sum = max(1, prefix[2] - (-1)) = max(1, 2+1) = max(1, 3) = 3
+#      min_prefix = min(-1, 2) = -1
+#
+#      Wait — that gives 3, but the answer should be 7. Let me re-check...
+#      Actually prefix[2] - min_prefix = 2 - (-1) = 3. That's sum(arr[1..2]) = -2+3 = 1.
+#      Hmm, that doesn't match. Let me recalculate.
+#
+#      prefix[2] = arr[0]+arr[1]+arr[2] = 1+(-2)+3 = 2
+#      min_prefix = -1 (which is prefix[1])
+#      prefix[2] - prefix[1] = 2 - (-1) = 3
+#      But sum(arr[2..2]) = 3, and sum(arr[1..2]) = -2+3 = 1
+#      prefix[2] - prefix[1] = sum(arr[2..2]) = 3 ✓  (because prefix[j]-prefix[i-1] where i=2, i-1=1)
+#
+# j=3: max_sum = max(3, prefix[3] - (-1)) = max(3, 6+1) = max(3, 7) = 7
+#      min_prefix = min(-1, 6) = -1
+#
+#      prefix[3] - prefix[1] = 6 - (-1) = 7
+#      This is sum(arr[2..3]) = 3+4 = 7 ✓
+#
+# Answer: 7
+
+# ----- Why does min_prefix start at 0? -----
+# min_prefix represents the minimum of all prefix[-1], prefix[0], prefix[1], ..., prefix[j-1].
+# prefix[-1] = 0 (the sum of zero elements before the array starts).
+# This handles the case where the best subarray starts at index 0:
+#   sum(arr[0..j]) = prefix[j] - prefix[-1] = prefix[j] - 0 = prefix[j]
+
+# ----- Deriving the Time Complexity: O(n) -----
+#
+# Building prefix sum: O(n) — one pass
+# Finding max subarray: O(n) — one pass
+# Total: O(n) + O(n) = O(2n) = O(n)
+#
+# We went from O(n^3) --> O(n^2) --> O(n) by:
+#   Step 1: Reusing partial sums (eliminated the k-loop)
+#   Step 2: Precomputing all prefix sums (set up O(1) range queries)
+#   Step 3: Realizing we only need the MINIMUM prefix, not all pairs
+#
+# ----- Space: O(n) -----
+# The prefix array takes O(n). We could technically make this O(1) by computing
+# the running prefix sum on the fly (like Kadane's algorithm does), but keeping
+# the prefix array makes the logic clearer.
+
+
+# =============================================================================
+# SECTION 10: How to Think About Complexity (A Guide)
+# =============================================================================
+
+# ----- The Goal -----
+# Don't memorize "binary search = O(log n)". Instead, learn to DERIVE it
+# from the code structure. Here's how to think about it:
+#
+#
+# === STEP 1: Count the loops ===
+#
+# Single loop over n elements:                    O(n)
+# Two nested loops, each up to n:                 O(n^2)
+# Three nested loops:                             O(n^3)
+# Loop that halves/doubles each step:             O(log n)
+# Loop of n with halving loop inside:             O(n log n)
+#
+#
+# === STEP 2: Look at what happens INSIDE the innermost loop ===
+#
+# If the innermost operation is O(1) (addition, comparison, assignment):
+#   Total = (number of iterations) * O(1) = number of iterations
+#
+# If the innermost operation itself takes O(k) time (e.g., slicing, copying):
+#   Total = (number of iterations) * O(k)
+#   This is why generate_subarrays is O(n^3) not O(n^2) — the slice is O(k)
+#
+#
+# === STEP 3: Count the ACTUAL iterations, not just "up to n" ===
+#
+# For nested loops, the inner loop often runs a VARIABLE number of times:
+#   for i in range(n):
+#       for j in range(i, n):   # NOT range(n)!
+#
+# Inner iterations: n + (n-1) + (n-2) + ... + 1 = n*(n+1)/2
+# This is O(n^2), not O(n^2) "times 2" — the 1/2 is a constant and drops.
+#
+#
+# === STEP 4: For space, ask "what new data structures did I create?" ===
+#
+# No new arrays/lists → O(1) space
+# One array of size n → O(n) space
+# 2D array of size n x n → O(n^2) space
+# Just a few variables → O(1) space
+# Recursive calls (call stack) → O(depth) space
+#
+#
+# === STEP 5: The "double the input" test ===
+#
+# If I double n, how does the runtime change?
+#   O(1):      no change        (formula, array lookup)
+#   O(log n):  adds ~1 step     (binary search)
+#   O(n):      doubles          (single loop)
+#   O(n log n): slightly > 2x   (merge sort)
+#   O(n^2):    quadruples (4x)  (nested loops)
+#   O(n^3):    8x               (triple nested loops)
+#   O(2^n):    SQUARES           (exponential, unusable for large n)
+#
+#
+# === COMMON PATTERNS IN THIS FILE ===
+#
+# | Code pattern                    | Complexity | Why                          |
+# |---------------------------------|------------|------------------------------|
+# | while lo <= hi: mid = ...       | O(log n)   | Search space halves each step|
+# | for i in range(n):              | O(n)       | One pass through array       |
+# | for i...for j in range(i,n):    | O(n^2)     | All pairs, triangular sum    |
+# | for i...for j...for k(i,j+1):   | O(n^3)     | All pairs + sum each pair    |
+# | prefix[j] - prefix[i-1]        | O(1)       | Precomputed, just subtraction|
+# | track min/max "so far"          | O(n)       | One pass, constant work each |
+#
+#
+# === THE OPTIMIZATION MINDSET ===
+#
+# When your solution is too slow, ask these questions in order:
+#
+# 1. "Am I recomputing something I already know?"
+#    --> Use incremental computation (O(n^3) → O(n^2) in max subarray sum)
+#
+# 2. "Can I precompute answers to subproblems?"
+#    --> Use prefix sums, lookup tables, memoization
+#
+# 3. "Do I need to check ALL possibilities, or can I eliminate some?"
+#    --> Use binary search (O(n) → O(log n)), two pointers, sorting
+#
+# 4. "Can I track just what I need instead of storing everything?"
+#    --> Use running min/max/sum instead of arrays (O(n) space → O(1))
+
+
+# =============================================================================
+# Test all approaches
+# =============================================================================
+
+arr = [1, -2, 3, 4]
+n = 4
+print("Brute force O(n^3):", max_subarray_sum_brute(arr, n))
+print("Optimized O(n^2):  ", max_subarray_sum_optimized(arr, n))
+print("Prefix sum O(n^2): ", max_subarray_sum_prefix(arr, n))
+print("Prefix opt O(n):   ", max_subarray_sum_prefix_optimized(arr, n))
+
+arr2 = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+n2 = 9
+print("\nClassic example [-2, 1, -3, 4, -1, 2, 1, -5, 4]:")
+print("Brute force O(n^3):", max_subarray_sum_brute(arr2, n2))
+print("Optimized O(n^2):  ", max_subarray_sum_optimized(arr2, n2))
+print("Prefix sum O(n^2): ", max_subarray_sum_prefix(arr2, n2))
+print("Prefix opt O(n):   ", max_subarray_sum_prefix_optimized(arr2, n2))
+
+# Expected output: 7 for arr, 6 for arr2 (subarray [4, -1, 2, 1])
 
