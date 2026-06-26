@@ -30,3 +30,5 @@ try:
     print(employee_info[name])
 except:
     print("The employee is not present")
+finally:
+    print("Execution done")
