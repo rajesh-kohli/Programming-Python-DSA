@@ -1,0 +1,11 @@
+Total Sales by Product Category
+product_category,total_sales
+Electronics,2190.0
+Clothing,545.74
+Groceries,249.99
+
+Top 3 Customers by Total Amount
+customer_id,total_amount
+C005,879.99
+C001,740.0
+C004,575.0
