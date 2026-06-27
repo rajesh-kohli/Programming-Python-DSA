@@ -1,0 +1,14 @@
+date,customer_id,amount,product_category
+2026-01-05,C001,250.00,Electronics
+2026-01-08,C002,120.50,Clothing
+2026-01-10,C003,89.99,Groceries
+2026-01-12,C001,430.00,Electronics
+2026-01-15,C004,55.00,Groceries
+2026-01-18,C002,310.00,Electronics
+2026-01-20,C003,75.25,Clothing
+2026-01-22,C005,199.99,Clothing
+2026-01-25,C001,60.00,Groceries
+2026-01-28,C004,520.00,Electronics
+2026-02-01,C002,45.00,Groceries
+2026-02-05,C005,680.00,Electronics
+2026-02-08,C003,150.00,Clothing
