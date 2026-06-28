@@ -311,16 +311,18 @@ print(sales.iloc[-1])
 print("\n--- Boolean indexing ---")
 expensive = sales[sales["amount"] > 400]
 
-
+print(expensive.head())
 print(sales.head())
 
 print(f"Transactions over $400: {len(expensive)} rows")
 
-print(expensive.head())
+
 
 Groceries_sales = sales[sales["product_category"] == 'Groceries']
 
-print(Groceries_sales)
+print(Groceries_sales.head())
+print(f"Transactions with product_category Groceries: {len(Groceries_sales)} rows")
+
 print()
 
 # %% SECTION 5: Filtering & Querying
@@ -379,9 +381,12 @@ df_copy = sales.copy()  # always work on a copy to avoid modifying the original
 df_copy["total"] = df_copy["amount"] * df_copy["quantity"]
 df_copy["is_expensive"] = df_copy["amount"] > 200
 
+print(df_copy.head())
+
 # ----- Rename columns -----
 df_renamed = df_copy.rename(columns={"amount": "sale_amount", "city": "location"})
 print("\nRenamed columns:", df_renamed.columns.tolist())
+print(df_renamed.head())
 
 # ----- Drop columns -----
 df_dropped = df_copy.drop(columns=["is_expensive", "total"])
@@ -419,6 +424,9 @@ top5 = sales.nlargest(5, "amount")
 bottom5 = sales.nsmallest(5, "amount")
 print("\nTop 5 amounts:")
 print(top5[["customer_id", "amount"]])
+
+print(bottom5[["customer_id", "amount"]])
+
 print()
 
 # %% SECTION 8: Handling Missing Data (NaN)
