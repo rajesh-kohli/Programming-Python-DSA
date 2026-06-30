@@ -125,6 +125,12 @@ print(f"Sum of digits of {original_n}: {sum}")
 # n=1:   rem = 1%10 = 1,   sum = 5+1 = 6, n = 1//10 = 0
 # n=0: loop ends
 # Output: 6
+#
+# Mental model -- peeling digits off the right end one at a time:
+#   123 --(%10)--> 3   123 --(//10)--> 12
+#    12 --(%10)--> 2    12 --(//10)--> 1
+#     1 --(%10)--> 1     1 --(//10)--> 0  (stop, n == 0)
+#   %10 reads the digit, //10 chops it off -- like peeling a sticker.
 
 
 # ---- Approach 2 (String conversion): ----
@@ -212,6 +218,15 @@ print(f"{n}! = {factorial}")
 # i=4: factorial = 6 * 4 = 24
 # i=5: factorial = 24 * 5 = 120
 # Output: 120
+#
+# Iteration trace table (accumulator growing each step):
+#   iteration #   i   factorial (before*i = after)
+#   -----------   --  -----------------------------
+#       1          1   1 * 1   = 1
+#       2          2   1 * 2   = 2
+#       3          3   2 * 3   = 6
+#       4          4   6 * 4   = 24
+#       5          5   24 * 5  = 120
 
 
 # =============================================================================
@@ -271,3 +286,9 @@ while i <= n:
 # Pattern insight:
 #   Row i has (2*i - 1) stars: 1, 3, 5, 7, ...  (always odd!)
 #   Row i has (n-i) leading spaces to center the pyramid
+#
+# Three inner while loops per outer row = three "lanes" walked left to right:
+#   row i:  [-- spaces (n-i) --][-- stars (2i-1) --][-- spaces (n-i) --]
+#            j-loop                k-loop               l-loop
+# Each lane is its own little counted loop nested inside the outer i-loop,
+# the same "outer picks a row, inner sweeps across it" idea as nested for loops.

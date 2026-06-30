@@ -60,6 +60,23 @@
 # Step 1:  lo=0, hi=6  --> mid=3  --> arr[3]=40 < 50  --> go RIGHT  --> lo=4
 # Step 2:  lo=4, hi=6  --> mid=5  --> arr[5]=60 > 50  --> go LEFT   --> hi=4
 # Step 3:  lo=4, hi=4  --> mid=4  --> arr[4]=50 == 50 --> FOUND at index 4
+#
+# ----- The classic "narrowing range" picture -----
+# Each step, lo and hi close in on each other, eliminating HALF the
+# remaining elements (the side mid is NOT on):
+#
+#   idx:    0   1   2   3   4   5   6
+#   arr:  [10, 20, 30, 40, 50, 60, 70]
+#          lo              hi              mid=3 -> 40<50, eliminate [0..3]
+#                          mid
+#
+#                       lo      hi          mid=5 -> 60>50, eliminate [5..6]
+#                       mid
+#
+#                       lo,hi               mid=4 -> 50==50, FOUND!
+#                       mid
+#
+#   Search space: 7 -> 3 -> 1 elements (roughly halved each step) -> O(log n)
 
 
 def binary_search(arr: list[int], n: int, t: int) -> int:
@@ -132,6 +149,14 @@ print(binary_search(arr, n, t))
 # Step 3:  lo=2, hi=3  --> mid=2  --> arr[2]=30 == 30  --> ans=2, search LEFT --> hi=1
 # Step 4:  lo=2, hi=1  --> lo > hi, STOP
 # Answer: ans = 2 (the first occurrence of 30)
+#
+# ----- Visual: even on a match, we keep shrinking hi to hunt LEFT -----
+#   idx: 0   1   2   3   4   5   6   7   8
+#   arr:[10, 20, 30, 30, 30, 30, 30, 40, 50]
+#        lo                  hi              mid=4 -> match! ans=4, hi=3 (look left)
+#        lo      hi                          mid=1 -> 20<30, lo=2 (look right)
+#            lo  hi                          mid=2 -> match! ans=2, hi=1 (look left)
+#            hi  lo                          lo>hi, STOP -> ans=2 is the LEFTMOST 30
 
 def first_occ(arr: list[int], n: int, t: int) -> int:
     lo, hi = 0, n-1
@@ -351,6 +376,17 @@ from bisect import * ## with this you just directly call bisect_left or any func
 #   i=0: j=0 -> [1],  j=1 -> [1,2],  j=2 -> [1,2,3]
 #   i=1: j=1 -> [2],  j=2 -> [2,3]
 #   i=2: j=2 -> [3]
+#
+# ----- Visual: i anchors the start, j sweeps right to grow the window -----
+#   idx: 0  1  2
+#   arr:[1, 2, 3]
+#
+#   i=0: [1]        i  j
+#        [1,2]      i     j
+#        [1,2,3]    i        j
+#   i=1: [2]           i  j
+#        [2,3]         i     j
+#   i=2: [3]               i  j
 
 def generate_subarrays(arr: list[int], n: int):
     for i in range(n):

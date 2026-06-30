@@ -403,6 +403,24 @@ print("Call 3:", append_to_list_GOOD(3))   # [3]   — independent!
 
 print("\n===== SECTION 9: *args and **kwargs =====")
 
+# MENTAL MODEL — *args and **kwargs are COLLECTING BUCKETS:
+#
+#   call:      total(1, 2, 3)
+#                    |  |  |
+#                    v  v  v
+#              *args bucket -> (1, 2, 3)      a TUPLE (ordered, positional)
+#
+#   call:      print_info(name="Alice", age=25)
+#                          |              |
+#                          v              v
+#              **kwargs bucket -> {"name": "Alice", "age": 25}   a DICT (key=value)
+#
+#   The * and ** don't "multiply" anything here — they mean "gather the
+#   leftover positional args into a tuple" / "gather leftover keyword
+#   args into a dict". Same symbols, opposite job when UNPACKING (see below):
+#   *numbers spreads a list back OUT into positional args, **config spreads
+#   a dict back OUT into keyword args.
+
 # --- *args: collect extra POSITIONAL arguments into a TUPLE ---
 
 def total(*args) -> int:
@@ -509,6 +527,16 @@ print(f"sorted by grade: {by_grade}")
 # - Regular function: reusable, multi-line, needs a docstring, complex logic
 # Rule of thumb: if you need to name it or it's more than one expression,
 # use a regular def.
+#
+# LAMBDA vs DEF — same machine, different packaging:
+#
+#   def square(x):              square = lambda x: x ** 2
+#       return x ** 2
+#
+#   - both create a function object you can call: square(5) -> 25
+#   - def gives it a name, a docstring slot, and supports multiple statements
+#   - lambda is a single EXPRESSION with an implicit return — no name needed
+#     until you assign it (and usually you don't: you pass it inline)
 
 
 # =============================================================================
@@ -579,6 +607,22 @@ triple = make_multiplier(3)         # triple is now a function: x -> x*3
 
 print("double(5):", double(5))      # 10
 print("triple(5):", triple(5))      # 15
+
+# MENTAL MODEL — a closure is an inner function carrying a "backpack":
+#
+#   make_multiplier(2) runs and returns ----> def multiplier(x): return x * factor
+#   then make_multiplier's normal frame      [ backpack: factor = 2 ]
+#   is destroyed... EXCEPT 'factor' is
+#   still needed by multiplier, so Python
+#   keeps it alive, stashed inside the
+#   returned function object itself.
+#
+#   double = make_multiplier(2)   double's backpack: {factor: 2}
+#   triple = make_multiplier(3)   triple's backpack: {factor: 3}
+#
+#   double(5) -> opens its OWN backpack, finds factor=2, computes 5*2 -> 10
+#   Each closure keeps an independent backpack, even though both came from
+#   the same outer function — this is how double and triple stay separate.
 
 # --- Practical: composing functions for a data pipeline ---
 def pipeline(data, *functions):

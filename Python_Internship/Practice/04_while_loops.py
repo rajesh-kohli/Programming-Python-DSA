@@ -51,6 +51,38 @@
 #   - Forgetting the updation step (infinite loop!)
 #   - Off-by-one errors (using < instead of <=, or starting at 0 vs 1)
 #   - In nested loops: forgetting to RESET the inner loop variable
+#
+# WHILE LOOP FLOW DIAGRAM:
+#
+#        +-------------------+
+#        |  initialization   |   (runs once)
+#        +-------------------+
+#                  |
+#                  v
+#        +-------------------+
+#   +--->|   check condition |
+#   |    +-------------------+
+#   |        |True      |False
+#   |        v           v
+#   |  +-----------+   (exit loop,
+#   |  |   body    |    continue after)
+#   |  +-----------+
+#   |        |
+#   |  +-----------+
+#   |  | updation  |
+#   |  +-----------+
+#   |        |
+#   +--------+
+#
+# TRACE TABLE for "i=1; while i<=10: print(i); i+=1" (first few iterations):
+#
+#   iteration | i (before body) | condition i<=10 | action
+#   ----------|-----------------|------------------|----------------
+#       1     |        1        |       True       | print 1, i->2
+#       2     |        2        |       True       | print 2, i->3
+#       3     |        3        |       True       | print 3, i->4
+#      ...    |       ...       |        ...       | ...
+#      11     |       11        |       False      | loop exits
 # =============================================================================
 
 
@@ -201,6 +233,16 @@ while i <= 15:
 #
 # This is different from a for loop, where the loop variable is automatically
 # reset by the "for j in range(...):" statement.
+#
+# WHY THE BUG HAPPENS (visual trace, j initialized OUTSIDE the outer loop):
+#
+#   i=1: inner while j<=5  j:1->2->3->4->5->6  (condition fails, j stays 6)
+#   i=2: inner while j<=5  j is already 6 --> condition False IMMEDIATELY
+#   i=3: inner while j<=5  j is still 6   --> condition False IMMEDIATELY
+#   ...  (inner loop body never runs again for the rest of i's lifetime)
+#
+#   Fix: put "j = 1" as the FIRST line inside the outer loop's body, so
+#   every outer iteration gets a freshly reset inner counter.
 # =============================================================================
 
 

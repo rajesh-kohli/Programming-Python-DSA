@@ -59,6 +59,17 @@
 #               Swap arr[3] and arr[4]
 #               [10, 20, 30, 40, 50]
 #                ^sorted         ^  DONE!
+#
+# ----- Mental Model: a growing sorted boundary -----
+#   The | marker is the frontier. Everything to its left is FINAL.
+#   Each pass scans the unsorted side for the min and swaps it to the
+#   frontier, then the frontier moves one step right.
+#
+#   [50  20  30  10  40]    |<- boundary at index 0, whole array unsorted
+#    [10] 20  30  50  40    |<- boundary at 1, 10 locked in
+#    [10  20] 30  50  40    |<- boundary at 2
+#    [10  20  30] 50  40    |<- boundary at 3
+#    [10  20  30  40  50]   |<- boundary at 5, DONE
 
 # time : O(n^2) always (even if already sorted - it still scans for min each time)
 # selection sort is NOT a stable sorting algorithm
@@ -142,6 +153,16 @@ print(arr)  # [10, 20, 30, 40, 50]
 #
 # Pass 4 (i=4): Compare adjacent pairs in [20, 10 | 30, 40, 50]
 #   j=0: 20 > 10? YES, swap --> [10, 20, 30, 40, 50]  DONE!
+#
+# ----- Mental Model: the biggest value "bubbles" rightward each pass -----
+#   Adjacent swaps only — like a bubble of air rising one step at a
+#   time through water, the largest unsorted value drifts to the end:
+#
+#     [50  40  30  20  10]                    no elements settled yet
+#      40  30  20  10 [50]   <- pass 1 pushes 50 all the way to the end
+#      30  20  10 [40  50]   <- pass 2 settles 40 next to it
+#      20  10 [30  40  50]   <- pass 3 settles 30
+#      10 [20  30  40  50]   <- pass 4: only 10 left, already in place
 #
 # ----- The "flag" Optimization (Early Termination) -----
 # If during a pass, NO swaps happen, the array is already sorted!
@@ -373,3 +394,26 @@ print(sorted_pairs)     # [(1, 3), (4, 2), (3, 1), (2, 0)]
 # ----- Python's sort is Timsort: O(n log n) -----
 # Under the hood, Python uses Timsort (a hybrid of Merge Sort + Insertion Sort).
 # It is stable and runs in O(n log n) worst case, much faster than the O(n^2) algorithms above.
+#
+# ----- Why O(n log n) beats O(n^2): the Merge Sort divide-and-conquer idea -----
+# Merge sort (one of Timsort's building blocks) recursively SPLITS the array
+# in half (that's the "log n" levels of splitting), then MERGES sorted
+# halves back together (that's the "n" work per level):
+#
+#                       [50, 40, 30, 20, 10]
+#                        /                \
+#               [50, 40, 30]            [20, 10]          <- split (log n levels)
+#                /        \                /    \
+#           [50, 40]      [30]          [20]    [10]
+#            /     \
+#         [50]    [40]
+#            \      /                       \      /
+#           [40, 50]      [30]             [10, 20]        <- merge (n work/level)
+#                \          /                  /
+#              [30, 40, 50]  -----  merge  -----
+#                        \                 /
+#                       [10, 20, 30, 40, 50]
+#
+# Each of the log(n) levels does O(n) total merge work, so total = O(n log n).
+# This is why merge sort / quicksort / Timsort scale far better than the
+# O(n^2) selection/bubble/insertion sorts above on large arrays.

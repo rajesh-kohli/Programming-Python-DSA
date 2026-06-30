@@ -740,6 +740,17 @@ if __name__ == "__main__":
 #   DELETE /todos/<id>   → delete a todo
 #
 # <id> in the URL is a PATH PARAMETER — Flask extracts it for you.
+#
+# CRUD <-> HTTP METHOD MENTAL MODEL:
+#
+#   GET /todos          ---->  [ {id:1,...}, {id:2,...} ]   Read  (list)
+#   POST /todos         ---->  todos.append(new_todo)        Create
+#   PUT /todos/<id>     ---->  find id, mutate fields         Update
+#   DELETE /todos/<id>  ---->  remove matching id             Delete
+#
+#   This is the same CRUD pattern behind almost every resource-based API
+#   (todos, products, users, orders...) -- once you know this shape, you
+#   can guess the endpoints of most REST APIs you'll encounter.
 
 # In-memory storage (list of dicts). In production, this would be a database.
 todos = []
@@ -1019,6 +1030,15 @@ def search_products():
     # Calculate which slice of the results to return
     # Page 1, per_page=10: items 0-9
     # Page 2, per_page=10: items 10-19
+    #
+    # PAGINATION WINDOW DIAGRAM (per_page=10, 50 total items):
+    #
+    #   items:  [0..9][10..19][20..29][30..39][40..49]
+    #            page1  page2   page3   page4   page5
+    #
+    #   page=2 -> start = (2-1)*10 = 10, end = 10+10 = 20 -> slice [10:20]
+    #   This is just Python list slicing applied to a "window" of the data,
+    #   so the client only ever receives one page's worth of results.
     total = len(results)
     start = (page - 1) * per_page  # page 1 → start at 0, page 2 → start at 10
     end = start + per_page

@@ -553,6 +553,18 @@ run("SELECT name FROM employees WHERE name LIKE '%son%'")
 #   1. In the GROUP BY clause, OR
 #   2. Inside an aggregate function (COUNT, SUM, AVG, MIN, MAX)
 # Violating this rule is the #1 GROUP BY mistake in interviews.
+#
+# Visual - rows get sorted into buckets, then each bucket collapses to one row:
+#
+#   employees                    buckets (GROUP BY department)      result
+#   +-------+------+            +----------------------------+
+#   | Alice | Eng  | --+        | Eng:  [Alice, Bob, Carol]   | --> | Eng  | 3 | 133k |
+#   | Bob   | Eng  | --+------> +----------------------------+
+#   | Carol | Eng  | --+        | DS:   [Dave, Eve]           | --> | DS   | 2 | 120k |
+#   | Dave  | DS   | --+------> +----------------------------+
+#   | Eve   | DS   | --+
+#   +-------+------+
+#   5 rows in  -->  2 buckets  -->  2 rows out (one per group)
 
 print("--- GROUP BY: Aggregate by department ---")
 run("""
@@ -676,6 +688,19 @@ WHERE manager_id IS NULL
 # JOIN connects rows from two tables based on a related column.
 # INNER JOIN: only rows that match in BOTH tables (the default).
 # Think of it as a Venn diagram — only the intersection.
+#
+# Visual - two circles, only the overlap survives:
+#
+#        employees              departments
+#       /-----------\          /-----------\
+#      /   Eng       \        /   Eng       \
+#      |   DS    *****|******|***** DS      |
+#      |   HR      *  |  INNER  *   Legal    |
+#       \   Mktg     /  JOIN     \  Sales    /
+#        \-----------/          \-----------/
+#                       ^^^^^^^^
+#                  only rows present
+#                  in BOTH tables survive
 
 print("--- INNER JOIN: Combine employees with departments ---")
 run("""
@@ -690,6 +715,17 @@ LIMIT 8
 # LEFT JOIN: all rows from the LEFT table, matched rows from the RIGHT table.
 # If no match exists in the right table, you get NULLs for right table columns.
 # This is used constantly in analytics to preserve all base records.
+#
+# Visual - every LEFT row survives; unmatched RIGHT columns become NULL:
+#
+#   customers (LEFT)         orders (RIGHT)            LEFT JOIN result
+#   +----+-------+           +----+-------------+      +-------+---------+
+#   | id | name  |           | id | customer_id |      | name  | order   |
+#   +----+-------+           +----+-------------+      +-------+---------+
+#   | 1  | Alice | <-------- | 9  | 1           | ----> | Alice | 9       |
+#   | 2  | Bob   |  no match +----+-------------+       | Bob   | NULL    |
+#   +----+-------+                                      +-------+---------+
+#   ALL rows from customers kept, even Bob who has no matching order.
 
 print("--- LEFT JOIN: Keep all customers, even those without orders ---")
 run("""
@@ -766,6 +802,20 @@ WHERE o.id IS NULL
 #
 # The workaround uses UNION of LEFT JOINs in both directions.
 # FULL OUTER JOIN = "keep ALL rows from BOTH tables, NULL where no match"
+#
+# Visual - two circles, EVERYTHING is kept, gaps filled with NULL:
+#
+#        team_a                  team_b
+#       /-----------\           /-----------\
+#      / Alice       \         /             \
+#      |          ****|*******|****           |
+#      |   Bob    *  matched *   Dave          |
+#      |   Carol  *  (both)  *   Eve           |
+#       \           /         \               /
+#        \-----------/         \-----------/
+#   Alice -> (NULL)        Bob -> Bob       Dave -> (NULL)
+#                           Carol -> Carol                Eve -> (NULL)
+#   left-only rows | matched rows (both sides) | right-only rows
 
 print("--- FULL OUTER JOIN (SQLite workaround using UNION) ---")
 # Let's create two small temp tables to demonstrate
@@ -1004,6 +1054,16 @@ GROUP BY department
 #
 # Correlated subqueries are POWERFUL but SLOW — each outer row triggers
 # the inner query. Prefer JOINs or CTEs when possible.
+#
+# Visual - the inner query runs first, its result feeds the outer query:
+#
+#   inner query                    outer query
+#   +---------------------+        +--------------------------------+
+#   | SELECT AVG(salary)  |        | SELECT name, salary             |
+#   | FROM employees      | -----> | FROM employees                  |
+#   +---------------------+ 125000 | WHERE salary > (125000)         |
+#         runs first              +--------------------------------+
+#                                          runs second, using that value
 
 print("--- Scalar Subquery: Employees earning above average ---")
 run("""
@@ -1054,6 +1114,19 @@ ORDER BY e.department, e.salary DESC
 #   - Interviewers prefer CTEs over deeply nested subqueries
 #   - They're easier to debug (test each CTE independently)
 #   - Some problems REQUIRE CTEs (like recursive queries)
+#
+# Visual - each CTE is a named building block; later steps reuse earlier ones:
+#
+#   WITH dept_stats AS ( ... )      Step 1: build dept_stats
+#        |
+#        v
+#        company_avg AS ( ... )     Step 2: build company_avg
+#        |         |
+#        v         v
+#   SELECT ... FROM dept_stats CROSS JOIN company_avg   Step 3: final query
+#
+#   Compare to nested subqueries: everything crammed into one unreadable
+#   blob. CTEs name each intermediate result so the query reads top to bottom.
 
 print("--- CTE: Clean, readable multi-step query ---")
 run("""
@@ -1353,6 +1426,19 @@ ORDER BY customer_id, order_date
 #
 # Default frame (when ORDER BY is specified): RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 # This means SUM() OVER(ORDER BY x) gives you a cumulative sum by default!
+#
+# Visual - the frame SLIDES along the ordered rows (3-row moving avg, "2 PRECEDING"):
+#
+#   month:    Jan    Feb    Mar    Apr    May
+#   revenue:  100    120    140    90     110
+#
+#   row=Mar  [ 100    120  [ 140 ] ]                 avg(100,120,140) -> Mar
+#   row=Apr           [ 120  [140    90 ] ]           avg(120,140, 90) -> Apr
+#   row=May                  [ 140  [90  110] ]       avg(140, 90,110) -> May
+#                                     ^^^^^^^ frame moves forward one row each time
+#
+#   Unlike GROUP BY (which collapses rows into buckets), the window frame
+#   slides row-by-row and every original row survives in the output.
 
 print("--- AVG() OVER(): 3-month moving average ---")
 run("""
@@ -1552,6 +1638,21 @@ B-TREE INDEXES (default in most databases)
 A B-tree index is a sorted data structure that allows O(log n) lookups.
 Think of it like the index in the back of a textbook — instead of reading
 every page, you jump straight to the right section.
+
+Visual - without an index vs with a B-tree index:
+
+  WITHOUT INDEX (full table scan, O(n)):
+    [row1][row2][row3][row4] ... [row N]   <- must check every single row
+     scan  scan  scan  scan        scan
+
+  WITH B-TREE INDEX (O(log n)):
+                  [ M ]                 <- start at root, compare
+                 /     \\
+            [ D ]       [ T ]           <- branch left/right, narrowing down
+           /    \\       /    \\
+        [B]    [F]   [Q]    [W]         <- a few hops reach the target row
+                       ^
+                  found it — no need to touch unrelated rows
 
 WHEN TO CREATE AN INDEX:
   - Columns frequently used in WHERE clauses

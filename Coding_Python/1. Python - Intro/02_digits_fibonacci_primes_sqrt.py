@@ -24,6 +24,13 @@ sum of digits of a number
 # Iteration 3: digit = 12 % 10 = 2,    sum = 7 + 2 = 9,   num = 12 // 10 = 1
 # Iteration 4: digit = 1 % 10 = 1,     sum = 9 + 1 = 10,  num = 1 // 10 = 0
 # num == 0, loop ends. Answer: 10
+#
+# ----- Peeling diagram: digits fall off the RIGHT end one at a time -----
+#   1234   --% 10-->  4   (peeled off)        1234 // 10 = 123
+#    123   --% 10-->  3   (peeled off)         123 // 10 = 12
+#     12   --% 10-->  2   (peeled off)          12 // 10 = 1
+#      1   --% 10-->  1   (peeled off)           1 // 10 = 0  --> stop
+#   num shrinks one digit per loop while sum collects what fell off.
 
 # Time:  O(d) where d = number of digits in num. Since d = floor(log10(n)) + 1, this is O(log n)
 # Space: O(1) — just two variables (sum, digit)
@@ -90,6 +97,11 @@ eg. 123 -> 321
 # Iteration 2: digit = 12 % 10 = 2,   rev = 3*10 + 2 = 32,    num = 1
 # Iteration 3: digit = 1 % 10 = 1,    rev = 32*10 + 1 = 321,  num = 0
 # Answer: 321
+#
+# ----- Diagram: digits peel off num and get appended to rev -----
+#   num: 123 --> 12 --> 1 --> 0        (shrinks from the right via // 10)
+#   rev:   0 -->  3 --> 32 --> 321     (grows from the right via *10 + digit)
+#   Each step moves exactly one digit from num's tail to rev's tail.
 
 # Time:  O(d) where d = number of digits = O(log n)
 # Space: O(1) — just rev and digit variables
@@ -160,6 +172,13 @@ The loop needs to run n-1 times, because we already know the first two Fibonacci
 #
 # Each number = sum of the two before it
 # fib(n) = fib(n-1) + fib(n-2)
+#
+# ----- Chain-of-boxes diagram -----
+#   +---+   +---+   +---+   +---+   +---+   +---+
+#   | 0 | + | 1 | = | 1 | + | 2 | = | 3 | + | 5 | = 8 ...
+#   +---+   +---+   +---+   +---+   +---+   +---+
+#     ^_______|        ^_______|       ^_______|
+#   each new box is just the sum of the two boxes directly behind it
 #
 # ----- Core Idea (Iterative) -----
 # Keep TWO variables (a, b) representing consecutive Fibonacci numbers.
@@ -459,6 +478,13 @@ Check Prime Number
 #   sqrt(36) = 6. Every pair has at least one number <= 6.
 #   So checking 2 to 6 is enough!
 #
+# ----- Trial division as a mirror -----
+#   small factor -->  2    3    4    6
+#                     |    |    |    |
+#   large factor <-- 18   12    9    6
+#   They "meet in the middle" at sqrt(n); past that point you'd just be
+#   re-checking factor pairs you've already found from the other side.
+#
 # ----- Walkthrough: Is 13 prime? -----
 # sqrt(13) ≈ 3.6, so check divisors 2 and 3 only.
 # 13 % 2 = 1 (not divisible)
@@ -719,6 +745,13 @@ Once i*i > n, I will stop searching and return i-1
 # ----- Walkthrough: sqrt(30) -----
 # ans=5: 25 <= 30 ✓, ans=6: 36 > 30 ✗ --> stop!
 # Answer: 6 - 1 = 5  (integer part only)
+#
+# ----- Convergence diagram: linear search creeping up to sqrt(30) -----
+#   ans:    0    1    2    3    4    5    6
+#   ans^2:  0    1    4    9   16   25   36
+#                                    ^^   ^^
+#                                  <=30  >30 (overshoot, back up by 1)
+#   We march forward 1 step at a time until we overshoot, then step back.
 
 n = int(input("Enter a number: "))
 ans = 0

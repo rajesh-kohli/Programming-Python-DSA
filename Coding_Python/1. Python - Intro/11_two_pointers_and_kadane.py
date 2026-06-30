@@ -131,6 +131,16 @@ print(f"Two-pointer count:    {target_sum_pair_optimised(arr, len(arr), t)}")
 #
 # Result: 3 pairs found: (1,6), (2,5), (3,4)
 #
+# ----- Visual: pointers start at opposite ends and converge inward -----
+#   idx:  0  1  2  3  4  5
+#   arr: [1, 2, 3, 4, 5, 6]
+#         i              j     sum=1+6=7 == t  -> MATCH, i++, j--
+#            i        j        sum=2+5=7 == t  -> MATCH, i++, j--
+#               i  j           sum=3+4=7 == t  -> MATCH, i++, j--
+#                  j  i        i no longer < j  -> STOP
+#
+#   Every step eliminates one element from EACH end -> O(n) total.
+#
 # ----- IMPORTANT GOTCHA -----
 # The two-pointer version ONLY works on a SORTED array. If your input
 # isn't sorted, you must sort it first: arr.sort() — which costs O(n log n).
@@ -219,6 +229,18 @@ print(f"Kadane's (optimised):     {maximum_subarray_sum_using_kadanes_optimised(
 # i=8: x=max(1+4, 4)=max(5,4)=5           max_so_far=6   (extend)
 #
 # Result: 6  → the subarray [4, -1, 2, 1] sums to 6 ✓
+#
+# ----- Visual: current_sum either EXTENDS or RESETS at each step -----
+#   arr:         -2    1   -3    4   -1    2    1   -5    4
+#   current_sum: -2    1   -2    4    3    5    6    1    5
+#                 |    |reset|reset|extend.................|
+#   max_sum:      -2    1    1    4    4    5    6    6    6
+#                                  ^------- best subarray found here -------^
+#                                  [4, -1, 2, 1] = 6
+#
+#   Whenever current_sum dips below the value of arr[i] alone, it's
+#   thrown away (reset); otherwise it keeps extending. max_sum just
+#   remembers the best current_sum has ever been.
 #
 # ----- Why does "reset when negative" work? -----
 # If the running sum x becomes negative, NO future subarray benefits from
@@ -316,6 +338,17 @@ print(f"Two-pointer max area: {max_area_optimised(heights)}")
 # i=1,j=5: w=4, h=min(8,4)=4,  a=16    max=49   ... continues until i meets j
 #
 # Result: 49 (the container between index 1 and index 8)
+#
+# ----- Visual: pointers start wide, the SHORTER side always steps inward -----
+#   idx:     0  1  2  3  4  5  6  7  8
+#   height: [1, 8, 6, 2, 5, 4, 8, 3, 7]
+#            i                       j     h=min(1,7)=1 width=8 area=8  -> i shorter, i++
+#               i                    j     h=min(8,7)=7 width=7 area=49 -> j shorter (7<8), j--
+#               i                 j        h=min(8,3)=3 width=6 area=18 -> j shorter, j--
+#               i              j           h=min(8,8)=8 width=5 area=40 -> tie, j--
+#
+#   Moving the TALLER line could only shrink width without raising the
+#   height cap, so it's never useful — only the shorter line is moved.
 
 
 # =============================================================================
@@ -457,6 +490,21 @@ print(two_sum_indices([2, 7, 11, 15], 9))   # [0, 1]  (2+7=9)
 
 
 # ----- Exercise 4: Remove duplicates from sorted array using two pointers -----
+#
+# ----- Visual: slow/fast pointers moving the SAME direction -----
+#   'slow' marks the last confirmed-unique slot; 'fast' scouts ahead.
+#   When fast finds something new, it gets copied just after slow.
+#
+#   arr: [1, 1, 2, 2, 2, 3]
+#         s
+#            f                 arr[fast]==arr[slow] -> skip
+#               f               arr[fast]!=arr[slow] -> slow++, arr[slow]=2
+#         s     f
+#                  f            duplicate -> skip
+#                     f         new value 3 -> slow++, arr[slow]=3
+#               s        f
+#
+#   Result: arr[:slow+1] = [1, 2, 3]
 
 def remove_duplicates(arr: list[int]) -> int:
     if not arr:

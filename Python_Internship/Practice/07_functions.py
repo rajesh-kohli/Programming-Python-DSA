@@ -58,6 +58,14 @@
 #       print(f"Hi {name}")
 #
 #   greet("Alice")        # "Alice" is an ARGUMENT
+#
+# Mental model: a function is a box. Arguments flow IN, a return value
+# flows OUT. Everything else stays sealed inside the box.
+#
+#        a=112 ----\                          /----> return a + b
+#        b=123 ----->  [   add(a, b)   ]  ---->        (value: 235)
+#                  /                          \
+#          (arguments in)                (return value out)
 
 
 # =============================================================================
@@ -125,6 +133,10 @@ add(112, 123)          # 112 and 123 are ARGUMENTS (actual values)
 #
 # RULE OF THUMB: Use return for computation, use print for display.
 # A function that computes something should almost always return it.
+#
+#   print(...)  -->  [console / screen]   (one-way, nothing comes back)
+#   return ...  -->  [caller's variable]  (value flows back into your code,
+#                                          reusable in further expressions)
 
 # What happens when a function has no return statement?
 # It returns None automatically.
@@ -147,6 +159,16 @@ add(112, 123)          # 112 and 123 are ARGUMENTS (actual values)
 #   - When you call a function, you put a plate on top
 #   - When a function returns, you remove the plate from the top
 #   - You always work with the top plate (most recent function call)
+#
+#   call func1(5,6)   call func2(3,4)    func2 returns 7    func1 returns 11
+#   +--------+        +--------+         +--------+         +------+
+#   | func1  |        | func2  | <- top  |        |         |      |
+#   +--------+        +--------+         +--------+         +------+
+#   |        |        | func1  |         | func1  |         |      |
+#   +--------+        +--------+         +--------+         +------+
+#   |  main  |        |  main  |         |  main  |         | main |
+#   +--------+        +--------+         +--------+         +------+
+#   grows upward as calls happen, shrinks back down as they return
 
 def func1(a, b):
     ans = func2(3, 4)       # func1 pauses here, calls func2

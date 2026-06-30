@@ -19,6 +19,15 @@ These are all the practice questions from the first 4 lectures
 # ----- Approach -----
 # Compare each number against the other two using 'and'.
 # If x > y AND x > z, then x is the largest. Same logic for y and z.
+#
+# ----- Mental model -----
+#   x=12  y=45  z=3
+#   is x the largest?  x>y? 12>45 NO  -->  skip straight to elif
+#   is y the largest?  y>x? 45>12 YES  and  y>z? 45>3 YES  --> y wins
+#
+#        x > y and x > z ?  --no--> y > x and y > z ?  --no--> z must be it
+#              |yes                      |yes
+#           x is largest             y is largest
 
 # Time: O(1)  — fixed number of comparisons (at most 2)
 # Space: O(1) — only 3 variables
@@ -178,6 +187,14 @@ design an algorithm to check if the number is prime
 # If n = a * b, then one of a or b must be <= sqrt(n).
 # So if no factor is found up to sqrt(n), n is prime.
 # This reduces time from O(n) to O(sqrt(n)).
+#
+# ----- Visualizing the factor pairs of 36 (sqrt(36) = 6) -----
+#   1 x 36   2 x 18   3 x 12   4 x 9   6 x 6
+#   ^                                   ^
+#   small factor                  factors "meet" at sqrt(n)
+#   grows -->                  <-- large factor shrinks
+# Every pair has one factor <= sqrt(n) and one >= sqrt(n),
+# so checking up to sqrt(n) is enough to catch every possible factor.
 
 # ----- Method 1: For loop, check all numbers from 2 to n-1 (Brute Force) -----
 # Time: O(n)
@@ -309,6 +326,11 @@ Example Input : N = 3
 #   "* " * 3  -->  "* * * "
 #   " " * 4   -->  "    "
 # This lets us write patterns as one-liners.
+#
+# ----- Mental model: every row = [spaces][stars] -----
+#   row i:  " " * spaces(i)  +  "*" * stars(i)
+#   You only ever need to figure out two small functions of i —
+#   how many spaces, and how many stars — everything else is the same loop.
 
 num = int(input("Enter a number: "))
 
@@ -402,6 +424,15 @@ for i in range(num):
 #
 # Row i (0-indexed): (num-i-1) spaces + (2*i+1) stars
 # Row i (1-indexed): (num-i) spaces + (2*i-1) stars
+#
+# ----- Actual output for num=5 -----
+#       *          row 0: 4 spaces, 1 star
+#      ***         row 1: 3 spaces, 3 stars
+#     *****        row 2: 2 spaces, 5 stars
+#    *******       row 3: 1 space,  7 stars
+#   *********      row 4: 0 spaces, 9 stars
+# As i grows, spaces shrink by 1 and stars grow by 2 — the pyramid widens
+# evenly on both sides because it adds 1 star to the left AND 1 to the right.
 
 for i in range(num):
     print(" " * (num - i - 1) + "*" * (2 * i + 1))  # prints a pyramid of stars
@@ -637,6 +668,15 @@ for i in range(num):
 # Row 1: 1 star + 8 spaces + 1 star  --> spaces = 2*(5-1) = 8
 # Row 2: 2 stars + 6 spaces + 2 stars --> spaces = 2*(5-2) = 6
 # Row 5: 5 stars + 0 spaces + 5 stars --> spaces = 2*(5-5) = 0
+#
+# ----- Visual: think of it as two triangles facing each other -----
+#   [stars][   gap shrinking   ][stars]
+#   *                                 *
+#   * *                             * *
+#   * * *                         * * *
+#   The left side is a normal right-angled triangle (i stars),
+#   the right side is its mirror image, and the gap between them
+#   is exactly the space the two triangles haven't "met" yet.
 
 ##  "butterfly pattern (upper half)" — also called "mirror triangles" or "double right-angled triangle"
 for i in range(1, num + 1):

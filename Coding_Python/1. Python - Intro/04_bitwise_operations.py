@@ -99,6 +99,14 @@ print(f"  {b:05b}")
 print(f"  -----")
 print(f"  {a ^ b:05b} = {a ^ b}")
 
+# ----- AND / OR / XOR side-by-side truth table (per bit column) -----
+#   bit:    1  1  0  0  1   (25)
+#   bit:    1  0  0  1  1   (19)
+#   --------------------------
+#   AND:    1  0  0  0  1   (17)  both must be 1
+#   OR:     1  1  0  1  1   (27)  at least one is 1
+#   XOR:    0  1  0  1  0   (10)  exactly one is 1 (i.e. they differ)
+
 # --- 2.4 NOT (~) : flip all bits ---
 # Python uses two's complement for negative numbers.
 # For any integer n:  ~n = -(n + 1)
@@ -109,6 +117,13 @@ print(f"  {a ^ b:05b} = {a ^ b}")
 #   ~5 = ...1111 1010 = -6
 #
 # Formula: ~n = -(n + 1)  because  n + ~n = all 1s = -1
+#
+# ----- Mental model: NOT flips every bit, even the "invisible" leading ones -----
+#   5  = ...0000 0101
+#   ~5 = ...1111 1010  = -6
+#   Since Python ints are conceptually infinite-precision, flipping bit-by-bit
+#   on a finite display can't show it directly — that's why we reason about it
+#   via the formula -(n+1) instead of printing a fixed-width flipped pattern.
 
 print(f"\n--- NOT (~) ---")
 print(f"  ~0 = {~0}    (all bits flipped: -(0+1) = -1)")
@@ -124,6 +139,12 @@ print(f"  ~{a} = {~a}   (-({a}+1) = -{a+1})")
 #   1 << 2 = 100   = 4     (1 * 2^2)
 #   1 << 3 = 1000  = 8     (1 * 2^3)
 #   5 << 2 = 10100 = 20    (5 * 2^2)
+#
+# ----- Bit-pattern shift diagram: 5 << 2 -----
+#   5      =     1 0 1
+#   5 << 1 =   1 0 1 0     (shift left, fill new rightmost slot with 0)
+#   5 << 2 = 1 0 1 0 0     (shift left again, another 0 fills in)
+#   Every bit slides left by k positions; k zeros are appended on the right.
 
 print(f"\n--- Left Shift (<<) ---")
 for k in range(1, 4):
@@ -139,6 +160,13 @@ print(f"  5 << 2 = {5 << 2:>4}    (binary: {5 << 2:08b})  -> 5 * 4 = 20")
 #   8 >> 2 = 10   = 2    (8 // 2^2)
 #   8 >> 3 = 1    = 1    (8 // 2^3)
 #   7 >> 1 = 11   = 3    (7 // 2 = 3, remainder lost)
+#
+# ----- Bit-pattern shift diagram: 8 >> 2 -----
+#   8      = 1 0 0 0
+#   8 >> 1 =   1 0 0 0  -- drop rightmost bit -->   1 0 0
+#   8 >> 2 =     1 0 0  -- drop rightmost bit -->     1 0
+#   Every bit slides right by k positions; the k rightmost bits fall off
+#   and are discarded (lost), and 0s fill in on the left.
 
 print(f"\n--- Right Shift (>>) ---")
 for k in range(1, 4):
@@ -483,6 +511,13 @@ print("=" * 60)
 # a ^= b  ->  a = (a^b) ^ a = b  (a cancels out)
 #
 # [INTERVIEW] Classic question. Works because XOR is its own inverse.
+#
+# ----- Mental model: each step "hides" one value inside the other -----
+#   x=42      y=99
+#   x^=y  -->  x=42^99        y=99            (x now holds the combined diff)
+#   y^=x  -->  x=42^99        y=99^(42^99)=42 (y recovers original x)
+#   x^=y  -->  x=(42^99)^42=99  y=42           (x recovers original y)
+#   No temp variable needed because XOR-ing twice with the same value cancels it.
 
 print("\n--- Ex 1: XOR Swap ---")
 x, y = 42, 99

@@ -54,6 +54,19 @@ print()
 #   DataFrame: a 2D labeled table  (like a spreadsheet or SQL table)
 #
 # Think of a DataFrame as a dictionary of Series — each column is a Series.
+#
+# SHAPE MENTAL MODEL — a DataFrame is a labeled grid (rows x columns):
+#
+#              columns ->  "name"     "age"    "city"
+#            index        +--------+--------+---------+
+#              0          | Alice  |   25   |   NYC   |
+#              1          | Bob    |   30   |   LA    |
+#              2          | Charlie|   35   | Chicago |
+#            +--------+--------+---------+
+#   df.shape -> (3, 3)   # (n_rows, n_columns)
+#   df["age"]      -> a single column, returned as a Series (1D)
+#   df.loc[1]      -> a single row, returned as a Series (1D)
+#   A Series is just one labeled column (or row) sliced out of this grid.
 
 # ----- Series -----
 s = pd.Series([10, 20, 30, 40], index=["a", "b", "c", "d"])
@@ -305,6 +318,20 @@ print(sales.iloc[-1])
 # ----- KEY DIFFERENCE -----
 # loc[0:2]  → includes row 2 (label-based, inclusive on both ends)
 # iloc[0:2] → excludes row 2 (position-based, exclusive on the end, like Python slicing)
+#
+# loc vs iloc AT A GLANCE:
+#
+#   index label:    "x"     "y"     "z"
+#   position:        0       1       2
+#                  +-------+-------+-------+
+#                  |  10   |  20   |  30   |
+#                  +-------+-------+-------+
+#
+#   .loc["x":"y"]   -> rows "x" AND "y"   (label-based, end INCLUSIVE)
+#   .iloc[0:1]      -> row at position 0 ONLY  (position-based, end EXCLUSIVE)
+#
+#   Rule of thumb: loc  = "by name/label"  (like a dict key)
+#                  iloc = "by integer position" (like a list index)
 
 # ----- Boolean indexing (MOST IMPORTANT — used everywhere) -----
 # Create a boolean mask, then use it to filter rows
@@ -485,6 +512,21 @@ print("=" * 60)
 # Think of it as: SQL's GROUP BY + aggregate functions.
 #
 # Pattern: df.groupby("column")["value_column"].agg_function()
+#
+# SPLIT -> APPLY -> COMBINE:
+#
+#   original df              groups (split by         result (combined)
+#   category | amount        "category")              category | sum
+#   ---------+-------        Electronics: [999,699] -> Electronics | 1698
+#   Electr.  |  999    -->   Clothing:    [50]       -> Clothing    |   50
+#   Clothing |   50          Groceries:   [25,40]    -> Groceries   |   65
+#   Electr.  |  699
+#   Grocer.  |   25                 .sum() applied
+#   Grocer.  |   40                 to each group
+#
+#   1. SPLIT:   rows are bucketed into groups by the key column's value
+#   2. APPLY:   an aggregate function (sum/mean/count/...) runs per group
+#   3. COMBINE: results are stitched back into one Series/DataFrame
 
 # ----- Basic groupby -----
 print("\n--- Total sales by category ---")
@@ -557,6 +599,23 @@ orders = pd.DataFrame({
 })
 
 # ----- merge (like SQL JOIN) -----
+#
+# JOIN TYPES AT A GLANCE (matching on customer_id):
+#
+#   orders.customer_id: C001 C002 C001 C007 C003
+#   customers.customer_id: C001 C002 C003 C004 C005 C006
+#
+#        orders only        both        customers only
+#           C007         C001,C002,C003    C004,C005,C006
+#          +------+    +---------------+    +------+
+#          |      |    |   (overlap)   |    |      |
+#          +------+    +---------------+    +------+
+#
+#   INNER  -> only the overlap (C001, C002, C003)
+#   LEFT   -> overlap + everything from orders (C007 kept, NaN for name/tier)
+#   RIGHT  -> overlap + everything from customers (C004/C005/C006 kept, NaN for order cols)
+#   OUTER  -> everything from both sides (union), NaN wherever there's no match
+#
 # inner join: only matching rows from both
 inner = pd.merge(orders, customers, on="customer_id", how="inner")
 print("\n--- INNER JOIN ---")
@@ -706,6 +765,17 @@ print("SECTION 14: Pivot Tables & Crosstab")
 print("=" * 60)
 
 # ----- pivot_table: like Excel pivot tables -----
+#
+# RESHAPE MENTAL MODEL — pivot_table turns long rows into a wide grid:
+#
+#   long format (one row per transaction)     wide format (pivoted)
+#   category    | city  | amount                       NYC    LA   Chicago
+#   Electronics | NYC   |  100         -->  Electronics 100    50      0
+#   Electronics | LA    |   50              Clothing     0    80     30
+#   Clothing    | LA    |   80
+#   Clothing    | Chicago|  30          index=category, columns=city,
+#                                       values=amount, aggfunc=sum
+#
 pivot = sales.pivot_table(
     values="amount",
     index="product_category",

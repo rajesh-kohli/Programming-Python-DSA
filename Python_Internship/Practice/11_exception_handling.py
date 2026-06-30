@@ -30,6 +30,22 @@ Topics Covered:
 # - Give the user a helpful error message instead of a scary traceback
 # - Allow the program to recover and continue running
 # - Handle predictable problems gracefully (file missing, bad input, etc.)
+#
+# Mental model -- exceptions form a TREE (a small slice of it shown here):
+#
+#                     BaseException
+#                           |
+#                       Exception
+#              /            |             \
+#       ArithmeticError  LookupError    ValueError   TypeError
+#             |             /    \
+#    ZeroDivisionError  IndexError  KeyError
+#
+#   `except Exception` catches ValueError, TypeError, LookupError and all
+#   their children (IndexError, KeyError, ...) -- but NOT KeyboardInterrupt
+#   or SystemExit, which live directly under BaseException, outside Exception.
+#   This is exactly why a bare "except:" (which catches BaseException) is
+#   more dangerous than "except Exception:" -- see Section 6 below.
 
 # =============================================================================
 # SECTION 2: The try / except / else / finally Flow
@@ -55,6 +71,19 @@ Topics Covered:
 #   1. Python tries to execute the code in the "try" block
 #   2. If NO error  -->  skip "except", run "else", then run "finally"
 #   3. If an error  -->  run matching "except", skip "else", then run "finally"
+#
+# Mental model -- two possible paths through the block, "finally" is the
+# only stop both paths always pass through:
+#
+#   SUCCESS PATH:   try (no error) -----> else -----> finally
+#                          |
+#   EXCEPTION PATH: try (error!) --> matching except --------> finally
+#                                          |
+#                          (else is SKIPPED on this path)
+#
+#   No matter which path is taken, "finally" runs at the end -- that's
+#   what makes it the right place for cleanup (closing files, releasing
+#   locks/connections) that must happen whether or not things went wrong.
 
 # =============================================================================
 # SECTION 3: Handling File Errors
@@ -183,6 +212,17 @@ finally:
 #
 # The "as e" part stores the exception object in variable e, so you can
 # print or log the actual error message for debugging.
+#
+# Mental model -- how wide a net each except clause casts (narrow to wide):
+#
+#   except FileNotFoundError:   [.]              narrowest -- one error type
+#   except (ValueError, KeyError):  [. .]         two specific types
+#   except Exception:            [. . . . . .]    almost everything (no Ctrl+C)
+#   except:  (bare)        [. . . . . . . . . .]  EVERYTHING, incl. Ctrl+C/exit
+#
+#   Prefer the narrowest net that still covers what you actually expect --
+#   it's the difference between a helpful error message and silently
+#   swallowing a bug (or worse, eating the user's Ctrl+C).
 
 # =============================================================================
 # SECTION 7: The "with" Statement (Context Manager)
@@ -212,6 +252,16 @@ finally:
 # You can even open multiple files at once:
 #   with open("input.txt", "r") as infile, open("output.txt", "w") as outfile:
 #       outfile.write(infile.read())
+#
+# Mental model -- "with" guarantees cleanup runs no matter what happens:
+#
+#   with open(...) as f:        __enter__() runs --> f is ready to use
+#       data = f.read()         block runs (may raise an exception)
+#   # block ends (normally OR via exception)
+#                                __exit__() runs  --> f.close() guaranteed
+#
+#   This is the same safety "finally" gives you, but scoped automatically
+#   to the resource -- no need to remember to write the finally yourself.
 
 # =============================================================================
 # KEY TAKEAWAYS

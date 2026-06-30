@@ -130,6 +130,23 @@ countdown(5)
 #
 # This is a "void" recursion — it doesn't return a value, just prints.
 # The next examples return values, which is where the stack matters more.
+#
+# ----- Call stack snapshot at the deepest point (just before countdown(0)) -----
+#   +---------------+
+#   | countdown(0)  |  <- top, about to print "Go!" and return
+#   +---------------+
+#   | countdown(1)  |
+#   +---------------+
+#   | countdown(2)  |
+#   +---------------+
+#   | countdown(3)  |
+#   +---------------+
+#   | countdown(4)  |
+#   +---------------+
+#   | countdown(5)  |  <- bottom, the original call
+#   +---------------+
+# Each frame is waiting on the one above it; once countdown(0) returns,
+# frames pop off top-down and nothing more happens (no work after the call).
 
 
 # =============================================================================
@@ -417,6 +434,23 @@ print(fib(7))   # 13
 
 # ----- How to fix it: Memoization -----
 # Store results we've already computed so we don't recompute them.
+#
+# ----- Same tree, but with memoization -- repeated subtrees get PRUNED -----
+#
+#                          fib(5)
+#                        /        \
+#                   fib(4)        fib(3) <-- already in memo! O(1) lookup, no recursion
+#                  /      \
+#             fib(3)    fib(2)
+#            /    \     /   \
+#        fib(2) fib(1) [memo] [memo]
+#        /   \
+#    fib(1) fib(0)
+#
+# Once fib(3) and fib(2) are computed once (left side), every later request
+# for them is a dictionary lookup instead of a re-expanded subtree.
+# This is exactly why time drops from O(2^n) to O(n): each distinct fib(k)
+# is expanded into the tree AT MOST ONCE.
 
 def fib_memo(n, memo={}):
     if n in memo:
@@ -648,6 +682,15 @@ def print_both(n):
 
 print_both(3)
 # Output: 3 2 1 1 2 3
+#
+# Mental model -- the recursive call is the mirror line; code before it
+# fires on the way DOWN, code after it fires on the way back UP:
+#
+#   print(3) -> print(2) -> print(1) -> print_both(0) -> return (base case)
+#      |                                                       |
+#      '---------------------- unwinding -----------------------'
+#                          (back up: print(1) -> print(2) -> print(3))
+#   Down pass prints: 3 2 1      Up pass prints: 1 2 3
 
 
 # ----- Perimeter of a circle (from original lecture) -----

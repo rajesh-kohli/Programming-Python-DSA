@@ -49,6 +49,21 @@ program ends. Files keep data permanently on disk.
 #   "r" vs "r+": "r" is read-only; "r+" lets you also write
 #   text vs binary: text mode handles encoding (newlines, etc.);
 #                   binary mode reads/writes raw bytes
+#
+# Mental model -- what happens to existing file content per mode:
+#
+#   File before:  "Hello World"
+#
+#   open(f, "w")        open(f, "a")          open(f, "r+")
+#   pointer at 0,        pointer at END,        pointer at 0,
+#   OLD CONTENT GONE     old content kept        old content kept
+#   |<empty>             |Hello World|<--write   |Hello World
+#    ^write here here          here goes here     ^write OVERWRITES
+#                                                   from this position
+#   After write("Hi"):   After write("Hi"):    After write("Hi"):
+#   "Hi"                 "Hello WorldHi"        "Hillo World"
+#                                                (overwrites first 2 chars,
+#                                                 does NOT insert)
 
 # (read, write, append, read/write, binary read, binary write, binary append, binary read/write)
 # eg.
@@ -88,6 +103,15 @@ f.close()  # close file
 # 2. Open files use system resources (file descriptors). Your OS limits
 #    how many files you can have open simultaneously.
 # 3. Other programs may not be able to access the file while it's open.
+#
+# Mental model -- f.write() flows through a buffer before hitting disk:
+#
+#   f.write("Hello")  -->  [in-memory buffer]  -- not on disk yet --
+#   f.write(" World")  -->  ["Hello World"]  -- still just in memory --
+#   f.close()          -->  buffer FLUSHED  --> disk: "Hello World"
+#
+#   If your program crashes before close()/flush(), buffered writes can
+#   be lost -- another reason "with" (which always closes) is preferred.
 
 # =============================================================================
 # SECTION 3: Reading from Files
@@ -419,6 +443,17 @@ f.close()
 # IMPORTANT CONCEPT: Strings in Python are IMMUTABLE.
 # This means you CANNOT change a string in place. Any operation that
 # "modifies" a string actually creates a NEW string.
+#
+# Mental model -- replace() builds a NEW string, it never edits in place:
+#
+#   data = "abc"
+#   data.replace("a", "#")   creates  id 2001: "#bc"   <-- thrown away!
+#         |
+#         v (return value ignored)
+#   data still -----> id 1001: "abc"   (UNCHANGED -- this is the bug)
+#
+#   data = data.replace("a", "#")   <-- must REASSIGN to capture the new string
+#   data now -----> id 2001: "#bc"   (data now points at the new string)
 
 f2 = open("tp.txt", "r")
 print(f2.read())
@@ -530,6 +565,14 @@ with open("tp.txt", "w") as f:
 #
 # Time Complexity: O(n) where n is the file size
 # Space Complexity: O(n) because we read the entire file into memory
+#
+# Mental model -- copying is just reading a stream then writing a stream:
+#
+#   abc.txt (source)  --read()-->  data (in memory)  --write()-->  abc1.txt
+#   [Hello World...]                "Hello World..."                [Hello World...]
+#
+#   For huge files, reading it all into memory (O(n) space) can be wasteful;
+#   shutil.copy() (or chunked reads) avoids holding the whole file at once.
 
 ###########################################################################################################################################################################################################################################################################################################################################################################################################################################
 f5 = open("abc.txt", "w")

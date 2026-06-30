@@ -81,6 +81,19 @@ print(f"chr(122) = '{chr(122)}'")     # z
 # Important relationships:
 #   ord('a') - ord('A') = 97 - 65 = 32
 #   Uppercase + 32 = Lowercase (and vice versa: Lowercase - 32 = Uppercase)
+#
+# MENTAL MODEL — ord()/chr() are just a two-way lookup table (a number line):
+#
+#   ord('A')                                           chr(90)
+#      |                                                   |
+#      v                                                   v
+#   ... 64   65   66   67  ...  89   90   91 ...
+#        '@'  'A'  'B'  'C' ... 'Y'  'Z'  '['
+#             ^------ chr(65) = 'A' ------^
+#
+#   ord(char)  walks  character -> number   (left to right above)
+#   chr(num)   walks  number -> character   (right to left above)
+#   They are exact inverses: chr(ord(c)) == c  and  ord(chr(n)) == n
 
 print("\n--- ASCII Table (printable subset) ---")
 print(f"  '0'-'9': {ord('0')}-{ord('9')}  (digits)")
@@ -107,6 +120,15 @@ print("=" * 70)
 # them by converting to int, doing math, and converting back.
 #
 # Pattern: chr(ord(char) + offset)
+#
+# MENTAL MODEL — "'a' + 1 -> 'b'" trick, step by step:
+#
+#   'a'  --ord()-->  97  --(+1)-->  98  --chr()-->  'b'
+#
+#   You can't add an int directly to a str ('a' + 1 is a TypeError) —
+#   you always have to round-trip through the number: ord() out, chr() back in.
+#   This single round-trip pattern powers next/prev char, case conversion,
+#   and the Caesar cipher in Section 6 below.
 
 # --- Getting next / previous character ---
 print("\n--- Next and previous characters ---")

@@ -27,6 +27,15 @@
 #   6 << 2 :  110 << 2 = 11000 = 24    (6 * 2^2 = 24)
 #   6 >> 1 :  110 >> 1 = 11 = 3        (6 // 2^1 = 3)
 #
+# COLUMN-ALIGNED TRUTH TABLE (using 5 and 3 as a worked example):
+#
+#       5   =  0 1 0 1
+#       3   =  0 0 1 1
+#      -----------------
+#   5 & 3   =  0 0 0 1   = 1    (AND: 1 only where BOTH are 1)
+#   5 | 3   =  0 1 1 1   = 7    (OR:  1 where AT LEAST ONE is 1)
+#   5 ^ 3   =  0 1 1 0   = 6    (XOR: 1 where bits DIFFER)
+#
 # WHY USE BITWISE OPERATORS?
 #   - They are extremely fast (direct CPU operations)
 #   - Even/odd check: (n & 1) == 0 means even, == 1 means odd
@@ -90,6 +99,11 @@ if ((x - 1) >> 1) or ((x >> 1) < 3) and (x != 3):
 #   str()    - convert to string
 #
 # Without casting, the + operator concatenates strings instead of adding.
+#
+# CASTING DIAGRAM:
+#   input() -> "3"  ----int()---->  3   (str object replaced by an int object)
+#   "3" + "4" = "34"   (concatenation, no math)
+#   int("3") + int("4") = 7   (real addition)
 # =============================================================================
 
 # WITHOUT type casting: string concatenation happens
@@ -185,6 +199,17 @@ else:
 #
 # POTENTIAL ISSUE: Floating-point comparison (distance == radius) can be
 # unreliable. For production code, use: abs(distance - radius) < epsilon
+#
+# IF / ELIF / ELSE AS A DECISION TREE:
+# -------------------------------------
+#                  [ radius == distance ? ]
+#                    /yes            \no
+#               "on circle"   [ radius > distance ? ]
+#                                /yes            \no
+#                          "inside circle"   "outside circle"
+#
+#   Only ONE branch ever runs. Python checks conditions top to bottom and
+#   stops at the first True one -- the rest are skipped entirely.
 #
 # TIME COMPLEXITY: O(1)
 # SPACE COMPLEXITY: O(1)

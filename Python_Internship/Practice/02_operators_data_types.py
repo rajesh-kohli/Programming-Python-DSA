@@ -89,6 +89,17 @@ print(15 not in container)  # Output: True (15 is NOT in the list)
 #   - Use == to compare VALUES  (almost always what you want)
 #   - Use 'is' to compare with None:  if x is None
 #   - Avoid using 'is' to compare integers or strings in general
+#
+# MENTAL MODEL: == compares the BOXES' contents, "is" compares the ARROWS
+# -------------------------------------------------------------------------
+#   a = b = 5            a = 1000       b = 1000
+#                         (separate statements, big int)
+#   a ---\
+#         >--> [ 5 ]      a ---> [1000]   b ---> [1000]
+#   b ---/
+#
+#   a == b  -> True (same value)     a == b -> True  (same value)
+#   a is b  -> True (same object)    a is b -> maybe False (different objects)
 # =============================================================================
 
 a = b = 5
@@ -162,6 +173,21 @@ print(id(b))
 #   - If you pass a mutable object to a function, the function CAN modify it
 #   - If you pass an immutable object, the function CANNOT modify the original
 #   - Immutable objects are hashable and can be used as dictionary keys
+#
+# ALIASING DIAGRAM: x = y means "point to the SAME object", not "copy"
+# -----------------------------------------------------------------------
+#   IMMUTABLE (int):              MUTABLE (list):
+#     x = 5                         x = [1, 2, 3]
+#     y = x                         y = x
+#     y = 10  (rebinds y only)      y.append(4)  (mutates the shared object!)
+#
+#     x ---> [5]                    x ---\
+#     y ---> [10]  (new box)              >---> [1, 2, 3, 4]
+#                                    y ---/
+#
+#   Reassigning y=10 just moves y's arrow to a new box; x is untouched.
+#   But mutating y (e.g. y.append) changes the SAME box that x also
+#   points to, so x sees the change too.
 # =============================================================================
 
 a = 123

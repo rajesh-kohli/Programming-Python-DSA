@@ -34,6 +34,13 @@ print(fun1(6, 7))
 # 3. fun1 calls fun3()     --> fun3 returns 5, stored in x (but x is unused)
 # 4. fun1 computes 6 + 7*7 = 6 + 49 = 55 and returns it
 # 5. print(55) displays "55"
+#
+# Mental model -- the call stack grows downward and unwinds upward:
+#   main()
+#    \-> fun1(6,7)              [waiting, pushed onto stack]
+#         \-> fun2(5,6) -> 9    [runs, returns 9, popped -- value discarded]
+#         \-> fun3()    -> 5    [runs, returns 5, popped -- stored in x]
+#        fun1 resumes, computes 6+49=55, fun1 popped, returns 55 to main
 
 
 # =============================================================================
@@ -63,6 +70,16 @@ print(x)
 # BEST PRACTICE: Avoid using `global` in real code. Instead, pass values
 # as arguments and return results. Global state makes code harder to
 # debug and test.
+#
+# Mental model -- two separate boxes (scopes):
+#   GLOBAL scope: x = 5 --------------------+
+#                                            |
+#   def g():                                |
+#       global x   <-- "use the outer box"--+
+#       x = 7      <-- writes into the SAME global box
+#
+#   Without `global`, `x = 7` inside g() would create a NEW local box
+#   named x that shadows the global one -- the global box stays untouched.
 
 
 # =============================================================================
@@ -111,6 +128,14 @@ print("After += ID:", id(a))
 # Compare with:
 #   a = a + [3, 4, 5]      # This creates a NEW list and reassigns a
 #   # The ID would CHANGE because a now points to a different object.
+#
+# Mental model -- in-place (+=) vs rebind (+):
+#   a += [3,4,5]            a = a + [3,4,5]
+#   id 1001 [1,2,3,4]        id 1001 [1,2,3,4]   (old list, unchanged)
+#         |   (mutated)            id 1002 [1,2,3,4,3,4,5]  (new list)
+#         v                  a ----^ (now points to id 1002)
+#   id 1001 [1,2,3,4,3,4,5]
+#   a still points to id 1001 (same box, new contents)
 
 
 # =============================================================================

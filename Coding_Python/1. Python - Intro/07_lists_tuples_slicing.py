@@ -223,6 +223,23 @@ else:
 # CRITICAL: Slicing ALWAYS returns a NEW list (shallow copy)
 # Out-of-range indices in slices do NOT raise errors — they are silently clamped
 
+# MENTAL MODEL — index markers above/below the list, start:stop:step:
+#
+#           0     1     2     3     4     5     6     7
+#         -8    -7    -6    -5    -4    -3    -2    -1
+#         +----+----+----+----+----+----+----+----+
+#         | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 |
+#         +----+----+----+----+----+----+----+----+
+#
+#   nums[1:4]    -> start=1, stop=4 (exclusive), step=1  -> [20, 30, 40]
+#   nums[-3:]    -> start=-3 (=index 5), stop=end          -> [60, 70, 80]
+#   nums[::2]    -> every 2nd element from the start       -> [10, 30, 50, 70]
+#   nums[::-1]   -> step=-1 walks RIGHT to LEFT, reverses   -> [80,70,60,...,10]
+#   nums[5:1:-1] -> start=5, walk backwards, stop BEFORE 1 -> [60, 50, 40, 30]
+#
+#   Rule of thumb: stop is always EXCLUDED, and the SIGN of step decides
+#   which direction you walk (positive = left-to-right, negative = right-to-left).
+
 nums = [10, 20, 30, 40, 50, 60, 70, 80]
 #  idx:  0   1   2   3   4   5   6   7
 # -idx: -8  -7  -6  -5  -4  -3  -2  -1
@@ -286,6 +303,20 @@ sliced[0][0] = 999           # Modifies the inner list
 print(f"original after modifying slice: {original}")
 #   [[999, 2], [3, 4], [5, 6]]  — inner list is SHARED!
 #   For deep copy, use: import copy; deep = copy.deepcopy(original)
+
+# MENTAL MODEL — shallow copy duplicates the OUTER box, not the INNER boxes:
+#
+#   original = [[1,2], [3,4], [5,6]]
+#
+#   original ---> [ ref0, ref1, ref2 ]      sliced ---> [ ref0, ref1, ref2 ]
+#                    |     |     |                         |     |     |
+#                    v     v     v                         v     v     v
+#                  [1,2] [3,4] [5,6]   <-- SAME inner list objects, shared!
+#
+#   sliced[0][0] = 999  walks through ref0 and mutates the SHARED [1,2] list,
+#   so original[0][0] changes too — even though sliced and original are
+#   different outer list objects. Only copy.deepcopy() also clones the
+#   inner lists, giving fully independent nested data.
 
 # Example 10: Slice ASSIGNMENT — modifying list through slices
 # This is a POWERFUL feature — can change size of the list!
@@ -654,6 +685,19 @@ print("\n--- Tuples ---")
 
 # A tuple is like a list but IMMUTABLE — once created, cannot be changed.
 # Under the hood: fixed-size array of references (no resize mechanism).
+#
+# MENTAL MODEL — mutable (list) vs immutable (tuple) under mutation attempts:
+#
+#   LIST (mutable)                      TUPLE (immutable)
+#   lst = [1, 2, 3]                     tup = (1, 2, 3)
+#   lst[0] = 99    -> OK, in-place      tup[0] = 99   -> TypeError!
+#   lst.append(4)  -> OK, in-place      tup has no .append at all
+#   id(lst) SAME before/after mutation  tup can never change; "changing" it
+#                                       means building a brand NEW tuple
+#                                       (e.g. tup = tup + (4,) -> new object)
+#
+#   Because tuples never change, they're hashable (usable as dict keys /
+#   set members) and Python can treat them as safe, fixed "records".
 
 # ----- Creating Tuples -----
 

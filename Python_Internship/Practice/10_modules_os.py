@@ -69,6 +69,21 @@ Topics Covered:
 # - "import os" keeps your namespace clean -- you always know os.path came from os.
 # - "from os import path" is convenient when you use path() many times.
 # - "import numpy as np" saves typing for modules you use constantly.
+#
+# Mental model -- a module is a NAMESPACE BOX full of names you pull from:
+#
+#   module "os"  (a box of names)              your code's namespace
+#   +-----------------------+
+#   | system   getcwd       |   import os  -->  os.system(), os.getcwd()
+#   | listdir  path  ...    |
+#   +-----------------------+
+#         |
+#         | from os import system  -->  pulls just `system` out of the box
+#         v                              into your own namespace: system()
+#
+#   "from os import *" dumps EVERY name out of the box into yours --
+#   convenient but risky: if two modules export the same name, the
+#   second import silently overwrites the first.
 
 # =============================================================================
 # SECTION 3: The OS Module -- Interacting with the Operating System
@@ -86,6 +101,17 @@ Topics Covered:
 #   os.remove(path)      -- Delete a file
 #   os.path.exists(path) -- Check if a file/path exists
 #   os.path.join(a, b)   -- Safely join path components (handles / vs \ for you)
+#
+# Mental model -- os.path treats the filesystem as a tree you walk/inspect:
+#
+#   /Users/you/project/            os.getcwd()       -> ".../project"
+#   +-- data/                      os.listdir(".")   -> ["data", "main.py"]
+#   |   +-- input.txt              os.path.exists("data/input.txt") -> True
+#   +-- main.py
+#
+#   os.path.join("data", "input.txt") -> "data/input.txt" (or "data\input.txt"
+#   on Windows) -- it picks the right separator for you so the same code
+#   works cross-platform instead of hardcoding "/" or "\".
 
 import os
 
@@ -197,6 +223,16 @@ import webbrowser
 #       content = f.read()
 #       print(content)
 #   # File is automatically closed here, even if an error occurs
+#
+# Mental model -- open() hands you a pointer into the file's byte stream:
+#
+#   filename.txt on disk: "Hello, world!"
+#   f = open(...)  ->  pointer starts at position 0 -->|Hello, world!
+#   f.read()       ->  reads to the end, pointer moves to the end ------->|
+#   f.close()      ->  releases the OS file handle (forgetting this leaks
+#                       handles and can leave writes un-flushed to disk)
+#
+#   See Lecture 12 (file_handling) for read/write modes in full detail.
 
 # %%
 # f = open("abc.txt", "r")

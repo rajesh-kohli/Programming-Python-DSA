@@ -21,6 +21,25 @@ PROJECT OVERVIEW:
       "todo.txt": "Buy groceries",
       ...
   }
+
+MENTAL MODEL -- dict as a tiny "file system":
+  Think of the dictionary as a flat directory listing: each key is a
+  filename, each value is that file's full contents. There are no folders
+  here, just a single flat namespace -- exactly like one folder on disk
+  with no subfolders.
+
+      file_system (dict)              disk (mirrored by every call)
+      +----------------+----------+   +-----------------------+
+      | KEY (filename) | VALUE    |   | notes.txt             |
+      +----------------+----------+   |   Hello World         |
+      | "notes.txt"    | "Hello.."|   +-----------------------+
+      | "todo.txt"     | "Buy..." |   | todo.txt              |
+      +----------------+----------+   |   Buy groceries       |
+                                       +-----------------------+
+
+  Every function below keeps these two views in sync: it writes/reads the
+  real file on disk AND updates the in-memory dict so lookups stay O(1)
+  without re-reading from disk each time.
 """
 
 # =============================================================================
@@ -102,6 +121,17 @@ def add_contents(file_name, contents):
       3. Appends the new contents both to disk and to the dictionary
     - This is a defensive programming pattern -- handle edge cases gracefully
       instead of crashing with a KeyError.
+
+    FLOW DIAGRAM (create -> add -> read):
+
+        create_file("notes.txt", "Hello")
+            file_system = {"notes.txt": "Hello"}
+
+        add_contents("notes.txt", " World")
+            file_system = {"notes.txt": "Hello World"}   <- appended, not replaced
+
+        read_file("notes.txt")
+            returns "Hello World"   <- read straight from the dict (no disk I/O)
     """
     if file_name not in file_system:
         file_system[file_name] = ""

@@ -51,6 +51,15 @@ Except what we are going to print
 #   i=3: j runs 1 to 3  --> prints: 1 2 3
 #   i=4: j runs 1 to 4  --> prints: 1 2 3 4
 #   i=5: j runs 1 to 5  --> prints: 1 2 3 4 5
+#
+# ----- Actual printed shape, annotated with i (row) -----
+#   i=1:  1
+#   i=2:  1 2
+#   i=3:  1 2 3
+#   i=4:  1 2 3 4
+#   i=5:  1 2 3 4 5
+#   The OUTER loop (i) picks the row; the INNER loop (j) walks 1..i printing
+#   each column value — j IS the value printed in this pattern.
 
 # ----- Method 1: Using for loops -----
 
@@ -213,6 +222,10 @@ Mostly use num = 1 - num for swapping numbers
 #   i=3 (odd):  num starts at 1  --> 1, flip 0, flip 1             --> 1 0 1
 #   i=4 (even): num starts at 0  --> 0, 1, 0, 1                   --> 0 1 0 1
 #   i=5 (odd):  num starts at 1  --> 1, 0, 1, 0, 1                --> 1 0 1 0 1
+#
+# ----- The flip in pictures -----
+#   num=1 --(1-num)--> num=0 --(1-num)--> num=1 --(1-num)--> num=0 ...
+#   It's a 2-state toggle: 1 - 1 = 0, and 1 - 0 = 1, bouncing back and forth.
 
 n = int(input())
 
@@ -283,6 +296,15 @@ Everytime you're at the ith row, you need to start printing the numbers starting
 # ----- Structure of each row -----
 # [ (n-i) spaces ] [ i numbers starting from i ]
 # Two inner loops: one for spaces, one for numbers.
+#
+# ----- Visual breakdown (n=5) -----
+#   i=1:  [    4 spaces    ][      1      ]   =>         1
+#   i=2:  [   3 spaces   ][    2  3      ]   =>       2 3
+#   i=3:  [  2 spaces  ][   3  4  5     ]   =>     3 4 5
+#   i=4:  [ 1 space  ][    4  5  6  7  ]   =>   4 5 6 7
+#   i=5:  [0 spaces][   5  6  7  8  9  ]   => 5 6 7 8 9
+#   spaces shrink by 1 each row while the number-block grows by 1 — they
+#   trade space for content, keeping the right edge aligned.
 
 n = int(input())
 
@@ -320,6 +342,11 @@ for i in range(1, n + 1):
 #   1. Leading SPACES      (to center/right-align the pattern)
 #   2. ASCENDING numbers   (numbers going up)
 #   3. DESCENDING numbers  (numbers coming back down, mirroring the ascent)
+#
+# ----- Row anatomy diagram (row i=3) -----
+#   [ spaces (n-i) ][ ascend: i nums  ][ descend: i-1 nums ]
+#   [    "  "      ][    3   4   5    ][      4     3      ]
+#                          ^ peak is the last ascending number, never repeated
 #
 # ----- Analysis for n=5 -----
 #
@@ -477,6 +504,15 @@ Output:
 #   i=3: i <= 2? NO   --> print 5-3+1 = 3  --> * * *    (peak / middle row)
 #   i=4: i <= 2? NO   --> print 5-4+1 = 2  --> * *
 #   i=5: i <= 2? NO   --> print 5-5+1 = 1  --> *
+#
+# ----- The shape, annotated with row i and star-count j -----
+#   i=1  j=1   *
+#   i=2  j=2   * *
+#   i=3  j=3   * * *   <-- peak: i == num//2 + 1
+#   i=4  j=2   * *
+#   i=5  j=1   *
+#   Star count climbs 1..i for the top half, then mirrors back down — like
+#   two right-angled triangles stacked base-to-base.
 
 num = int(input("Enter any postive odd number:"))
 

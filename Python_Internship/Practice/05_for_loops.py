@@ -32,6 +32,15 @@
 #   range(0, 10, 3) --> 0, 3, 6, 9
 #   range(10, 0, -1)--> 10, 9, 8, 7, 6, 5, 4, 3, 2, 1  (counting down)
 #   range(10, 0, -2)--> 10, 8, 6, 4, 2                  (counting down by 2)
+#
+# Mental model: think of range(start, stop, step) as a number line walk.
+# You stand at `start`, take `step`-sized hops, and stop the instant you
+# would land on or past `stop` -- that landing spot is NEVER printed.
+#
+#   range(2, 7):
+#   0   1   [2]  3   4   5   6  (7)
+#               ^start          ^stop (excluded, walk stops here)
+#   visited: 2, 3, 4, 5, 6
 
 
 # =============================================================================
@@ -51,6 +60,15 @@ for i in range(0, 10, 2):
 # 8
 # Time Complexity: O(n/2) = O(n), where n = stop value
 # Space Complexity: O(1) -- range produces values one at a time
+#
+# Iteration trace table (loop variable only, no accumulator here):
+#   iteration #   i
+#   -----------   --
+#       1          0
+#       2          2
+#       3          4
+#       4          6
+#       5          8
 
 
 # ---- Example 2: Default start and step ----
@@ -135,6 +153,15 @@ for i in range(10):
 #   ... and so on
 #
 # Total iterations = (outer count) * (inner count)
+#
+# Mental model: the outer loop picks a ROW, the inner loop walks every
+# COLUMN in that row before moving to the next row -- like reading a grid
+# left-to-right, top-to-bottom.
+#
+#   for i in range(3):        j-> 0    1    2
+#       for j in range(3):  i=0 [0,0][0,1][0,2]   <- inner loop sweeps
+#           ...              i=1 [1,0][1,1][1,2]     across before i
+#                             i=2 [2,0][2,1][2,2]     advances to next row
 
 # ---- Example 4: Two nested loops with modulo ----
 # Outer: i goes 0,1,2,3,4  (5 iterations)

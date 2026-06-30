@@ -25,6 +25,19 @@
 #   Understanding memory helps you avoid bugs with mutable objects (like lists)
 #   and understand why "is" and "==" behave differently (covered in file 02).
 #
+# MENTAL MODEL: name --> reference --> object in memory
+# -------------------------------------------------------
+#   pid = 1001
+#
+#       pid ----------> +--------+
+#       (name)           | 1001   |  <- object in memory (has its own id())
+#                         +--------+
+#
+#   The variable "pid" is NOT the box. It's an arrow (reference) pointing
+#   at the box. If you later do "pid = 2002", the arrow is redirected to a
+#   NEW box -- the old 1001 box is left behind (and garbage collected if
+#   nothing else points to it).
+#
 # TIME COMPLEXITY: All operations here are O(1) - constant time.
 # SPACE COMPLEXITY: O(1) - we store a single integer.
 # =============================================================================
@@ -68,4 +81,20 @@ print("End of an application")
 #       b = 1000
 #       print(id(a), id(b))   # May be different addresses!
 #    (Python only caches integers from -5 to 256 -- more on this in file 02)
+#
+# VISUALIZING THE CACHE DIFFERENCE:
+#
+#   Small ints (-5 to 256) are pre-built and SHARED:
+#       a = 100  ----\
+#                      >---> +-----+
+#       b = 100  ----/        | 100 |   <- ONE shared object, two arrows
+#                              +-----+
+#
+#   Larger ints (outside the cache) get a fresh object EACH time:
+#       a = 1000 --------> +------+
+#                            | 1000 |   <- separate object
+#                            +------+
+#       b = 1000 --------> +------+
+#                            | 1000 |   <- another separate object
+#                            +------+
 # =============================================================================

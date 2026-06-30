@@ -284,6 +284,19 @@ print("=" * 70)
 #
 # Time : O(n) — one pass through the array.
 # Space: O(1) — only one extra variable (temp).
+#
+# Mental model: the last element "lifts off" into temp, everyone else
+# slides one seat to the right, then temp lands in the empty front seat.
+#
+#   [1, 2, 3, 4, 5]      temp = 5 (lifted off)
+#    idx:0 1 2 3 4
+#
+#   shift right-to-left (so we never overwrite a value before reading it):
+#   [1, 2, 3, 4, 4]   i=4: arr[4] = arr[3]
+#   [1, 2, 3, 3, 4]   i=3: arr[3] = arr[2]
+#   [1, 2, 2, 3, 4]   i=2: arr[2] = arr[1]
+#   [1, 1, 2, 3, 4]   i=1: arr[1] = arr[0]
+#   [5, 1, 2, 3, 4]   arr[0] = temp  <- 5 lands at the front
 
 
 def rotate_right_by_1(arr):
@@ -472,6 +485,16 @@ print("=" * 70)
 #   Sort the array, take last 3. Time: O(n log n). This is worse!
 #   Our single-pass approach is O(n), which is optimal since we must
 #   look at every element at least once.
+#
+# Mental model — three "podium slots" that only ever move DOWN:
+#
+#   arr = [12, 35, 1]              first second third
+#   num=12  -> 12 beats all        [ 12 ] [ -inf] [ -inf]
+#   num=35  -> 35 beats all        [ 35 ] [  12 ] [ -inf]   (12 cascades down)
+#   num=1   -> 1 only beats third  [ 35 ] [  12 ] [   1 ]
+#
+#   A new champion bumps 1st->2nd and 2nd->3rd in one step — like a
+#   medal podium where a faster runner pushes everyone below them down.
 
 
 def three_largest(arr):
@@ -576,6 +599,17 @@ def two_sum_hashmap(arr, target):
 #   i=1: num=7,  complement=9-7=2,  seen={2:0}       -> 2 IS in seen! -> return (0,1)
 #
 # We found the answer in just 2 iterations!
+#
+# Mental model: "seen" is a guest list. Each new number asks "is my
+# partner (complement) already on the list?" before adding itself.
+#
+#   arr = [2, 7, 11, 15], target = 9
+#
+#   i=0  num=2   need 7   seen={}        7 not on list -> add 2  seen={2:0}
+#   i=1  num=7   need 2   seen={2:0}     2 IS on list! -> return (0, 1)
+#
+#   No nested loop needed — the hash map remembers what we've already
+#   walked past, trading O(n) space for dropping from O(n^2) to O(n).
 
 arr = [2, 7, 11, 15]
 target = 9
@@ -624,6 +658,20 @@ print("=" * 70)
 #
 # Time : O(n)
 # Space: O(1)
+#
+# Mental model: write_pos marks "the next free slot for a non-zero".
+# Non-zero values get pulled forward into that slot as we scan; the
+# gaps left behind get filled with zeros at the end.
+#
+#   arr = [0, 1, 0, 3, 12]            write_pos
+#    idx:  0  1  2  3   4
+#
+#   num=0  (skip)                     wp=0
+#   num=1  -> arr[0]=1   [1,1,0,3,12] wp=1
+#   num=0  (skip)                     wp=1
+#   num=3  -> arr[1]=3   [1,3,0,3,12] wp=2
+#   num=12 -> arr[2]=12  [1,3,12,3,12]wp=3
+#   fill rest with 0:    [1,3,12,0,0]
 
 def move_zeros_to_end(arr):
     """Move all zeros to the end, preserving order of non-zeros. In-place."""
@@ -718,6 +766,20 @@ print(f"[]              -> {is_sorted([])}")
 #
 # Time : O(n)
 # Space: O(1)
+#
+# Mental model: two pointers walking together — 'i' is the fast scout
+# checking every element, 'write_pos' only advances when a genuinely
+# NEW value is found, so it always points at the next "clean" slot.
+#
+#   arr = [1, 1, 2, 2, 3]              write_pos
+#    idx:  0  1  2  3  4
+#
+#   i=1: arr[1]=1 == arr[0]=1   -> skip (duplicate)        wp=1
+#   i=2: arr[2]=2 != arr[1]=1   -> arr[1]=2  [1,2,2,2,3]    wp=2
+#   i=3: arr[3]=2 == arr[2]=2   -> skip (duplicate)        wp=2
+#   i=4: arr[4]=3 != arr[3]=2   -> arr[2]=3  [1,2,3,2,3]    wp=3
+#
+#   Result: first 3 slots [1, 2, 3] are the unique values.
 
 def remove_duplicates_sorted(arr):
     """Remove duplicates in-place from sorted array. Return unique count."""

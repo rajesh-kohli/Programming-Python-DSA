@@ -98,6 +98,18 @@ Table of Contents:
 #
 # You can create MANY objects from ONE class, just like building
 # many houses from the same blueprint.
+#
+# Visual - one class, many independent objects:
+#
+#   class Dog2          dog1 = Dog2()         dog2 = Dog2()
+#   (the blueprint)
+#   +------------+        dog1                  dog2
+#   | bark()     |   -->  (own memory address)   (own memory address)
+#   | sit()      |        id(dog1) != id(dog2)
+#   +------------+
+#
+#   Both objects share the SAME methods defined on the class, but each
+#   is a separate object in memory (dog1 is dog2 -> False).
 
 # In Python, EVERYTHING is an object:
 a = 5
@@ -222,6 +234,26 @@ print()
 # Defined OUTSIDE __init__, directly in the class body
 # SHARED by ALL objects of that class
 # Changing it affects ALL objects (unless overridden on an instance)
+#
+# Visual - each object has its own instance-variable box, but they all
+# point to the SAME shared class-variable box:
+#
+#                  class Employee2
+#                  +---------------------------+
+#                  | company = "Google"  <----------+  SHARED by everyone
+#                  | employee_count = 0  <--------+  |  (one copy, lives on the class)
+#                  +---------------------------+  |  |
+#                       ^             ^           |  |
+#                       |             |           |  |
+#        +--------------+    +--------+----+      |  |
+#        | e1: name=Alice|    | e2: name=Bob|      |  |
+#        |     salary=150k|   |   salary=130k|     |  |
+#        +----------------+   +--------------+     |  |
+#        (own instance vars)  (own instance vars)  |  |
+#                                                    |  |
+#   Employee2.company = "Meta"  ----------------->--+  |
+#   changes the ONE shared box -> e1.display() and       |
+#   e2.display() BOTH now say "Meta" --------------------+
 
 class Employee2:
     # CLASS VARIABLE — shared by all employees
@@ -475,6 +507,19 @@ print()
 # ----- Multiple Inheritance -----
 # A class can inherit from MORE THAN ONE parent class.
 # Python uses MRO (Method Resolution Order) to decide which parent's method to call.
+#
+# Visual - Duck's hierarchy and the MRO lookup order Python walks:
+#
+#              Animal      Flyable      Swimmable
+#                 \           |            /
+#                  \          |           /
+#                   +-------- Duck -------+
+#
+#   Duck.__mro__:  Duck -> Animal -> Flyable -> Swimmable -> object
+#                   ^1       ^2         ^3          ^4          ^5
+#   When you call donald.speak(), Python searches this list left to
+#   right and stops at the FIRST class that defines speak(). Duck
+#   defines its own speak(), so the search stops at step 1.
 
 class Flyable:
     def fly(self):
@@ -578,6 +623,17 @@ print()
 # | __contains__   | item in obj                    | 5 in my_set           |
 # | __iter__       | for item in obj                | for x in obj:         |
 # | __del__        | Object is garbage collected     | del obj               |
+#
+# Visual - familiar syntax on the left, the dunder method Python actually calls on the right:
+#
+#   print(book1)        --> book1.__str__()
+#   len(book1)           --> book1.__len__()
+#   book1 == book3      --> book1.__eq__(book3)
+#   book1 < book2        --> book1.__lt__(book2)
+#
+#   Dunder methods are how Python lets YOUR objects plug into built-in
+#   syntax (print, len, ==, <, +, for-loops, ...) instead of forcing
+#   everyone to call custom method names like book1.compare_to(book2).
 
 class Book:
     def __init__(self, title, author, pages):
@@ -632,6 +688,22 @@ print()
 #
 # In Python, we use @property to make attribute access look natural
 # while still controlling it behind the scenes.
+#
+# Visual - looks like a plain attribute, but a method runs underneath:
+#
+#   temp.celsius              temp.celsius = 100
+#        |                          |
+#        v                          v
+#   looks like attribute      looks like attribute
+#   access...                 assignment...
+#        |                          |
+#        v                          v
+#   @property def celsius(self):    @celsius.setter def celsius(self, value):
+#       return self._celsius            if value < -273.15: raise ValueError(...)
+#       (a method runs!)                self._celsius = value   (a method runs!)
+#
+#   The caller never sees the method call - that's the point of @property:
+#   clean syntax on the outside, validation/logic on the inside.
 
 class Temperature:
     def __init__(self, celsius):
@@ -680,6 +752,22 @@ print()
 #
 # Rule of thumb: prefer composition over inheritance.
 # Composition is more flexible and avoids deep inheritance chains.
+#
+# Visual - "is-a" (arrow pointing up to a parent) vs "has-a" (box containing another box):
+#
+#   INHERITANCE ("is-a")              COMPOSITION ("has-a")
+#
+#        Animal                       +-------------------+
+#          ^                          |  Car2              |
+#          | is-a                     |  +--------------+  |
+#          |                          |  | engine: Engine|  |
+#         Dog3                        |  +--------------+  |
+#                                      +-------------------+
+#   Dog3 IS an Animal.                Car2 HAS an Engine.
+#   Tight coupling: Dog3 only          The Engine object is swappable -
+#   exists as a kind of Animal.        plug a different engine into a
+#                                       different Car2 without touching
+#                                       the Engine class itself.
 
 class Engine:
     def __init__(self, horsepower, fuel_type):
@@ -721,6 +809,21 @@ print()
 # It defines a TEMPLATE — child classes MUST implement certain methods.
 #
 # Use case: you want to enforce that all subclasses implement specific methods.
+#
+# Visual - the abstract class is a template only; concrete subclasses are buildable:
+#
+#   Shape(ABC)                  shape = Shape()
+#   +----------------------+    -----------------> TypeError! Can't instantiate
+#   | area()      [empty]  |                        an abstract class.
+#   | perimeter() [empty]  |
+#   | describe()  [real]   |
+#   +----------------------+
+#           |  must implement area() + perimeter()
+#     +-----+-----+
+#     v           v
+#   Circle(Shape) Rectangle(Shape)      circle = Circle(5)   -> OK, concrete
+#   area() [real]  area() [real]        rect = Rectangle(4,6) -> OK, concrete
+#   perimeter() [real] perimeter() [real]
 
 from abc import ABC, abstractmethod
 
