@@ -799,6 +799,109 @@ print(f"\nArray: {arr2}")
 print(f"Max difference: {max_difference(arr2)}")
 
 
+# ===== SECTION 10.5: Insert Into a Sorted Array (Keeping It Sorted) ========
+print("\n" + "=" * 70)
+print("  SECTION 10.5: Insert Into a Sorted Array")
+print("=" * 70)
+
+# ----- Problem -----
+# You're given a SORTED array with one extra empty slot at the end
+# (marked with a placeholder, usually 0), and a value x to insert.
+# Insert x into its correct position so the array STAYS sorted.
+#
+# Example: arr = [1, 4, 7, 8, 9, 0],  x = 6
+#          The trailing 0 is just "empty space" reserved for the new element.
+#          Expected result: [1, 4, 6, 7, 8, 9]
+#
+# This shows up in interviews as a precursor to "merge two sorted arrays"
+# (LeetCode 88) — that problem is just this one applied repeatedly.
+
+# ----- Approach 1: Shift from the back -----
+#
+# Idea: start from the second-to-last slot (the last real element) and
+# shift elements RIGHT one at a time until we find x's correct spot.
+# This avoids overwriting data — we always shift before we write.
+#
+# Walkthrough: arr = [3, 5, 10, 14, 0], x = 7
+#   i = 3 (arr[3]=14): 7 < 14  → shift: arr = [3, 5, 10, 14, 14], i = 2
+#   i = 2 (arr[2]=10): 7 < 10  → shift: arr = [3, 5, 10, 10, 14], i = 1
+#   i = 1 (arr[1]=5):  7 >= 5  → stop, place x at i+1 = 2
+#   Result: [3, 5, 7, 10, 14]
+
+def insert_sorted(arr, x):
+    """Insert x into a sorted array (last slot is the empty placeholder)."""
+    if x <= 0:
+        return False
+    if arr[-1] != 0:          # no empty slot available
+        return False
+
+    i = len(arr) - 2          # start at the last REAL element (skip the empty slot)
+    while i >= 0 and x < arr[i]:
+        arr[i + 1] = arr[i]   # shift this element one position right
+        i -= 1
+    arr[i + 1] = x            # place x in the gap we just made
+    return True
+
+# Time:  O(n) — worst case, x is the smallest and shifts everything
+# Space: O(1) — modifies the array in place, no extra storage
+
+print("\n--- Approach 1: Shift from the back ---")
+arr1 = [3, 5, 10, 14, 0]
+x1 = 7
+print(f"Before: {arr1}, inserting {x1}")
+insert_sorted(arr1, x1)
+print(f"After:  {arr1}")
+
+# ----- Approach 2: Swap while moving forward -----
+#
+# Idea: walk LEFT to RIGHT. The moment we find a slot that should hold
+# a SMALLER value than what's currently there (or we hit the empty 0),
+# swap x into that slot and carry the displaced value forward as the
+# new x. Keep going until x lands in the empty slot at the end.
+#
+# Walkthrough: arr = [3, 5, 10, 14, 0], x = 1
+#   i=0: arr[0]=3, x=1 < 3        → swap: arr=[1, 5, 10, 14, 0], x becomes 3
+#   i=1: arr[1]=5, x=3 < 5        → swap: arr=[1, 3, 10, 14, 0], x becomes 5
+#   i=2: arr[2]=10, x=5 < 10      → swap: arr=[1, 3, 5, 14, 0], x becomes 10
+#   i=3: arr[3]=14, x=10 < 14     → swap: arr=[1, 3, 5, 10, 0], x becomes 14
+#   i=4: arr[4]=0,  x=14, arr[i]==0 → swap: arr=[1, 3, 5, 10, 14]
+#   Result: [1, 3, 5, 10, 14]
+
+def insert_sorted_swap(arr, x):
+    """Insert x by repeatedly swapping it forward until it reaches the empty slot."""
+    if x <= 0:
+        return False
+    if arr[-1] != 0:
+        return False
+
+    for i in range(len(arr)):
+        if x < arr[i] or arr[i] == 0:
+            arr[i], x = x, arr[i]   # swap: place x here, carry old value forward
+    return True
+
+# Time:  O(n) — single forward pass
+# Space: O(1)
+
+print("\n--- Approach 2: Swap while moving forward ---")
+arr2 = [3, 5, 10, 14, 0]
+x2 = 1
+print(f"Before: {arr2}, inserting {x2}")
+insert_sorted_swap(arr2, x2)
+print(f"After:  {arr2}")
+
+# ----- Comparing the two approaches -----
+# Both are O(n) time, O(1) space. The difference is DIRECTION:
+#   Approach 1 (shift): scans from the END, only touches elements
+#     that need to move — slightly fewer writes if x is large.
+#   Approach 2 (swap):  scans from the START, always does exactly
+#     n swaps — simpler to reason about, same cost regardless of x.
+#
+# Both return False if x <= 0 or the array has no empty slot (arr[-1] != 0) —
+# always validate inputs before mutating in DSA interview code.
+
+print()
+
+
 # ===== SECTION 11: Interview Quick Reference — Common Array Patterns =======
 print("\n" + "=" * 70)
 print("  SECTION 11: Interview Quick Reference")

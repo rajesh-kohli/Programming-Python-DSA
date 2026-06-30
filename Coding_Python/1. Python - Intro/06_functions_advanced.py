@@ -599,6 +599,193 @@ print(f"pipeline('{raw}') -> '{cleaned}'")  # 'hello, world'
 
 
 # =============================================================================
+# Matrix Multiplication from Scratch
+# =============================================================================
+
+print("\n===== Matrix Multiplication from Scratch =====")
+
+# ----- The Rule: when CAN two matrices be multiplied? -----
+#
+# A matrix is represented as a list of rows: mat[i][j] = element at row i, column j.
+#   mat1 has dimensions (p x q1)  → p rows, q1 columns
+#   mat2 has dimensions (q2 x c)  → q2 rows, c columns
+#
+# Multiplication mat1 @ mat2 is only possible if:
+#       COLUMNS of mat1  ==  ROWS of mat2     (q1 == q2)
+#
+# The result mat3 has dimensions (p x c) — rows of mat1, columns of mat2.
+#
+# Visual:
+#   mat1: (p x q1)  @  mat2: (q2 x c)   -- need q1 == q2
+#              \_______/
+#           "inner" dimensions must match
+#   result: (p x c)        ← "outer" dimensions become the result shape
+#
+# ----- How each result cell is computed -----
+#
+# mat3[i][j] = (row i of mat1) DOT (column j of mat2)
+#            = sum over k of  mat1[i][k] * mat2[k][j]
+#
+# Each cell is a SUM OF PRODUCTS across the shared dimension (q1 == q2).
+
+def mat_multp(mat1: list[list[int]], mat2: list[list[int]]):
+    """Multiply two matrices: mat1 (p x q1) and mat2 (q2 x c) -> result (p x c)."""
+    p = len(mat1)        # rows of mat1
+    q1 = len(mat1[0])    # columns of mat1
+
+    q2 = len(mat2)        # rows of mat2
+    cols_mat2 = len(mat2[0])  # columns of mat2 -> becomes columns of the result
+
+    if q1 != q2:
+        print("Dimension Mismatch, Matrix Multiplication not possible")
+        return "Error"
+
+    print("Matrix Multiplication possible")
+    # Initialize the result matrix mat3 with zeros — same trick as list
+    # initialization covered in 07_lists_tuples_slicing.py: nested
+    # comprehension creates p independent rows (not p references to one row).
+    mat3 = [[0 for _ in range(cols_mat2)] for _ in range(p)]
+
+    # Triple nested loop — the classic O(n^3) matrix multiplication
+    for i in range(p):              # iterate over rows of mat1 (= rows of result)
+        for j in range(cols_mat2):  # iterate over columns of mat2 (= cols of result)
+            for k in range(q1):     # iterate over the shared/common dimension
+                mat3[i][j] += mat1[i][k] * mat2[k][j]   # accumulate the dot product
+
+    return mat3
+
+# ----- Demonstration -----
+mat1 = [[1, 2, 3],
+        [4, 5, 6]]            # 2x3 matrix
+mat2 = [[7, 8],
+        [9, 10],
+        [11, 12]]             # 3x2 matrix — rows (3) match mat1's columns (3) ✓
+
+print(f"mat1 (2x3): {mat1}")
+print(f"mat2 (3x2): {mat2}")
+
+result = mat_multp(mat1, mat2)
+print(f"Result (2x2): {result}")
+# Result: [[58, 64], [139, 154]]
+
+# ----- Manual verification of result[0][0] -----
+# row 0 of mat1: [1, 2, 3]      column 0 of mat2: [7, 9, 11]
+# dot product = 1*7 + 2*9 + 3*11 = 7 + 18 + 33 = 58  ✓ matches mat3[0][0]
+
+# ----- Mismatched dimensions example -----
+mat_bad = [[1, 2], [3, 4]]     # 2x2
+mat_other = [[1, 2, 3]]        # 1x3 — columns of mat_bad (2) != rows of mat_other (1)
+print(f"\nTrying incompatible shapes (2x2) @ (1x3):")
+print(mat_multp(mat_bad, mat_other))   # prints the mismatch message, returns "Error"
+
+# ----- Complexity Analysis -----
+# Time:  O(p * q1 * cols_mat2) — three nested loops.
+#        For SQUARE matrices (n x n), this is O(n^3) — the classic complexity
+#        of naive matrix multiplication. (Strassen's algorithm improves this
+#        to ~O(n^2.807) but is rarely used outside specialized numerical libraries.)
+# Space: O(p * cols_mat2) — the result matrix mat3.
+#
+# ----- In production, never write this by hand -----
+# Use NumPy instead — it's implemented in C and uses highly optimized
+# linear algebra libraries (BLAS/LAPACK), often 100x+ faster:
+#   import numpy as np
+#   result = np.array(mat1) @ np.array(mat2)     # or np.matmul(mat1, mat2)
+# Writing it from scratch (like above) is purely for understanding the
+# algorithm — exactly the kind of thing interviewers ask you to implement
+# to test your grasp of nested loops and complexity analysis.
+
+
+# =============================================================================
+# SECTION 11.5: Functions vs Methods, and Introspection with dir()
+# =============================================================================
+
+print("\n===== SECTION 11.5: Functions vs Methods, Introspection =====")
+
+# ----- Function vs Method: what's the actual difference? -----
+#
+# A FUNCTION is a piece of code called by name. You pass it data (parameters)
+# and it can optionally return data.
+#     len([1, 2, 3])      ← len is a function, the list is its argument
+#
+# A METHOD is a piece of code called via a name ATTACHED to an object.
+# It behaves like a function with two key differences:
+#   1. It is IMPLICITLY passed the object it was called on (that's 'self')
+#   2. It can operate on data CONTAINED WITHIN that object/class
+#     [1, 2, 3].append(4)  ← append is a method, implicitly operates on the list
+
+def is_even(n):           # FUNCTION — standalone, not tied to any object
+    return n % 2 == 0
+
+nums = [1, 2, 3]
+nums.append(4)             # METHOD — called ON nums, implicitly modifies nums
+print(f"is_even(4) [function call]: {is_even(4)}")
+print(f"nums after .append(4) [method call]: {nums}")
+
+# ----- dir() — discover what's available on any object -----
+#
+# dir(obj) returns a list of every attribute and method name an object has.
+# This is one of the most useful tools for EXPLORING Python interactively —
+# when you forget a method name, dir() jogs your memory.
+
+list_attributes = dir([])    # dir() on an empty list — shows what ALL lists support
+# Most names starting with __ are "dunder" (double underscore) internal methods.
+# Filter them out to see just the PUBLIC, commonly-used methods:
+list_methods = [item for item in list_attributes if not item.startswith('__')]
+print(f"\nPublic list methods: {list_methods}")
+# ['append', 'clear', 'copy', 'count', 'extend', 'index', 'insert',
+#  'pop', 'remove', 'reverse', 'sort']
+
+# Try this with other types too: dir(""), dir({}), dir(5) — same pattern,
+# instantly shows you every method that type supports.
+
+# ----- The builtins module — every function available without import -----
+#
+# All the functions you've been using without `import` (print, len, range,
+# sum, max, sorted, etc.) actually live in a module called 'builtins' that
+# Python auto-imports into every script.
+
+import builtins
+
+all_builtins = dir(builtins)
+# Built-in FUNCTIONS start with a lowercase letter.
+# Built-in EXCEPTIONS (ValueError, TypeError, etc.) start with uppercase —
+# exclude those to see just the functions:
+builtin_functions = [item for item in all_builtins if item[0].islower() and not item.startswith('__')]
+print(f"\nSample built-in functions: {builtin_functions[:15]} ...")
+# ['abs', 'all', 'any', 'bin', 'bool', 'callable', 'chr', 'dict',
+#  'dir', 'divmod', 'enumerate', 'filter', 'float', 'format', 'frozenset', ...]
+
+# ----- The keyword module — Python's reserved words -----
+#
+# Keywords are words you CANNOT use as variable names (if, for, class, etc.)
+# because Python's grammar reserves them for special syntax.
+
+import keyword
+
+print(f"\nStandard keywords: {keyword.kwlist}")
+# ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await',
+#  'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except',
+#  'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is',
+#  'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try',
+#  'while', 'with', 'yield']
+
+# Soft keywords (Python 3.9+) — special meaning ONLY in specific contexts,
+# can still be used as variable names elsewhere (unlike hard keywords above).
+print(f"Soft keywords: {keyword.softkwlist}")
+# ['_', 'case', 'match', 'type']
+#   e.g. 'match' and 'case' are only special inside a match statement;
+#   you can still write `match = 5` as a normal variable assignment.
+
+print(f"Is 'class' a keyword? {keyword.iskeyword('class')}")   # True
+print(f"Is 'data' a keyword?  {keyword.iskeyword('data')}")    # False
+
+# ----- Why this matters for interviews -----
+# Being able to say "I wasn't sure of the exact method name, so I checked
+# dir(my_object)" shows you know how to be self-sufficient in unfamiliar
+# codebases — a skill interviewers value as much as memorized syntax.
+
+
+# =============================================================================
 # SECTION 12: Practice Exercises
 # =============================================================================
 

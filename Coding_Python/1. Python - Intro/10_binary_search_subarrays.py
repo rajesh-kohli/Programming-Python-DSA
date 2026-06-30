@@ -416,7 +416,7 @@ generate_subarrays(arr,n)
 #   1. Brute Force:            O(n^3)
 #   2. Optimized Brute Force:  O(n^2)
 #   3. Prefix Sum approach:    O(n^2) but introduces a powerful concept
-#   (Kadane's Algorithm is O(n) — covered in a later lecture)
+#   (Kadane's Algorithm is O(n) — covered in 11_two_pointers_and_kadane.py)
 
 
 # ----- Approach 1: Brute Force — O(n^3) -----

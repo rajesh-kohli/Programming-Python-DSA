@@ -971,6 +971,89 @@ print(f"First 5: {[next(gen) for _ in range(5)]}")  # [0, 1, 4, 9, 16]
 
 
 # =============================================================================
+# SECTION 11.5: Frequency Counting — set(), dict, and collections.Counter
+# =============================================================================
+
+# A VERY common interview/real-world task: given a list, count how many
+# times each item appears, or find the unique items, or find the most
+# common one. Python gives you several tools of increasing power.
+
+print("\n--- Frequency Counting ---")
+
+categories = ['shoes', 'shirts', 'shoes', 'jackets', 'shirts', 'shoes']
+
+# ----- Tool 1: set() — just the UNIQUE values, no counts -----
+# Use when you only care about "what distinct items exist", not how many times.
+unique_categories = set(categories)
+print(f"Unique categories: {unique_categories}")   # {'shoes', 'shirts', 'jackets'}
+# Time: O(n) to build, Space: O(k) where k = number of unique items
+
+# ----- Tool 2: Manual dict — build the frequency map yourself -----
+# This is what's actually happening "under the hood" — good to know for interviews
+# even though you'd rarely write this by hand in production code.
+counts = {}
+for item in categories:
+    if item in counts:
+        counts[item] += 1
+    else:
+        counts[item] = 1
+print(f"Manual counts: {counts}")          # {'shoes': 3, 'shirts': 2, 'jackets': 1}
+
+top_category_manual = max(counts, key=counts.get)
+print(f"Most common (manual): {top_category_manual}")   # shoes
+# max(dict, key=dict.get) → finds the KEY whose VALUE is largest.
+# Time: O(n) to build counts, O(k) to find the max → overall O(n)
+
+# ----- Tool 3: dict comprehension + .count() — concise but SLOWER -----
+# .count() re-scans the whole list for EVERY unique item — O(n*k), not O(n)!
+# Fine for small lists, but avoid for large data (use Counter instead).
+unique_set = set(categories)
+click_counts_comp = {item: categories.count(item) for item in unique_set}
+print(f"Dict comprehension counts: {click_counts_comp}")
+
+# ----- Tool 4: collections.Counter — THE RIGHT TOOL for frequency counting -----
+# Counter is a specialized dict subclass built exactly for this purpose.
+from collections import Counter
+
+click_counts = Counter(categories)
+print(f"Counter object: {click_counts}")
+# Counter({'shoes': 3, 'shirts': 2, 'jackets': 1})
+print(f"Type: {type(click_counts)}")   # <class 'collections.Counter'>
+
+# Counter behaves like a dict — you can index into it:
+print(f"Count of 'shoes': {click_counts['shoes']}")     # 3
+print(f"Count of 'pants' (missing): {click_counts['pants']}")  # 0 — no KeyError!
+#   ^ This is a key advantage over a regular dict: missing keys return 0
+#     instead of raising KeyError. Regular dict would need .get(key, 0).
+
+# .most_common(n) — the most useful Counter method.
+# Returns a list of (item, count) tuples, sorted by count descending.
+print(f"Most common overall: {click_counts.most_common()}")
+#   [('shoes', 3), ('shirts', 2), ('jackets', 1)]
+
+top_category = click_counts.most_common(1)[0][0]   # top item's NAME
+print(f"Top category: {top_category}")              # shoes
+#   most_common(1)  → [('shoes', 3)]   (list with one tuple)
+#   most_common(1)[0] → ('shoes', 3)    (the tuple)
+#   most_common(1)[0][0] → 'shoes'      (just the name)
+
+# Counter also supports arithmetic — adding/subtracting frequency maps:
+more_categories = Counter(['shoes', 'hats', 'hats'])
+combined = click_counts + more_categories
+print(f"Combined counts: {combined}")
+# Counter({'shoes': 4, 'shirts': 2, 'hats': 2, 'jackets': 1})
+
+# ----- Time Complexity Comparison -----
+# | Approach              | Time      | When to use                          |
+# |------------------------|-----------|---------------------------------------|
+# | set()                  | O(n)      | Only need unique values, not counts   |
+# | Manual dict loop        | O(n)      | Educational / when Counter isn't available |
+# | dict comp + .count()    | O(n*k)    | AVOID for large lists — slow!         |
+# | collections.Counter     | O(n)      | ALWAYS prefer this for frequency work |
+print()
+
+
+# =============================================================================
 # SECTION 12: Common Operations Reference Table + Practice Exercises
 # =============================================================================
 
