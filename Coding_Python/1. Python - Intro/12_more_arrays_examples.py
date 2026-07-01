@@ -597,13 +597,20 @@ def trap_4(height: list[int]) -> int:
 #
 #   Solution   Time     Space   Key idea
 #   ─────────────────────────────────────────────────────────────────────
-#   trap_1     O(n²)    O(1)    Brute force: scan left+right for each i
-#   trap_2     O(n)     O(n)    Precompute both l[] and r[] arrays
-#   trap_3     O(n)     O(n)    Only precompute r[], compute l on-the-fly
-#   trap_4     O(n)     O(1)    Two pointers — best solution ✓
+#   trap_1     O(n²)    O(1)    Brute force: scan left+right for each i / EVERY building
+#   trap_2     O(n)     O(n)    Precompute both l[] and r[] arrays upfront
+#   trap_3     O(n)     O(n)    Drop l[] - Only precompute r[], compute l on-the-fly / compute left max on-the-fly with one variable
+#   trap_4     O(n)     O(1)    Two pointers — best solution ✓ - drop r[] too, no extra arrays at all
 #
 # The progression from 1→2→3→4 is a classic interview pattern:
 #   start with the obvious solution, then ask "what's redundant?" each time.
+
+# Why the two-pointer works (the tricky part from these 4 solutions):
+# When l < r at position i: you know r >= l, and whatever the TRUE right max is,
+# it's at least r (which is already >= l). So the left wall (l) is definitely the
+# limiting factor — wi = l - height[i] is exact. You never needed the full right array.
+# Same logic applies to j from the right when r <= l.
+
 
 # --- Examples ---
 print("\n===== SECTION 4: Rain-Water Trapping =====")
@@ -960,6 +967,11 @@ def counting_sort(arr: list[int], k: int) -> list[int]:
     for value, count in enumerate(freq):
         result.extend([value] * count)
     return result
+
+# Counting sort key concept from class: 
+# the freq[] array IS a dictionary — index = element value (the key), freq[index] = count (the value).
+# No comparisons needed, which is how it breaks the O(n log n) barrier.
+
 
 # --- Examples ---
 print("\n===== SECTION 7: Counting Sort =====")
