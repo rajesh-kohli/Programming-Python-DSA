@@ -1032,8 +1032,10 @@ ganesha_pattern(n)
 
 
 # =============================================================================
-# PATTERN 20: Hollow Diamond Pattern (Pattern 6)
+# PATTERN 6 / PATTERN 20: Hollow Diamond Pattern
 # =============================================================================
+# Note: this problem is often called Pattern 6 in the prompt, but in this file
+# it is placed later as Pattern 20 to keep the pattern sequence organized.
 #
 # Output (n=5)  [total rows = 2n-1 = 9]:
 #           *            ← only 1 star (first & last = same)
@@ -1108,6 +1110,60 @@ def hollow_diamond(n):
 
 print("\n=== Pattern 20: Hollow Diamond Pattern ===")
 hollow_diamond(n)
+
+
+# =============================================================================
+# PATTERN 6: Hollow Diamond Pattern (Prompt version)
+# =============================================================================
+# Output (n=5):
+#   * * * * *
+#   * *   * *
+#   *   *   *
+#   * *   * *
+#   * * * * *
+#
+# Explanation:
+#   - First and last rows are full of stars.
+#   - The rows between form a hollow diamond shape inside the square.
+#   - For row i (2..n-1), the stars are at positions:
+#       1, i, n-i+1, n   if i is in the top half,
+#       1, n-i+1, i, n   if i is in the bottom half (mirror symmetry).
+#
+#   This creates the diamond points at the center row and the two side
+#   edges of the hollow diamond.
+#
+#   Each '*' is separated from the next by a tab, matching the prompt format.
+#
+# Visual row positions for n=5:
+#   Row 1: 1 2 3 4 5         → * * * * *
+#   Row 2: 1 2   4 5         → * *   * *
+#   Row 3: 1   3   5         → *   *   *
+#   Row 4: 1 2   4 5         → * *   * *
+#   Row 5: 1 2 3 4 5         → * * * * *
+
+
+def pattern_6_hollow_diamond(n):
+    mid = (n + 1) // 2
+    for i in range(1, n + 1):
+        if i == 1 or i == n:
+            for _ in range(n):
+                print("*", end="\t")
+        else:
+            if i <= mid:
+                left = i
+            else:
+                left = n - i + 1
+            right = n - left + 1
+            for j in range(1, n + 1):
+                if j == 1 or j == left or j == right or j == n:
+                    print("*", end="\t")
+                else:
+                    print(" ", end="\t")
+        print()
+
+
+print("\n=== Pattern 6: Hollow Diamond Pattern ===")
+pattern_6_hollow_diamond(n)
 
 
 # =============================================================================

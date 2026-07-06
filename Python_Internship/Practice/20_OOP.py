@@ -26,6 +26,73 @@ Key theme: Most interview system-design questions are just one of these
 data structures in disguise. Learn the structure, not just the use case.
 """
 
+
+# Notes on Python and OOP:
+# - Python supports object-oriented programming, but it is not "pure" OOP like
+#   some other languages (Java, C++). Python is more flexible and pragmatic.
+#
+# - DATA HIDING in Python is mostly a convention, not a strict rule.
+#   The language allows access to most class members from outside the class.
+#
+# - Common conventions:
+#     · public member:      name
+#     · protected-style:    _name      (internal use, but still accessible)
+#     · private-style:      __name     (name mangled, harder to access)
+#
+# - Example: public vs protected vs name-mangled private
+#
+#   class Account:
+#       def __init__(self, balance):
+#           self.balance = balance      # public
+#           self._fee = 10              # protected-style
+#           self.__pin = 1234           # name-mangled private
+#
+#   acc = Account(100)
+#   print(acc.balance)      # OK: 100
+#   print(acc._fee)         # Works, but convention says "internal"
+#   print(acc.__pin)        # AttributeError: __pin is not directly accessible
+#   print(acc._Account__pin)  # This works because Python mangled the name
+#
+# - Visual: How name mangling works
+#     class Account:            actual attribute name stored in object
+#         self.__pin = 1234     →   _Account__pin
+#
+# - Why this matters:
+#   * `_name` means "please do not touch this from outside".
+#   * `__name` means "avoid accidental access".
+#   * Neither one is truly secret in Python.
+#
+# - Python still supports the main OOP concepts:
+#     * classes
+#     * objects/instances
+#     * inheritance
+#     * polymorphism
+#     * abstraction
+#     * encapsulation by convention
+#
+# - The practical rule for beginners:
+#   Use underscores to show intent, but understand that Python trusts the
+#   programmer. If you really need to protect data, use methods instead of
+#   exposing raw attributes.
+#
+# - Example: better encapsulation with methods
+#
+#   class Counter:
+#       def __init__(self):
+#           self._count = 0
+#       def increment(self):
+#           self._count += 1
+#       def get_count(self):
+#           return self._count
+#
+#   This keeps the internal value private in practice, even though it can
+#   technically still be accessed if someone really wants to.
+#
+# - Bottom line:
+#   Python is OOP, but it is not a strict privacy-enforcing language. The
+#   language gives you tools and conventions, and the rest depends on how you
+#   structure your classes and use naming conventions.
+
 import heapq
 import math
 from collections import deque, defaultdict
@@ -1224,6 +1291,75 @@ print(f"  As Python list: {linked.to_list()}")
 
 print("===== SECTION 1: Music Playlist (Doubly Linked List) =====")
 
+# Notes for beginners:
+# - This file implements MusicPlaylist using a doubly linked list.
+# - Each SongNode stores `title`, `next`, and `prev` pointers.
+# - `add_song(title)` is O(1) because it uses the `tail` pointer and appends
+#   directly to the end.
+# - `remove_song(title)` finds the node in O(n), then rewires neighbours in O(1).
+# - This implementation also supports current-song playback and easy
+#   next/previous navigation.
+#
+# Instructor’s simpler version (what the teacher is doing in class):
+# - Uses a singly linked list or a plain linked structure.
+# - Each node has `title` and `next` only.
+# - `search_song(self, title)` walks from the start until it finds the title.
+# - `add_song(self, title)` usually walks to the last node and appends there,
+#   so it is O(n) unless a tail pointer is also maintained.
+# - `remove_song_playlist(self, title)` must track the previous node while
+#   traversing, because there is no `prev` pointer.
+#
+# Alternative teacher-style singly linked playlist pseudocode:
+#
+# class SongNode:
+#     def __init__(self, title):
+#         self.title = title
+#         self.next = None
+#
+# class MusicPlaylist:
+#     def __init__(self):
+#         self.head = None
+#
+#     def add_song(self, title):
+#         node = SongNode(title)
+#         if self.head is None:
+#             self.head = node
+#             return
+#         current = self.head
+#         while current.next is not None:
+#             current = current.next
+#         current.next = node
+#
+#     def search_song(self, title):
+#         current = self.head
+#         while current is not None:
+#             if current.title == title:
+#                 return current
+#             current = current.next
+#         return None
+#
+#     def remove_song(self, title):
+#         prev = None
+#         current = self.head
+#         while current is not None and current.title != title:
+#             prev = current
+#             current = current.next
+#         if current is None:
+#             print("Song not found")
+#             return
+#         if prev is None:
+#             self.head = current.next
+#         else:
+#             prev.next = current.next
+#
+# What to prefer:
+# - While in class, use the teacher’s singly-linked approach if that is what
+#   is being taught. It is simpler and is the right learning path.
+# - The current file’s doubly linked version is more complete and powerful,
+#   and it is fine to study once you understand the simpler version.
+# - For `remove_song_playlist`, the doubly linked list is easier because it
+#   rewires both directions without needing a separate `prev` tracker.
+
 
 class SongNode:
     """One node in the doubly linked list. Holds a song title + two pointers."""
@@ -1369,6 +1505,74 @@ playlist.play_song("Levitating")  # jump directly
 playlist.remove_song("Levitating")   # remove currently playing song
 playlist.play_current()              # should auto-move to Watermelon Sugar
 playlist.display()
+
+
+# =============================================================================
+# SECTION 1b: Linked List Cycle Detection
+# =============================================================================
+# Problem: Given a linked list, determine whether it contains a cycle.
+# Return True if there is a cycle, otherwise False.
+#
+# Visual example:
+#   No cycle:      A -> B -> C -> D -> None
+#   With cycle:    A -> B -> C -> D
+#                         ^         |
+#                         |_________|
+#
+# Approach: Floyd’s Tortoise and Hare (fast/slow pointers)
+# - slow moves one step at a time
+# - fast moves two steps at a time
+# - if there is a cycle, fast and slow will eventually meet
+# - if fast reaches None, the list has no cycle
+#
+# This is O(n) time and O(1) extra space.
+
+
+class ListNode:
+    """One node of a singly linked list used for cycle detection."""
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+
+def has_cycle(head):
+    """Return True if the linked list starting at head contains a cycle."""
+    slow = head
+    fast = head
+
+    while fast is not None and fast.next is not None:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            return True
+    return False
+
+
+def make_cyclic_list(values, cycle_index):
+    """Build a list from values and create a cycle at cycle_index."""
+    if not values:
+        return None
+
+    head = ListNode(values[0])
+    node = head
+    nodes = [head]
+    for value in values[1:]:
+        node.next = ListNode(value)
+        node = node.next
+        nodes.append(node)
+
+    if 0 <= cycle_index < len(nodes):
+        node.next = nodes[cycle_index]
+    return head
+
+
+# Demo for cycle detection
+linear_head = make_cyclic_list([10, 20, 30, 40], -1)
+cycle_head = make_cyclic_list([10, 20, 30, 40], 1)  # cycle back to 20
+
+print("\n===== LINKED LIST CYCLE DETECTION =====")
+print("Linear list has cycle?", has_cycle(linear_head))
+print("Cyclic list has cycle?", has_cycle(cycle_head))
 
 
 # =============================================================================
