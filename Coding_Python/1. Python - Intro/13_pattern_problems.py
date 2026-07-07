@@ -1149,16 +1149,24 @@ def pattern_6_hollow_diamond(n):
             for _ in range(n):
                 print("*", end="\t")
         else:
-            if i <= mid:
-                left = i
+            # Middle row should show only two stars (one at each end).
+            if i == mid:
+                for j in range(1, n + 1):
+                    if j == 1 or j == n:
+                        print("*", end="\t")
+                    else:
+                        print(" ", end="\t")
             else:
-                left = n - i + 1
-            right = n - left + 1
-            for j in range(1, n + 1):
-                if j == 1 or j == left or j == right or j == n:
-                    print("*", end="\t")
+                if i <= mid:
+                    left = i
                 else:
-                    print(" ", end="\t")
+                    left = n - i + 1
+                right = n - left + 1
+                for j in range(1, n + 1):
+                    if j == 1 or j == left or j == right or j == n:
+                        print("*", end="\t")
+                    else:
+                        print(" ", end="\t")
         print()
 
 
